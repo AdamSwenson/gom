@@ -76,16 +76,17 @@ describe( compName, () => {
         wrapper = mount( Component, {
             store, localVue,
             attachToDocument: true,
-            sync: false
-        } );
+            sync: false,
 
-        wrapper.setProps( { item } );
+        } );
+        wrapper.setProps( {item});
 
     } );
 
     describe( " loads into expected default state for testing ", () => {
-        it( 'displays the expected component div on first load', () => {
+        it( 'displays the expected component div on first load', (done) => {
             assertions.assertElementExists( wrapper, componentDivIdentifier );
+            done();
         } );
     } );
 
@@ -103,6 +104,41 @@ describe( compName, () => {
     } );
 
     describe( ' methods ', () => {
+        describe(" createSlider ", (  ) => {
+            it.skip(" sets the slider's initial value to 0 when the pre-existing score is undefined", (  done) => {
+                let spy = sinon.stub();
+                spy.resolves(true);
+                getters[nggTypes.getItemScoreObject] = (  ) => (  ) => undefined;
+                actions['initializeItemScore'] = spy;
+
+                store = new Vuex.Store( {
+                    actions,
+                    getters,
+                    mutations
+                } );
+
+                wrapper = mount( Component, {
+                    store, localVue,
+                    attachToDocument: true,
+                    sync: false,
+                    propsData : {item}
+                } );
+
+
+                let spy3 = sinon.spy();
+                wrapper.setMethods({setSliderScore: spy3});
+                //check
+                // expect(spy.callCount).toBe(1);
+                expect(spy3.args[0[0]]).toBe(0);
+                done();
+
+            });
+
+            it.skip(" sets the slider's initial value to the pre-existing score when a score exists", (  ) => {
+
+            });
+        })
+
         it( " handleElementSliderStopEvent behaves as expected ", () => {
             let test = 74;
 

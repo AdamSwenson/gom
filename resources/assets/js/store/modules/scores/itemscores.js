@@ -7,8 +7,16 @@ import m from './itemscores.mutations';
 import loaders from './itemscores.loaders';
 
 const state = {
-    //Array of Score objects
-    scores: []
+    /**
+     * Array of Score objects
+     */
+    scores: [],
+
+    /**
+     * Whether the relevant objects have been loaded such that the
+     * exam is ready to be graded
+     */
+    isReadyToRock: false
 };
 
 const mutations = {

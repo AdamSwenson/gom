@@ -66,7 +66,7 @@
                 if ( _.isUndefined( newVal ) || _.isUndefined( oldVal ) ) return false;
                 if ( newVal === oldVal ) return false;
 
-                //
+                //todo To renable the grade popover, this is where you do it
                 // this.showGradePopOver( this.displayedGradeAssignment, this.maxScore, newVal );
             }
         },

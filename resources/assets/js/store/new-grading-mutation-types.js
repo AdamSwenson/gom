@@ -52,6 +52,7 @@ export const loadInitialData = 'loadInitialData';
 
 
 //scores
+export const createScore = 'createScore';
 export const updateScore = 'updateScore';
 export const updateText = 'updateText';
 

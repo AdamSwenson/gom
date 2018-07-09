@@ -1,5 +1,8 @@
 import * as gTypes from "../../getter-types";
-import { getValenceForScore, isSameValence, sliderSettings } from "./commentHelpers";
+import { getValenceIndexForScore, getValenceNameFromIndex,
+    isSameValence,
+    sliderSettings
+} from "./commentHelpers";
 import PayloadScore from "../../../models/PayloadScore";
 import * as ngaTypes from "../../new-grading-action-types";
 import * as nggTypes from "../../new-grading-getter-types";
@@ -21,9 +24,13 @@ module.exports = {
      * @param student
      * @returns {Promise<any>}
      */
-    initializeItemScore: ( { state, dispatch, commit, getters }, { exam, item, student } ) => {
-
+    initializeItemScore: ( { state, dispatch, commit, getters }, payload ) => {
         return new Promise( function ( resolve, reject ) {
+            let obj = getters[ nggTypes.getItemScoreObject ]( payload );
+            //first check if the score object already exists. If it does, bail.
+            if ( !_.isUndefined( obj ) ) return resolve();
+
+            let { exam, item, student } = payload;
             commit( ngmTypes.updateScore, PayloadScore.factory( { exam, item, student, mutateSilently: true } ) );
             resolve();
         } );
@@ -97,22 +104,24 @@ module.exports = {
             //before we save the score and thus lose
             // what the previous score was, we need to
             //check whether the valence has changed
-            let oldScore = getters[ nggTypes.getItemScoreObject ]( {item : item, student: student} );
+            let oldScore = getters[ nggTypes.getItemScoreObject ]( { item: item, student: student } );
             //Similarly, we need to determine whether the presently
             //existing text has been customized by the user. If it has,
             //we don't want changes of the slider and score to overwrite
             //the text
             let customText = oldScore.isCustomText;
 
-            let sameValence = _.isUndefined(oldScore) ? false : isSameValence( oldScore.score, score, item.maxScore );
-            // window.console.log( 'itemscores', 'sqmc', 163, oldScore, sameValence);
+            let sameValence = _.isUndefined( oldScore ) ? false : isSameValence( oldScore.score, score, item.maxScore );
 
+            // window.console.log( 'itemscores', 'sqmc', 163, oldScore, sameValence );
 
+            //We first update the score
             let p1 = new Promise( function ( resolve, reject ) {
                 commit( ngmTypes.updateScore, pl );
                 resolve();
             } );
 
+            //Now we update the text
             p1.then( function () {
                 //We only need to alter text if the score has changed valence regions
                 //if the valence hasn't changed or if the text is customized, we are done
@@ -121,17 +130,18 @@ module.exports = {
                 //Ok. So the score is in a new valence region and we're using stock
                 //comments. Let's get the appropriate stock comment text and update
                 // accordingly.
-                let newValenceIdx = getValenceForScore( score, item.maxScore );
-                let newValenceName = _.lowerCase(sliderSettings.valenceLabels[ newValenceIdx ]);
+                let newValenceIdx = getValenceIndexForScore( score, item.maxScore );
+                let newValenceName = getValenceNameFromIndex(newValenceIdx);
                 let comment = item.comments.get( newValenceName );
-                // window.console.log( 'itemscores.actions', 'comment', 126,comment );
+
+                // window.console.log( 'itemscores.actions', 'comment', 126, newValenceName,  comment );
 
                 //This needs to be stored / saved
                 let pl2 = {
                     exam: exam,
                     item: item,
                     student: student,
-                    text: _.isUndefined(comment) ? '' : comment.text
+                    text: _.isUndefined( comment ) ? '' : comment.text
                 };
 
                 //call the action to record the new comment
@@ -197,7 +207,7 @@ module.exports = {
      * @param student
      * @param score
      */
-    [ ngaTypes.resetItemScore] : ( { state, dispatch, commit, getters }, { exam, item, student } ) => {
+    [ ngaTypes.resetItemScore ]: ( { state, dispatch, commit, getters }, { exam, item, student } ) => {
         return new Promise( function ( resolve, reject ) {
 
             let p1 = new Promise( function ( resolve, reject ) {

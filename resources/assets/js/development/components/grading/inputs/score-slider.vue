@@ -4,7 +4,6 @@
            class="score-slider slider"
            v-bind:min="minScore"
            v-bind:max="maxScore"
-           v-model="score"
     >
 
 </template>
@@ -55,6 +54,25 @@
         },
 
         asyncComputed: {
+            isParentReady: function () {
+                let me = this;
+                let isParentReady = this.$store.getters.isReadyToRock;
+                if ( isParentReady && this.isReady() ) {
+                    // window.console.log( 'score-slider', 'isParentReady', 60, 'REady!' );
+                    let p = this.$store.dispatch( 'initializeItemScore',
+                        { exam: this.exam, item: this.item, student: this.student } );
+                    p.then( function () {
+                        //Now we can create the slider, if we did it before,
+                        //things would not go well (See GOM-344)
+                        if ( !me.slider ) {
+                            me.createSlider();
+                        }
+                        return true;
+                    } );
+                }
+            },
+
+
             /**
              * This is a secondary representation of the score
              * for the slider. However, it only exists as a workaround
@@ -74,11 +92,6 @@
                     } );
 
                     if ( !_.isUndefined( qs ) && !_.isNull( qs ) ) {
-                        if ( !me.slider ) {
-                            //if the slider doesn't exist yet, we make it
-                            me.createSlider( qs.score );
-                        }
-
                         return qs.score;
                     }
 
@@ -96,7 +109,7 @@
                         //Now we can create the slider, if we did it before,
                         //things would not go well (See GOM-344)
                         if ( !me.slider ) {
-                            me.createSlider( qs.score );
+                            // me.createSlider( qs.score );
                         }
                         return qs.score;
                     } );
@@ -116,11 +129,14 @@
              * if the slider is created before we have a value from the server.
              */
             score: function ( newVal ) {
-                if ( this.slider ) this.setSliderScore( newVal  );
-            }
+                if ( this.slider ) this.setSliderScore( newVal );
+            },
+
         },
 
         computed: {
+
+
             //maxScore , score, and exam are defined in the mixin
 
             student: function () {
@@ -161,8 +177,10 @@
             // isReady defined in mixin
 
             /**
-             * Called when an element slider stops movement. Updates element
-             * score and text (if necessary), then saves score, text and time
+             * Called when an element slider stops movement.
+             * Dispatches action to update item score and text (if necessary) and
+             * save to server
+             *
              * @param slideEvt
              * @param data
              * @param Roster
@@ -171,13 +189,13 @@
             handleElementSliderStopEvent: function ( slideEvt, callback ) {
                 // window.console.log( 'score-slider', 'handleElementSliderStopEvent', 114, slideEvt );
                 //store the new element score in the data object
-                // this.score = slideEvt.value;
+                let score = Number(slideEvt.value);
 
                 let pl = {
                     exam: this.exam,
                     item: this.item,
                     student: this.student,
-                    score: slideEvt.value
+                    score: score
                 };
                 this.$store.dispatch( ngaTypes.recordItemScore, pl );
 
@@ -187,30 +205,49 @@
 
             },
 
+            /**
+             * Programmatically set the value of the slider. This does
+             * not trigger the update action.
+             * Thus this should be used for moving the slider around
+             * behind the server's back.
+             */
             setSliderScore: function ( score ) {
                 this.slider.setValue( score, { triggerSlideEvent: false } );
                 // this.slider.refresh();
             },
 
-            createSlider: function ( initialScore  ) {
+            createSlider: function () {
                 //only create it if it doesn't already exist
                 if ( this.slider ) return true;
 
+                let initialScore;
                 let me = this;
 
+                //Set the pre-existing score, if it exists
+                if(! _.isUndefined(this.sliderScore) && !_.isNull(this.sliderScore)){
+                    initialScore = this.sliderScore;
+                }
+                else{
+                    //Or, for the times I feel like it should be in the middle initially
+                    // let initialScore = this.maxScore / 2;
+                    initialScore = 0;
+                }
+
+                //Create the slider control
                 me.slider = new Slider( me.$el, me.settings );
+
+                //NB, this does not set the value in the store. It only sets the
+                //initial state of the control
                 me.setSliderScore( initialScore );
 
-                /* ----------------- slider listeners --------------- */
                 /* When an element slider stops movement,
-             update element score and text (if necessary),
-             then save score, text and time
-             *  */
+                   update element score and text (if necessary),
+                   then save score, text and time
+                */
                 jQuery( me.$el ).on( 'slideStop', function ( slideEvt ) {
                     me.handleElementSliderStopEvent( slideEvt );
                 } );
 
-                // }, 2000 );
             },
         },
 
@@ -220,9 +257,8 @@
 
         mounted: function () {
             let me = this;
-            me.$nextTick( function () {
-                // me.createSlider()
-            } );
+            // me.$nextTick( function () {
+
 
         }
     }

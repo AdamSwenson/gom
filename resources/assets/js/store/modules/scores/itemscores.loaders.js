@@ -1,5 +1,5 @@
 import * as gTypes from "../../getter-types";
-import { getValenceForScore, isSameValence, sliderSettings } from "./commentHelpers";
+import { getValenceIndexForScore, isSameValence, sliderSettings } from "./commentHelpers";
 import PayloadScore from "../../../models/PayloadScore";
 import * as ngaTypes from "../../new-grading-action-types";
 import * as nggTypes from "../../new-grading-getter-types";

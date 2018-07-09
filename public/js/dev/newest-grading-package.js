@@ -3766,6 +3766,8 @@ exports.default = {
 
     data: function data() {
         return {
+            isReadyToRock: false,
+
             //temporary while developing as separate page
             examId: window.examId,
 
@@ -3842,6 +3844,9 @@ exports.default = {
                         //and any existing scores
                         //as well as comments
                         me.$store.dispatch('loadScoresFromServer', me.exam).then(function () {
+                            //we now have all the basic items we need, so we can
+                            //let other processes know
+                            me.$store.commit('notifyReady');
                             //finally we get grading times
                             me.$store.dispatch(ngaTypes.loadTimesFromServer, me.exam);
                             //and are done.
@@ -4088,6 +4093,9 @@ exports.default = {
     },
 
     computed: {
+        /**
+         * The exam currently being graded
+         */
         exam: function exam() {
             return this.$store.getters[nggTypes.getActiveExam];
         },
@@ -4679,7 +4687,7 @@ exports.default = {
             if (_.isUndefined(newVal) || _.isUndefined(oldVal)) return false;
             if (newVal === oldVal) return false;
 
-            //
+            //todo To renable the grade popover, this is where you do it
             // this.showGradePopOver( this.displayedGradeAssignment, this.maxScore, newVal );
         }
     },
@@ -4823,7 +4831,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
-//
 
 
 var jQuery = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
@@ -4853,6 +4860,23 @@ exports.default = {
     },
 
     asyncComputed: {
+        isParentReady: function isParentReady() {
+            var me = this;
+            var isParentReady = this.$store.getters.isReadyToRock;
+            if (isParentReady && this.isReady()) {
+                // window.console.log( 'score-slider', 'isParentReady', 60, 'REady!' );
+                var p = this.$store.dispatch('initializeItemScore', { exam: this.exam, item: this.item, student: this.student });
+                p.then(function () {
+                    //Now we can create the slider, if we did it before,
+                    //things would not go well (See GOM-344)
+                    if (!me.slider) {
+                        me.createSlider();
+                    }
+                    return true;
+                });
+            }
+        },
+
         /**
          * This is a secondary representation of the score
          * for the slider. However, it only exists as a workaround
@@ -4872,11 +4896,6 @@ exports.default = {
                 });
 
                 if (!_.isUndefined(qs) && !_.isNull(qs)) {
-                    if (!me.slider) {
-                        //if the slider doesn't exist yet, we make it
-                        me.createSlider(qs.score);
-                    }
-
                     return qs.score;
                 }
 
@@ -4893,7 +4912,7 @@ exports.default = {
                     //Now we can create the slider, if we did it before,
                     //things would not go well (See GOM-344)
                     if (!me.slider) {
-                        me.createSlider(qs.score);
+                        // me.createSlider( qs.score );
                     }
                     return qs.score;
                 });
@@ -4915,9 +4934,11 @@ exports.default = {
         score: function score(newVal) {
             if (this.slider) this.setSliderScore(newVal);
         }
+
     },
 
     computed: {
+
         //maxScore , score, and exam are defined in the mixin
 
         student: function student() {
@@ -4958,8 +4979,10 @@ exports.default = {
         // isReady defined in mixin
 
         /**
-         * Called when an element slider stops movement. Updates element
-         * score and text (if necessary), then saves score, text and time
+         * Called when an element slider stops movement.
+         * Dispatches action to update item score and text (if necessary) and
+         * save to server
+         *
          * @param slideEvt
          * @param data
          * @param Roster
@@ -4968,13 +4991,13 @@ exports.default = {
         handleElementSliderStopEvent: function handleElementSliderStopEvent(slideEvt, callback) {
             // window.console.log( 'score-slider', 'handleElementSliderStopEvent', 114, slideEvt );
             //store the new element score in the data object
-            // this.score = slideEvt.value;
+            var score = Number(slideEvt.value);
 
             var pl = {
                 exam: this.exam,
                 item: this.item,
                 student: this.student,
-                score: slideEvt.value
+                score: score
             };
             this.$store.dispatch(ngaTypes.recordItemScore, pl);
 
@@ -4983,30 +5006,47 @@ exports.default = {
             }
         },
 
+        /**
+         * Programmatically set the value of the slider. This does
+         * not trigger the update action.
+         * Thus this should be used for moving the slider around
+         * behind the server's back.
+         */
         setSliderScore: function setSliderScore(score) {
             this.slider.setValue(score, { triggerSlideEvent: false });
             // this.slider.refresh();
         },
 
-        createSlider: function createSlider(initialScore) {
+        createSlider: function createSlider() {
             //only create it if it doesn't already exist
             if (this.slider) return true;
 
+            var initialScore = void 0;
             var me = this;
 
+            //Set the pre-existing score, if it exists
+            if (!_.isUndefined(this.sliderScore) && !_.isNull(this.sliderScore)) {
+                initialScore = this.sliderScore;
+            } else {
+                //Or, for the times I feel like it should be in the middle initially
+                // let initialScore = this.maxScore / 2;
+                initialScore = 0;
+            }
+
+            //Create the slider control
             me.slider = new Slider(me.$el, me.settings);
+
+            //NB, this does not set the value in the store. It only sets the
+            //initial state of the control
             me.setSliderScore(initialScore);
 
-            /* ----------------- slider listeners --------------- */
             /* When an element slider stops movement,
-            update element score and text (if necessary),
-            then save score, text and time
-            *  */
+               update element score and text (if necessary),
+               then save score, text and time
+            */
             jQuery(me.$el).on('slideStop', function (slideEvt) {
                 me.handleElementSliderStopEvent(slideEvt);
             });
-
-            // }, 2000 );
         }
     },
 
@@ -5016,9 +5056,8 @@ exports.default = {
 
     mounted: function mounted() {
         var me = this;
-        me.$nextTick(function () {
-            // me.createSlider()
-        });
+        // me.$nextTick( function () {
+
     }
 };
 
@@ -66560,27 +66599,12 @@ if (false) {}
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.score),
-      expression: "score"
-    }],
     staticClass: "score-slider slider",
     attrs: {
       "id": _vm.sliderId,
       "type": "number",
       "min": _vm.minScore,
       "max": _vm.maxScore
-    },
-    domProps: {
-      "value": (_vm.score)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.score = $event.target.value
-      }
     }
   })
 },staticRenderFns: []}
@@ -98824,6 +98848,15 @@ var Item = function (_IModel) {
         /* ------------------------ Getters and setters -------------------- */
 
         //----------------- Comments
+        /**
+         * Given a string key, returns the comment.
+         * We do not define what the allowable keys are here, since
+         * the item doesn't need to know about what comments it contains.
+         * That is left up to consumers. For example, the main standard
+         * mapping is in scores.CommentHelpers.valenceMap
+         * @param valence
+         * @returns {*}
+         */
 
     }, {
         key: 'getComment',
@@ -110433,7 +110466,7 @@ module.exports = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.getValenceForScore = getValenceForScore;
+exports.getValenceIndexForScore = getValenceIndexForScore;
 exports.isSameValence = isSameValence;
 exports.makeCutoffsFromMaxScore = makeCutoffsFromMaxScore;
 /**
@@ -110458,7 +110491,32 @@ var sliderSettings = exports.sliderSettings = {
      */
     valenceCutoffs: [0, 3.25, 6.75, 10],
 
+    /**
+     * These are the publicly displayed valence names.
+     * They are separate from the values of valenceMap, since
+     * we may want to allow users to define their own labels (or we
+     * change our minds) without changing the underlying code.
+     */
     valenceLabels: ["Missing", "Poor", "Fair", "Excellent"],
+
+    /**
+     * This is the underlying mapping from label positions to comment
+     * identifiers which should be used for all
+     * code needing to convert the valence index to name.
+     * The key is the valence index which things like the grading slider
+     * will use. The value is the string corresponds to the Item object's map.
+     * Comments are stored on the Item object in a map which
+     * has string keys. Thus we retrieve the comment for absent via
+     * Item.getComment('absent').
+     * NB, the Item may contain other comments (e.g., it contains the original stock
+     * comment under the key 'stock')
+     */
+    valenceMap: {
+        0: 'absent',
+        1: 'poor',
+        2: 'good',
+        3: 'excellent'
+    },
 
     /**
      * This gets passed to the sliders ticks_position option
@@ -110468,6 +110526,12 @@ var sliderSettings = exports.sliderSettings = {
     valenceLabelPositions: [0, 33, 67, 100]
 };
 
+/**
+ * Determines whether the score is within the range of cutoffs
+ * @param score
+ * @param cutoffs
+ * @returns {boolean}
+ */
 var checkInRange = exports.checkInRange = function checkInRange(score, cutoffs) {
     if (score < cutoffs[0]) throw new Error("cannot get valence. value out of range");
     return true;
@@ -110480,7 +110544,7 @@ var checkInRange = exports.checkInRange = function checkInRange(score, cutoffs) 
  * @param score
  * @returns {number}
  */
-function getValenceForScore(score, maxScore) {
+function getValenceIndexForScore(score, maxScore) {
     if (_.isNull(score)) throw new Error("cannot get valence for null");
 
     //if the max score is set, we need to dynamically create
@@ -110496,21 +110560,31 @@ function getValenceForScore(score, maxScore) {
     return getValenceIndex(score, cutoffs);
 };
 
+/**
+ * Returns the string key for the comment stored on the item object
+ * @param valenceIndex
+ * @returns {*}
+ */
+var getValenceNameFromIndex = exports.getValenceNameFromIndex = function getValenceNameFromIndex(valenceIndex) {
+    return sliderSettings.valenceMap[valenceIndex];
+};
+
 var getValenceIndex = exports.getValenceIndex = function getValenceIndex(score, cutoffs) {
     //now we can look up the valence
-    var valence = 0;
+    var index = 0;
     //start at the second largest value in the cutoffs.
     for (var j = cutoffs.length - 2; j >= 0; j--) {
         if (score > cutoffs[j]) {
             //if the score is greater than the second largest cutoff value, then it belongs
             //to the highest valence and so on.
-            valence = j + 1;
+            index = j + 1;
             break;
         }
     }
-    window.console.log('commentHelpers', 'getValenceIndex', 81, score, cutoffs, valence);
+    // window.console.log( 'commentHelpers', 'getValenceIndex', 81, score, cutoffs, index );
+
     //return the set valence. If made it all the way to 0, the default will be returned.
-    return valence;
+    return index;
 };
 
 /**
@@ -110527,7 +110601,7 @@ function isSameValence(oldScore, newScore, maxScore) {
         return false;
     }
 
-    if (getValenceForScore(newScore, maxScore) != getValenceForScore(oldScore, maxScore)) {
+    if (getValenceIndexForScore(newScore, maxScore) != getValenceIndexForScore(oldScore, maxScore)) {
         return false;
     }
     return true;
@@ -110943,31 +111017,35 @@ module.exports = (_module$exports = {
      * @param student
      * @returns {Promise<any>}
      */
-    initializeItemScore: function initializeItemScore(_ref, _ref2) {
+    initializeItemScore: function initializeItemScore(_ref, payload) {
         var state = _ref.state,
             dispatch = _ref.dispatch,
             commit = _ref.commit,
             getters = _ref.getters;
-        var exam = _ref2.exam,
-            item = _ref2.item,
-            student = _ref2.student;
-
 
         return new Promise(function (resolve, reject) {
+            var obj = getters[nggTypes.getItemScoreObject](payload);
+            //first check if the score object already exists. If it does, bail.
+            if (!_.isUndefined(obj)) return resolve();
+
+            var exam = payload.exam,
+                item = payload.item,
+                student = payload.student;
+
             commit(ngmTypes.updateScore, _PayloadScore2.default.factory({ exam: exam, item: item, student: student, mutateSilently: true }));
             resolve();
         });
     }
 
-}, _defineProperty(_module$exports, ngaTypes.recordItemScore, function (_ref3, _ref4) {
-    var state = _ref3.state,
-        dispatch = _ref3.dispatch,
-        commit = _ref3.commit,
-        getters = _ref3.getters;
-    var exam = _ref4.exam,
-        item = _ref4.item,
-        student = _ref4.student,
-        score = _ref4.score;
+}, _defineProperty(_module$exports, ngaTypes.recordItemScore, function (_ref2, _ref3) {
+    var state = _ref2.state,
+        dispatch = _ref2.dispatch,
+        commit = _ref2.commit,
+        getters = _ref2.getters;
+    var exam = _ref3.exam,
+        item = _ref3.item,
+        student = _ref3.student,
+        score = _ref3.score;
 
     return new Promise(function (resolve, reject) {
 
@@ -110990,14 +111068,16 @@ module.exports = (_module$exports = {
         var customText = oldScore.isCustomText;
 
         var sameValence = _.isUndefined(oldScore) ? false : (0, _commentHelpers.isSameValence)(oldScore.score, score, item.maxScore);
-        // window.console.log( 'itemscores', 'sqmc', 163, oldScore, sameValence);
 
+        // window.console.log( 'itemscores', 'sqmc', 163, oldScore, sameValence );
 
+        //We first update the score
         var p1 = new Promise(function (resolve, reject) {
             commit(ngmTypes.updateScore, pl);
             resolve();
         });
 
+        //Now we update the text
         p1.then(function () {
             //We only need to alter text if the score has changed valence regions
             //if the valence hasn't changed or if the text is customized, we are done
@@ -111006,10 +111086,11 @@ module.exports = (_module$exports = {
             //Ok. So the score is in a new valence region and we're using stock
             //comments. Let's get the appropriate stock comment text and update
             // accordingly.
-            var newValenceIdx = (0, _commentHelpers.getValenceForScore)(score, item.maxScore);
-            var newValenceName = _.lowerCase(_commentHelpers.sliderSettings.valenceLabels[newValenceIdx]);
+            var newValenceIdx = (0, _commentHelpers.getValenceIndexForScore)(score, item.maxScore);
+            var newValenceName = (0, _commentHelpers.getValenceNameFromIndex)(newValenceIdx);
             var comment = item.comments.get(newValenceName);
-            // window.console.log( 'itemscores.actions', 'comment', 126,comment );
+
+            // window.console.log( 'itemscores.actions', 'comment', 126, newValenceName,  comment );
 
             //This needs to be stored / saved
             var pl2 = {
@@ -111026,15 +111107,15 @@ module.exports = (_module$exports = {
             });
         });
     });
-}), _defineProperty(_module$exports, ngaTypes.recordCommentText, function (_ref5, _ref6) {
-    var state = _ref5.state,
-        dispatch = _ref5.dispatch,
-        commit = _ref5.commit,
-        getters = _ref5.getters;
-    var exam = _ref6.exam,
-        item = _ref6.item,
-        student = _ref6.student,
-        text = _ref6.text;
+}), _defineProperty(_module$exports, ngaTypes.recordCommentText, function (_ref4, _ref5) {
+    var state = _ref4.state,
+        dispatch = _ref4.dispatch,
+        commit = _ref4.commit,
+        getters = _ref4.getters;
+    var exam = _ref5.exam,
+        item = _ref5.item,
+        student = _ref5.student,
+        text = _ref5.text;
 
     return new Promise(function (resolve, reject) {
 
@@ -111053,14 +111134,14 @@ module.exports = (_module$exports = {
         //todo we may need to handle flagging the text as custom here so it won't get overwritten
         resolve();
     });
-}), _defineProperty(_module$exports, ngaTypes.resetItemScore, function (_ref7, _ref8) {
-    var state = _ref7.state,
-        dispatch = _ref7.dispatch,
-        commit = _ref7.commit,
-        getters = _ref7.getters;
-    var exam = _ref8.exam,
-        item = _ref8.item,
-        student = _ref8.student;
+}), _defineProperty(_module$exports, ngaTypes.resetItemScore, function (_ref6, _ref7) {
+    var state = _ref6.state,
+        dispatch = _ref6.dispatch,
+        commit = _ref6.commit,
+        getters = _ref6.getters;
+    var exam = _ref7.exam,
+        item = _ref7.item,
+        student = _ref7.student;
 
     return new Promise(function (resolve, reject) {
 
@@ -111197,6 +111278,8 @@ module.exports = (_module$exports = {
         if (!_.isUndefined(scoreObj.score) && scoreObj.score >= 0) graded.push(scoreObj.studentId);
     });
     return _.uniq(graded);
+}), _defineProperty(_module$exports, "isReadyToRock", function isReadyToRock(state) {
+    return state.isReadyToRock;
 }), _module$exports);
 
 /***/ }),
@@ -111284,8 +111367,16 @@ var _itemscores8 = _interopRequireDefault(_itemscores7);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var state = {
-    //Array of Score objects
-    scores: []
+    /**
+     * Array of Score objects
+     */
+    scores: [],
+
+    /**
+     * Whether the relevant objects have been loaded such that the
+     * exam is ready to be graded
+     */
+    isReadyToRock: false
 };
 
 var mutations = _extends({}, _itemscores6.default);
@@ -111468,7 +111559,9 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-module.exports = (_module$exports = {}, _defineProperty(_module$exports, ngmTypes.updateScore, function (state, payload) {
+module.exports = (_module$exports = {}, _defineProperty(_module$exports, ngmTypes.createScore, function (state, payload) {
+    (0, _itemscores.create)(state, payload.exam, payload.item, payload.student);
+}), _defineProperty(_module$exports, ngmTypes.updateScore, function (state, payload) {
     //check whether we already have the object
     var obj = (0, _itemscores.itemScoreGetter)(state, payload.item.id, payload.student.id);
     if (_.isUndefined(obj)) {
@@ -111486,6 +111579,8 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, ngmType
     var text = payload.text;
     //update the object
     _vue2.default.set(obj, 'text', text);
+}), _defineProperty(_module$exports, "notifyReady", function notifyReady(state, payload) {
+    state.isReadyToRock = true;
 }), _module$exports);
 
 /***/ }),
@@ -112971,6 +113066,7 @@ var setExam = exports.setExam = 'setExam';
 var loadInitialData = exports.loadInitialData = 'loadInitialData';
 
 //scores
+var createScore = exports.createScore = 'createScore';
 var updateScore = exports.updateScore = 'updateScore';
 var updateText = exports.updateText = 'updateText';
 

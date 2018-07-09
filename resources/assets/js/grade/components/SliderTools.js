@@ -55,7 +55,7 @@ module.exports = {
         if ( typeof oldScore == 'undefined' || oldScore == null ) {
             return false;
         }
-        if ( this.getValenceForScore( newScore ) != this.getValenceForScore( oldScore ) ) {
+        if ( this.getValenceIndexForScore( newScore ) != this.getValenceIndexForScore( oldScore ) ) {
             return false;
         }
         return true;
@@ -112,7 +112,7 @@ module.exports = {
             //Dear Adam, make sure you read the doc for storeCommentText before fucking with
             //anything in these lines
             data.storeCommentText( Roster.activeStudent, elementIndex, $elementComment.val() );
-            var commentText = data.getCommentText( Roster.activeStudent, elementIndex, this.getValenceForScore( score ) );
+            var commentText = data.getCommentText( Roster.activeStudent, elementIndex, this.getValenceIndexForScore( score ) );
 
             //update display
             this.updateDisplayedComment( $elementComment, commentText );

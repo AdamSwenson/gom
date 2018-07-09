@@ -253,6 +253,15 @@ export default class Item extends IModel {
     /* ------------------------ Getters and setters -------------------- */
 
     //----------------- Comments
+    /**
+     * Given a string key, returns the comment.
+     * We do not define what the allowable keys are here, since
+     * the item doesn't need to know about what comments it contains.
+     * That is left up to consumers. For example, the main standard
+     * mapping is in scores.CommentHelpers.valenceMap
+     * @param valence
+     * @returns {*}
+     */
     getComment( valence ) {
         return this.comments.get( valence );
     }

@@ -22,7 +22,32 @@ export const sliderSettings = {
     valenceCutoffs: [ 0, 3.25, 6.75, 10 ],
 
 
+    /**
+     * These are the publicly displayed valence names.
+     * They are separate from the values of valenceMap, since
+     * we may want to allow users to define their own labels (or we
+     * change our minds) without changing the underlying code.
+     */
     valenceLabels: [ "Missing", "Poor", "Fair", "Excellent" ],
+
+    /**
+     * This is the underlying mapping from label positions to comment
+     * identifiers which should be used for all
+     * code needing to convert the valence index to name.
+     * The key is the valence index which things like the grading slider
+     * will use. The value is the string corresponds to the Item object's map.
+     * Comments are stored on the Item object in a map which
+     * has string keys. Thus we retrieve the comment for absent via
+     * Item.getComment('absent').
+     * NB, the Item may contain other comments (e.g., it contains the original stock
+     * comment under the key 'stock')
+     */
+    valenceMap: {
+        0: 'absent',
+        1: 'poor',
+        2: 'good',
+        3: 'excellent'
+    },
 
     /**
      * This gets passed to the sliders ticks_position option
@@ -33,11 +58,14 @@ export const sliderSettings = {
 };
 
 
-
-
-
+/**
+ * Determines whether the score is within the range of cutoffs
+ * @param score
+ * @param cutoffs
+ * @returns {boolean}
+ */
 export const checkInRange = ( score, cutoffs ) => {
-    if ( score < cutoffs[0] ) throw new Error( "cannot get valence. value out of range" );
+    if ( score < cutoffs[ 0 ] ) throw new Error( "cannot get valence. value out of range" );
     return true;
 }
 
@@ -49,7 +77,7 @@ export const checkInRange = ( score, cutoffs ) => {
  * @param score
  * @returns {number}
  */
-export function getValenceForScore( score, maxScore ) {
+export function getValenceIndexForScore( score, maxScore ) {
     if ( _.isNull( score ) ) throw new Error( "cannot get valence for null" );
 
     //if the max score is set, we need to dynamically create
@@ -58,29 +86,38 @@ export function getValenceForScore( score, maxScore ) {
     //cutoffs need to be by dividing max possible score by the number of labels
     let numLabels = sliderSettings.valenceLabels.length;
 
-    let cutoffs = (!_.isUndefined( maxScore )) ? makeCutoffsFromMaxScore( maxScore, numLabels) : sliderSettings.valenceCutoffs;
+    let cutoffs = (!_.isUndefined( maxScore )) ? makeCutoffsFromMaxScore( maxScore, numLabels ) : sliderSettings.valenceCutoffs;
 
     if ( !checkInRange( score, cutoffs ) ) return null;
 
     return getValenceIndex( score, cutoffs );
 };
 
+/**
+ * Returns the string key for the comment stored on the item object
+ * @param valenceIndex
+ * @returns {*}
+ */
+export const getValenceNameFromIndex = ( valenceIndex ) => {
+    return sliderSettings.valenceMap[ valenceIndex ];
+}
 
 export const getValenceIndex = ( score, cutoffs ) => {
     //now we can look up the valence
-    let valence = 0;
+    let index = 0;
     //start at the second largest value in the cutoffs.
     for (let j = cutoffs.length - 2; j >= 0; j--) {
         if ( score > cutoffs[ j ] ) {
             //if the score is greater than the second largest cutoff value, then it belongs
             //to the highest valence and so on.
-            valence = j + 1;
+            index = j + 1;
             break;
         }
     }
-    window.console.log( 'commentHelpers', 'getValenceIndex', 81, score, cutoffs, valence);
+    // window.console.log( 'commentHelpers', 'getValenceIndex', 81, score, cutoffs, index );
+
     //return the set valence. If made it all the way to 0, the default will be returned.
-    return valence;
+    return index;
 }
 
 
@@ -99,7 +136,7 @@ export function isSameValence( oldScore, newScore, maxScore ) {
     }
 
 
-    if ( getValenceForScore( newScore, maxScore ) != getValenceForScore( oldScore, maxScore ) ) {
+    if ( getValenceIndexForScore( newScore, maxScore ) != getValenceIndexForScore( oldScore, maxScore ) ) {
         return false;
     }
     return true;
@@ -120,9 +157,9 @@ export function isSameValence( oldScore, newScore, maxScore ) {
 export function makeCutoffsFromMaxScore( maxScore, numLabels ) {
     let cutoffs = [];
 
-    _.forEach(sliderSettings.valenceLabelPositions, function ( vlp ) {
-        cutoffs.push( (vlp * .01) * maxScore);
-    })
+    _.forEach( sliderSettings.valenceLabelPositions, function ( vlp ) {
+        cutoffs.push( (vlp * .01) * maxScore );
+    } )
 //
 // //todo the max score needs to be the final value
 //     let intervalVal = maxScore / numLabels;

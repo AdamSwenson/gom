@@ -39,6 +39,9 @@
         },
 
         computed: {
+            /**
+             * The exam currently being graded
+             */
             exam: function () {
                 return this.$store.getters[ nggTypes.getActiveExam ];
             },

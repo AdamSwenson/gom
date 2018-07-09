@@ -22,7 +22,7 @@ import {
     checkInRange,
     makeCutoffsFromMaxScore,
     isSameValence,
-    getValenceForScore,
+    getValenceIndexForScore,
     getValenceIndex
 } from '../../../../../../resources/assets/js/store/modules/scores/commentHelpers';
 
@@ -63,7 +63,7 @@ describe( "commentHelpers | ", function () {
         it( " happy path using default settings ", () => {
             let testScore = sliderSettings.valenceCutoffs[ sliderSettings.valenceCutoffs.length - 1 ];
             let expectedValence = sliderSettings.valenceCutoffs.length  - 1;
-            let result = getValenceForScore( testScore );
+            let result = getValenceIndexForScore( testScore );
 
             expect( result ).toBe( expectedValence );
         } );
@@ -73,20 +73,20 @@ describe( "commentHelpers | ", function () {
             let testScore = 200;
             let maxScore = 600;
 
-            let result = getValenceForScore( testScore, maxScore );
+            let result = getValenceIndexForScore( testScore, maxScore );
 
             expect( result ).toBe( expectedValence );
         } );
 
         it( " throws error on null score ", () => {
             expect( function () {
-                getValenceForScore( null );
+                getValenceIndexForScore( null );
             } ).toThrow();
         } );
 
         it( " throws error when score is less than the least cutoff ", () => {
             expect( function () {
-                getValenceForScore( -12 );
+                getValenceIndexForScore( -12 );
             } ).toThrow();
         } );
 

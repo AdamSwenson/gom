@@ -157,6 +157,8 @@
 
         data: function () {
             return {
+                isReadyToRock : false,
+
                 //temporary while developing as separate page
                 examId: window.examId,
 
@@ -240,6 +242,9 @@
                             //and any existing scores
                             //as well as comments
                             me.$store.dispatch( 'loadScoresFromServer', me.exam ).then( function () {
+                                //we now have all the basic items we need, so we can
+                                //let other processes know
+                                me.$store.commit('notifyReady');
                                 //finally we get grading times
                                 me.$store.dispatch( ngaTypes.loadTimesFromServer, me.exam )
                                 //and are done.

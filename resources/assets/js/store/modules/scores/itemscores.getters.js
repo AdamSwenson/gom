@@ -96,6 +96,10 @@ module.exports = {
         })
         return _.uniq(graded);
 
+    },
+
+    isReadyToRock: ( state ) => {
+        return state.isReadyToRock;
     }
 };
 
