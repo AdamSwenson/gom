@@ -53,6 +53,8 @@
             },
 
             freqChartData: function () {
+                if(_.isUndefined(this.gradeFrequencies)) return [];
+
                 let me = this;
                 let data = _.toPairs( this.gradeFrequencies );
                 _.forEach( data, (function ( d, i ) {
@@ -105,7 +107,7 @@
 
             // displays the grade frequency chart
             drawChart: function () {
-                if(_.isUndefined(GoogleCharts.api.visualization)) return false;
+                if(_.isUndefined(GoogleCharts.api)) return false;
 
                 var data = GoogleCharts.api.visualization.arrayToDataTable( this.freqChartData );
 

@@ -13238,6 +13238,8 @@ exports.default = {
         },
 
         freqChartData: function freqChartData() {
+            if (_.isUndefined(this.gradeFrequencies)) return [];
+
             var me = this;
             var data = _.toPairs(this.gradeFrequencies);
             _.forEach(data, function (d, i) {
@@ -13289,7 +13291,7 @@ exports.default = {
 
         // displays the grade frequency chart
         drawChart: function drawChart() {
-            if (_.isUndefined(_googleCharts.GoogleCharts.api.visualization)) return false;
+            if (_.isUndefined(_googleCharts.GoogleCharts.api)) return false;
 
             var data = _googleCharts.GoogleCharts.api.visualization.arrayToDataTable(this.freqChartData);
 
@@ -13824,6 +13826,8 @@ exports.default = {
     }
 
 }; //
+//
+//
 //
 //
 //
@@ -69988,13 +69992,13 @@ if (false) {}
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "grades-panel"
-  }, [_c('p', {
-    staticClass: "title"
-  }, [_vm._v("\n        Setting grade distribution happens here\n    ")]), _vm._v(" "), _c('div', {
+  }, [_c('div', {
     staticClass: "tile is-ancestor box"
   }, [_c('div', {
     staticClass: "assignment-table  tile is-parent is-vertical"
-  }, [_c('div', {
+  }, [_c('p', {
+    staticClass: "title"
+  }, [_vm._v("\n                Grade distributions for this exam\n            ")]), _vm._v(" "), _c('div', {
     staticClass: "maxScoreArea"
   }, [_c('p', [_c('span', {
     staticClass: "h4"
@@ -105387,6 +105391,7 @@ var sortTotalScores = exports.sortTotalScores = function sortTotalScores(totalSc
 
     return newList;
 };
+
 /**
  * Sorts the grade assignments object
  * by calc value and returns an array of assignments
@@ -105507,7 +105512,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
     _vue2.default.set(state, 'gradeAssignments', payload.obj);
     (0, _grades.updateInconsistentList)(state);
 }), _defineProperty(_module$exports, mTypes.loadTotalScores, function (state, payload) {
-    state.totalScores = sortTotalScores(payload.updateVal);
+    state.totalScores = (0, _grades.sortTotalScores)(payload.updateVal);
 }), _module$exports);
 
 /***/ }),

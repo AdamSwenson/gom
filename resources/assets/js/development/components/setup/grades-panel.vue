@@ -1,13 +1,15 @@
 <template>
 
     <div class="grades-panel">
-        <p class="title">
-            Setting grade distribution happens here
-        </p>
+
 
         <div class="tile is-ancestor box">
 
             <div class="assignment-table  tile is-parent is-vertical">
+                <p class="title">
+                    Grade distributions for this exam
+                </p>
+
                 <div class="maxScoreArea">
                     <p><span class="h4">Maximum possible score:</span> {{ examMaxScore }}</p>
                 </div>
@@ -126,7 +128,7 @@
 
             gradesAjax: function () {
                 let me = this;
-                this.$store.dispatch(aTypes.loadGradeAssignmentsFromServer , this.exam);
+                this.$store.dispatch( aTypes.loadGradeAssignmentsFromServer, this.exam );
                 // let p = requests.getGradeAssignments( this.exam );
                 // p.then( function ( data ) {
                 //     let p2 = me.$store.dispatch( aTypes.loadGradeAssignmentsFromServerData, data );

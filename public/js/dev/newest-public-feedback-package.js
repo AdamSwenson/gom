@@ -54079,6 +54079,7 @@ var sortTotalScores = exports.sortTotalScores = function sortTotalScores(totalSc
 
     return newList;
 };
+
 /**
  * Sorts the grade assignments object
  * by calc value and returns an array of assignments
@@ -54199,7 +54200,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
     _vue2.default.set(state, 'gradeAssignments', payload.obj);
     (0, _grades.updateInconsistentList)(state);
 }), _defineProperty(_module$exports, mTypes.loadTotalScores, function (state, payload) {
-    state.totalScores = sortTotalScores(payload.updateVal);
+    state.totalScores = (0, _grades.sortTotalScores)(payload.updateVal);
 }), _module$exports);
 
 /***/ }),

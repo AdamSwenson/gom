@@ -4,7 +4,7 @@ import Payload from "../../../models/Payload";
 
 
 import Vue from 'vue';
-import { updateInconsistentList } from "./grades.helpers";
+import { updateInconsistentList, sortTotalScores } from "./grades.helpers";
 
 module.exports ={
     /**
