@@ -113,7 +113,7 @@ module.exports =  [
         components: { prefsContentArea: gradeDashArea },
         props:  true,
         group: 'grade',
-        tabText: 'Dash'//{default: true}
+        tabText: 'Dashboard'//{default: true}
     }, //props: (route) => {return route.index;}},
 
 

@@ -1,27 +1,11 @@
-
 //The name of the tested component
 var compName = 'settings-button-menu';
 //The path to the tested component
-var Component = require('../../../../resources/assets/js/development/components/top-nav/settings-button-menu.vue');
+var Component = require( '../../../../resources/assets/js/development/components/top-nav/settings-button-menu.vue' );
 
+require( '../../injectglobals' );
 
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
-import sinon from 'sinon';
-import VueRouter from 'vue-router';
-import Vuex from 'vuex';
-import moxios from 'moxios';
-import faker from 'faker';
-
-//helpers
-// import { see } from '../../helpers/test-helpers';
-import { assertExpectedDivIsDisplayed } from '../../helpers/assertions';
-// import { factories } from '../../helpers/vuex.spec.helpers';
-//
-//
-// import * as mTypes from "../../../../../resources/assets/js/store/mutation-types";
-// import * as gTypes from "../../../../../resources/assets/js/js/store/getter-types";
-// import * as nggTypes from "../../../../../resources/assets/js/store/new-grading-getter-types";
-
 
 const localVue = createLocalVue();
 
@@ -29,11 +13,12 @@ localVue.use( Vuex )
 // localVue.use( VueRouter );
 
 
+import { SettingsLinks } from '../../../../resources/assets/js/api/apiSettings';
+
 //tested stuff
 
 
-
-describe(  compName , () => {
+describe( compName, () => {
 
     let componentDivIdentifier = '.' + compName;
 
@@ -42,9 +27,9 @@ describe(  compName , () => {
     let store;
     let wrapper;
 
-    beforeEach( (  ) => {
+    beforeEach( () => {
 
-        getters = {   };
+        getters = {};
 
         mutations = {};
 
@@ -62,13 +47,40 @@ describe(  compName , () => {
 
     describe( " loads into expected default state for testing ", () => {
         it( 'displays the expected component div on first load', () => {
-            assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
+            assertions.assertExpectedDivIsDisplayed( wrapper, componentDivIdentifier );
         } );
     } );
-    
-    describe.skip(" TESTS NEEDED", () => {
-        it('awaits tests')        
-    });
+
+    describe( " toggleModal", () => {
+        it( ' sets isModalVisible to true when was false', () => {
+            wrapper.setData( { isModalVisible: false } );
+            expect( wrapper.vm.isModalVisible ).toBe( false );
+            wrapper.vm.toggleModal();
+            expect( wrapper.vm.isModalVisible ).toBe( true );
+        } );
+        it( ' sets isModalVisible to false when was true', () => {
+            wrapper.setData( { isModalVisible: true } );
+            expect( wrapper.vm.isModalVisible ).toBe( true );
+            wrapper.vm.toggleModal();
+            expect( wrapper.vm.isModalVisible ).toBe( false );
+        } );
+    } );
+
+    describe( " handleClick ", () => {
+        it( ' sets the appropriate type', () => {
+            expect( wrapper.vm.type ).toBe( '' );
+            _.forEach( SettingsLinks, function ( link ) {
+                wrapper.vm.toggleModal( link.type );
+            } );
+        } );
+
+        it( ' toggles modal visibility', () => {
+            wrapper.setData( { isModalVisible: true } );
+            expect( wrapper.vm.isModalVisible ).toBe( true );
+            wrapper.vm.handleClick( 'student' );
+            expect( wrapper.vm.isModalVisible ).toBe( false );
+        } );
+    } );
 
 
-});
+} );

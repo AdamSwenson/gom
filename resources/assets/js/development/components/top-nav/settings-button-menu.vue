@@ -68,7 +68,7 @@
 
         methods: {
             toggleModal: function ( v ) {
-                this.isErrorModalVisible = !this.isModalVisible;
+                this.isModalVisible = !this.isModalVisible;
             },
 
             handleClick: function ( link ) {

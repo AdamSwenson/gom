@@ -18686,7 +18686,7 @@ exports.default = {
 
     methods: {
         toggleModal: function toggleModal(v) {
-            this.isErrorModalVisible = !this.isModalVisible;
+            this.isModalVisible = !this.isModalVisible;
         },
 
         handleClick: function handleClick(link) {
@@ -94740,7 +94740,7 @@ module.exports = [
     components: { prefsContentArea: _gradeDash2.default },
     props: true,
     group: 'grade',
-    tabText: 'Dash' //{default: true}
+    tabText: 'Dashboard' //{default: true}
 }];
 
 /***/ }),
