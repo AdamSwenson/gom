@@ -14921,7 +14921,7 @@ exports.default = {
             buttonLabel: 'Choose a file to import students from',
             styling: 'is-primary is-outlined',
             events: {
-                importComplete: 'studentImportComplete',
+                importComplete: 'student-import-complete',
                 importError: ''
             },
 
