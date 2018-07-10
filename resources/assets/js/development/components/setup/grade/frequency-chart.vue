@@ -42,8 +42,11 @@
         },
 
         watch: {
-          'freqChartData':function (  ) {
-              this.drawChart();
+          freqChartData: function (  ) {
+              if(! _.isUndefined(this.freqChartData) && this.freqChartData.length > 0 ){
+                  this.drawChart();
+              }
+
           }
         },
 

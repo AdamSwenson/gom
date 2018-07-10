@@ -5,9 +5,9 @@
 
         <div class="tile is-ancestor box">
 
-            <div class="assignment-table  tile is-parent is-vertical">
+            <div class="assignment-table tile is-parent is-vertical">
                 <p class="title">
-                    Grade distributions for this exam
+                    Grade distribution for this exam
                 </p>
 
                 <div class="maxScoreArea">
@@ -30,19 +30,23 @@
                                 v-for="g in gradeAssignments"
                                 v-bind:key="g.displayValue"
                                 :grade="g"
+                                v-bind:inconsistent-change="handleInconsistentChange"
                         ></assignment-row>
 
                         </tbody>
                     </table>
                 </div>
 
-                <!--<div class="assignment-controls tile is-child">-->
-                <!--<a class="button is-danger">Clear</a>-->
-
-                <!--<a class="button is-warning">Undo</a>-->
-
-                <!--</div>-->
-
+                <div class="tile is-child is-primary warning-explanation"
+                     v-if="isInconsistent"
+                >
+                    <p class="subtitle">
+                        The highlighted row(s) above indicate places where the grade distribution is inconsistent.</p>
+                    <p class="subtitle">
+                        This occurs when the cutoff for a lower grade is higher than the cutoff for a
+                        higher grade, or vice-versa.
+                    </p>
+                </div>
 
             </div>
 
@@ -128,7 +132,10 @@
 
             gradesAjax: function () {
                 let me = this;
-                this.$store.dispatch( aTypes.loadGradeAssignmentsFromServer, this.exam );
+                let p = this.$store.dispatch( aTypes.loadGradeAssignmentsFromServer, this.exam );
+                return p.then( function () {
+                    return me.$store.getters.getGradeAssignments;
+                } );
                 // let p = requests.getGradeAssignments( this.exam );
                 // p.then( function ( data ) {
                 //     let p2 = me.$store.dispatch( aTypes.loadGradeAssignmentsFromServerData, data );
@@ -169,14 +176,14 @@
                 return this.$store.getters.getListOfGradeValues;
             },
 
-            inconsistentRows: function () {
-                let letterGrades = [];
+            /**
+             * Returns true if there are any inconsistencies in the scores.
+             */
+            isInconsistent: function () {
+                let inconsistentList = this.$store.getters[ gTypes.getInconsistentCutOffs ];
+                if ( _.isUndefined( inconsistentList ) ) return false;
 
-                _.forIn( this.gradeAssignments, function ( value, key ) {
-
-                } );
-
-
+                return inconsistentList.length > 0
             },
 
             frequencies: function () {
@@ -198,7 +205,7 @@
 
             isExam: function () {
                 return this.item ? this.item.isExam() : false;
-            }
+            },
 
         },
 
@@ -220,6 +227,10 @@
                 if ( _.isUndefined( freqs ) ) return false;
 
                 return freqs[ letterGrade ];
+            },
+
+            handleInconsistentChange: function ( isInconsistent ) {
+                this.showWarning = isInconsistent;
             }
         }
 

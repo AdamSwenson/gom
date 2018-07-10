@@ -13227,8 +13227,10 @@ exports.default = {
     },
 
     watch: {
-        'freqChartData': function freqChartData() {
-            this.drawChart();
+        freqChartData: function freqChartData() {
+            if (!_.isUndefined(this.freqChartData) && this.freqChartData.length > 0) {
+                this.drawChart();
+            }
         }
     },
 
@@ -13740,7 +13742,10 @@ exports.default = {
 
         gradesAjax: function gradesAjax() {
             var me = this;
-            this.$store.dispatch(aTypes.loadGradeAssignmentsFromServer, this.exam);
+            var p = this.$store.dispatch(aTypes.loadGradeAssignmentsFromServer, this.exam);
+            return p.then(function () {
+                return me.$store.getters.getGradeAssignments;
+            });
             // let p = requests.getGradeAssignments( this.exam );
             // p.then( function ( data ) {
             //     let p2 = me.$store.dispatch( aTypes.loadGradeAssignmentsFromServerData, data );
@@ -13776,10 +13781,14 @@ exports.default = {
             return this.$store.getters.getListOfGradeValues;
         },
 
-        inconsistentRows: function inconsistentRows() {
-            var letterGrades = [];
+        /**
+         * Returns true if there are any inconsistencies in the scores.
+         */
+        isInconsistent: function isInconsistent() {
+            var inconsistentList = this.$store.getters[gTypes.getInconsistentCutOffs];
+            if (_.isUndefined(inconsistentList)) return false;
 
-            _.forIn(this.gradeAssignments, function (value, key) {});
+            return inconsistentList.length > 0;
         },
 
         frequencies: function frequencies() {
@@ -13822,10 +13831,18 @@ exports.default = {
             if (_.isUndefined(freqs)) return false;
 
             return freqs[letterGrade];
+        },
+
+        handleInconsistentChange: function handleInconsistentChange(isInconsistent) {
+            this.showWarning = isInconsistent;
         }
     }
 
 }; //
+//
+//
+//
+//
 //
 //
 //
@@ -69174,11 +69191,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "modal-card"
   }, [_c('header', {
     staticClass: "modal-card-head"
-  }, [_c('p', {
-    staticClass: "modal-card-title"
-  }, [_vm._t("modalTitle", [_c('h3', {
-    staticClass: "title is-3"
-  }, [_vm._v("Previously created exams")])])], 2), _vm._v(" "), _c('a', {
+  }, [_c('a', {
     staticClass: "button is-primary",
     attrs: {
       "aria-label": "close"
@@ -69186,7 +69199,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "click": _vm.toggleModal
     }
-  }, [_vm._v("Done")])]), _vm._v(" "), _c('section', {
+  }, [_vm._v("Close")])]), _vm._v(" "), _c('section', {
     staticClass: "modal-card-body"
   }, [_c('exam-list', {
     attrs: {
@@ -69202,7 +69215,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "slot": "heading"
     },
     slot: "heading"
-  }, [_vm._v("Select the exam to switch to.")])]), _vm._v(" "), _vm._t("modalBody")], 2), _vm._v(" "), _c('footer', {
+  }, [_vm._v("Exams")])]), _vm._v(" "), _vm._t("modalBody")], 2), _vm._v(" "), _c('footer', {
     staticClass: "modal-card-foot"
   }, [_c('button', {
     staticClass: "button",
@@ -69995,10 +70008,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('div', {
     staticClass: "tile is-ancestor box"
   }, [_c('div', {
-    staticClass: "assignment-table  tile is-parent is-vertical"
+    staticClass: "assignment-table tile is-parent is-vertical"
   }, [_c('p', {
     staticClass: "title"
-  }, [_vm._v("\n                Grade distributions for this exam\n            ")]), _vm._v(" "), _c('div', {
+  }, [_vm._v("\n                Grade distribution for this exam\n            ")]), _vm._v(" "), _c('div', {
     staticClass: "maxScoreArea"
   }, [_c('p', [_c('span', {
     staticClass: "h4"
@@ -70010,10 +70023,17 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     return _c('assignment-row', {
       key: g.displayValue,
       attrs: {
-        "grade": g
+        "grade": g,
+        "inconsistent-change": _vm.handleInconsistentChange
       }
     })
-  }))])])]), _vm._v(" "), _c('div', {
+  }))])]), _vm._v(" "), (_vm.isInconsistent) ? _c('div', {
+    staticClass: "tile is-child is-primary warning-explanation"
+  }, [_c('p', {
+    staticClass: "subtitle"
+  }, [_vm._v("\n                    The highlighted row(s) above indicate places where the grade distribution is inconsistent.")]), _vm._v(" "), _c('p', {
+    staticClass: "subtitle"
+  }, [_vm._v("\n                    This occurs when the cutoff for a lower grade is higher than the cutoff for a\n                    higher grade, or vice-versa.\n                ")])]) : _vm._e()]), _vm._v(" "), _c('div', {
     staticClass: "right-side tile is-parent is-vertical"
   }, [_c('div', {
     staticClass: "tile is-child"

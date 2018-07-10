@@ -6,12 +6,12 @@
         <div class="modal-card">
 
             <header class="modal-card-head">
-                <p class="modal-card-title">
-                    <slot name="modalTitle">
-                        <h3 class="title is-3">Previously created exams</h3>
-                    </slot>
-                </p>
-                <a class="button is-primary" aria-label="close" v-on:click="toggleModal">Done</a>
+                <!--<p class="modal-card-title">-->
+                    <!--<slot name="modalTitle">-->
+                        <!--<h3 class="title is-3">Exams</h3>-->
+                    <!--</slot>-->
+                <!--</p>-->
+                <a class="button is-primary" aria-label="close" v-on:click="toggleModal">Close</a>
             </header>
 
             <section class="modal-card-body">
@@ -21,7 +21,7 @@
                         v-on:exam-selected="handleSelection"
                 >
 
-                    <h4 slot="heading" class="subtitle is-5">Select the exam to switch to.</h4>
+                    <h4 slot="heading" class="subtitle is-5">Exams</h4>
 
                 </exam-list>
                 <slot name="modalBody"></slot>
