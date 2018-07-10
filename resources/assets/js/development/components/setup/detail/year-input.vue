@@ -46,7 +46,7 @@
         data: function () {
             return {
                 disabledOption: 'Year',
-                helpText: 'years re good',
+                helpText: "The year in which you're giving this",
 
                 defaults: {
 

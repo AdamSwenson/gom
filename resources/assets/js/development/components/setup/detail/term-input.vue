@@ -45,7 +45,7 @@
         data: function () {
             return {
                 disabledOption: 'Term',
-                helpText: 'terms are good',
+                helpText: "The term in which you're giving this",
 
                 defaults: {
                     terms: [ 'fall', 'winter', 'spring', 'summer' ],

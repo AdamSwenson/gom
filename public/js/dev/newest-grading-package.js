@@ -11447,7 +11447,7 @@ exports.default = {
     data: function data() {
         return {
             disabledOption: 'Term',
-            helpText: 'terms are good',
+            helpText: "The term in which you're giving this",
 
             defaults: {
                 terms: ['fall', 'winter', 'spring', 'summer']
@@ -11558,7 +11558,7 @@ exports.default = {
     data: function data() {
         return {
             disabledOption: 'Year',
-            helpText: 'years re good',
+            helpText: "The year in which you're giving this",
 
             defaults: {
 
