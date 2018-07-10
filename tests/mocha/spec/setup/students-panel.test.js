@@ -37,7 +37,7 @@ describe( compName, () => {
             getters, mutations, actions
         } );
 
-        wrapper = shallow( Component, {
+        wrapper = mount( Component, {
             store, localVue
         } );
 
@@ -51,6 +51,19 @@ describe( compName, () => {
     } );
 
     describe( "methods", () => {
+
+        describe("handleImportComplete", (  ) => {
+            it(" hides the file button by setting fileButtonVisible to false ", (  ) => {
+                wrapper.setData({fileButtonVisible: true});
+                //check setup
+                expect(wrapper.vm.fileButtonVisible).toBe(true);
+                //call
+                wrapper.vm.handleImportComplete();
+                //check
+                expect(wrapper.vm.fileButtonVisible).toBe(false);
+            });
+        });
+
         it( " calls for the correct mutation when ....", () => {
         } );
     } )
