@@ -21,7 +21,7 @@
                         class="textarea comment-text"
                         rows="4"
                         v-bind:placeholder="placeholder"
-                        v-model="commentText"></textarea>
+                        v-model.lazy="commentText"></textarea>
             </p>
             <p v-if=" isOverwriteHelpMessageVisible "
                class="help is-danger"

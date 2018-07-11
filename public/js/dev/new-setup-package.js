@@ -70088,9 +70088,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('textarea', {
     directives: [{
       name: "model",
-      rawName: "v-model",
+      rawName: "v-model.lazy",
       value: (_vm.commentText),
-      expression: "commentText"
+      expression: "commentText",
+      modifiers: {
+        "lazy": true
+      }
     }],
     staticClass: "textarea comment-text",
     attrs: {
@@ -70101,8 +70104,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "value": (_vm.commentText)
     },
     on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
+      "change": function($event) {
         _vm.commentText = $event.target.value
       }
     }
