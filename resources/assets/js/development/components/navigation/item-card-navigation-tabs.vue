@@ -1,139 +1,82 @@
 <template>
 
-    <nav class="item-card-navigation-tabs nav-edit-tabs-component tabs is-centered"
-    >
+    <nav class="item-card-navigation-tabs tabs is-centered is-boxed">
         <ul v-bind:id="id">
-            <li v-if="isExam" role="presentation">
-                <router-link v-bind:to="routeToExamDetails">
-                    <a class="exam-details-nav"
-                       v-bind:class="{ 'exam-nav' : isExam  }">
-                        <span class="icon is-small">
+
+            <!--details-->
+            <router-link
+                    tag="li"
+                    v-bind:active-class="activeClass"
+                    v-bind:to="routeToItemDetails">
+                <a class="item-details-nav">
+                    <span class="icon is-small">
                             <i class="fa fa-pencil" aria-hidden="true"></i>
                         </span>
-                        <span>Details</span>
-                    </a>
-                </router-link>
-            </li>
-
-            <li v-else role="presentation">
-                <router-link v-bind:to="routeToItemDetails">
-                    <a class="item-details-nav" v-bind:class="{ 'exam-nav' : isExam  }">
-                        <span class="icon is-small">
-                            <i class="fa fa-pencil" aria-hidden="true"></i>
-                        </span>
-                        <span>Details</span>
-                    </a>
-                </router-link>
-            </li>
-
-            <li v-if="isExam" role="presentation">
-                <router-link v-bind:to="routeToStudents">
-                    <a class="students-nav" v-bind:class="{ 'exam-nav' : isExam  }">
-                        <span class="icon is-small">
-                            <i class="fa fa-group" aria-hidden="true"></i>
-                        </span>
-                        <span>Students</span>
-                    </a>
-                </router-link>
-            </li>
-
-
-            <li role="presentation">
-                <router-link v-bind:to="routeToComments"
-                             v-bind:id="getId('feedback')"
-                >
-                    <a class="feedback-nav" v-bind:class="{ 'exam-nav' : isExam  }">
-                        <span class="icon is-small">
+                    <span>Details</span>
+                </a>
+            </router-link>
+            <router-link
+                    tag="li"
+                    v-bind:active-class="activeClass"
+                    v-bind:to="routeToComments"
+                    v-bind:id="getId('feedback')"
+            >
+                <a class="feedback-nav">
+                    <span class="icon is-small">
                             <i class="fa fa-comments-o" aria-hidden="true"></i>
                         </span>
-                        <span>Feedback</span>
-                    </a>
-                </router-link>
-            </li>
+                    <span>Feedback</span>
+                </a>
+            </router-link>
 
-            <li v-if="isExam" role="presentation">
-                <router-link v-bind:to="routeToExamStats">
-                    <a class="stats-nav" v-bind:class="{ 'exam-nav' : isExam  }">
-                        <span class="icon is-small">
+            <!--stats-->
+            <router-link
+                    tag="li"
+                    v-bind:active-class="activeClass"
+                    v-bind:to="routeToStats">
+                <a class="stats-nav">
+                    <span class="icon is-small">
                             <i class="fa fa-bar-chart" aria-hidden="true"></i>
                         </span>
-                        <span>Stats</span>
-                    </a>
-                </router-link>
-            </li>
+                    <span>Stats</span>
+                </a>
+            </router-link>
 
-
-            <li v-else role="presentation">
-                <router-link v-bind:to="routeToStats">
-                    <a class="stats-nav" v-bind:class="{ 'exam-nav' : isExam  }">
-                        <span class="icon is-small">
-                            <i class="fa fa-bar-chart" aria-hidden="true"></i>
-                        </span>
-                        <span>Stats</span>
-                    </a>
-                </router-link>
-            </li>
-
-
-            <li v-if="!isExam" role="presentation">
-                <router-link v-bind:to="routeToHistory">
-                    <a class="history-nav" v-bind:class="{ 'exam-nav' : isExam  }">
-                        <span class="icon is-small">
+            <!--history-->
+            <router-link
+                    tag="li"
+                    v-bind:active-class="activeClass"
+                    v-bind:to="routeToHistory">
+                <a class="history-nav">
+                    <span class="icon is-small">
                             <i class="fa fa-book" aria-hidden="true"></i>
                         </span>
-                        <span>History</span>
-                    </a>
-                </router-link>
-            </li>
+                    <span>History</span>
+                </a>
+            </router-link>
 
-            <li role="presentation">
-                <router-link v-bind:to="routeToNotes">
-                    <a id="notes-nav"
-                       class="notes-nav"
-                       v-bind:class="{ 'exam-nav' : isExam  }"
-                    >
-                        <span class="icon is-small">
+            <!--notes    -->
+            <router-link
+                    tag="li"
+                    v-bind:active-class="activeClass"
+                    v-bind:to="routeToNotes"
+            >
+                <a id="notes-nav"
+                   class="notes-nav"
+                >
+                    <span class="icon is-small">
                             <i class="fa fa-sticky-note-o" aria-hidden="true"></i>
                         </span>
-                        <span>Notes</span>
-                    </a>
-                </router-link>
-            </li>
-
-            <!--These are for post grading tasks-->
-
-            <li v-if="isExam" role="presentation">
-                <router-link v-bind:to="routeToGrades">
-                    <a class="grades-nav" v-bind:class="{ 'exam-nav' : isExam  }">
-                        <span class="icon is-small">
-                            <i class="fa fa-graduation-cap" aria-hidden="true"></i>
-                        </span>
-                        <span>Grades</span>
-                    </a>
-                </router-link>
-            </li>
-
-
-            <!--<li role="presentation">-->
-                <!--<router-link v-bind:to="routeToTags">-->
-                    <!--<a class="tags-nav" v-bind:class="{ 'exam-nav' : isExam  }">-->
-                        <!--<span class="icon is-small">-->
-                            <!--<i class="fa fa-tags" aria-hidden="true"></i>-->
-                        <!--</span>-->
-                        <!--<span>Tags</span>-->
-                    <!--</a>-->
-                <!--</router-link>-->
-            <!--</li>-->
+                    <span>Notes</span>
+                </a>
+            </router-link>
         </ul>
     </nav>
 
 
 </template>
 <style lang="scss">
-    .nav-edit-tabs-component {
-        .exam-nav {
-            color: #DDDDDD;
-        }
+    .item-card-navigation-tabs {
 
     }
 
@@ -158,6 +101,7 @@
 
         data: function () {
             return {
+                activeClass: 'is-active',
                 identifiers: {
                     exam: 'exam-nav-tabs',
                     item: 'item-nav-tabs'
@@ -199,7 +143,7 @@
             //Notes
             routeToNotes: function () {
 
-                if(this.isExam) return "/panel-exam-notes/" + this.serialNumber;
+                if ( this.isExam ) return "/panel-exam-notes/" + this.serialNumber;
 
                 return "/panel-item-notes/" + this.serialNumber;
             },

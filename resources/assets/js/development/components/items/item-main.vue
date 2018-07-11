@@ -1,4 +1,5 @@
-µ<template>
+µ
+<template>
 
     <div class="item-main field has-addons">
 
@@ -14,7 +15,9 @@
             ></item-name>
         </p>
 
-        <p class="control">
+        <p class="control"
+           v-if="! isExam"
+        >
             <settings-button
                     :serial-number="serialNumber"
                     :is-exam="isExam"
@@ -69,8 +72,9 @@
     import * as mTypes from '../../../store/mutation-types'
 
     import mixin from './item-buttons.mixin';
+
     export default {
-        mixins :[ mixin],
+        mixins: [ mixin ],
 
         components: { ChildrenDisplayControl, ItemName, SettingsButton },
         props: [ 'item' ],

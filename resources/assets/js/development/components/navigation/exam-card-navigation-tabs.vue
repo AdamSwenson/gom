@@ -1,98 +1,115 @@
 <template>
-    <!--These are the navigation tabs for the exam only-->
+    <!--These are the navigation tabs for the exam cardonly-->
     <nav class="exam-card-navigation-tabs tabs is-centered"
     >
         <ul v-bind:id="id">
-            <li role="presentation">
-                <router-link v-bind:to="routeToExamDetails">
-                    <a class="exam-details-nav"
-                       v-bind:class="{ 'exam-nav' : isExam  }">
-                        <span class="icon is-small">
-                            <i class="fa fa-pencil" aria-hidden="true"></i>
+
+            <!--details-->
+            <router-link
+                    v-for="r in routes"
+                    v-bind:key="r.name"
+                    tag="li"
+                    v-bind:active-class="activeClass"
+                    v-bind:to="r.path"
+            >
+                <a class="exam-nav">
+                    <span class="icon is-small">
+                            <i v-bind:class="r.icon" aria-hidden="true"></i>
                         </span>
-                        <span>Details</span>
-                    </a>
-                </router-link>
-            </li>
+                    <span>{{r.label}}</span>
+                </a>
+            </router-link>
 
 
-            <li role="presentation">
-                <router-link v-bind:to="routeToStudents">
-                    <a class="students-nav" v-bind:class="{ 'exam-nav' : isExam  }">
-                        <span class="icon is-small">
-                            <i class="fa fa-group" aria-hidden="true"></i>
-                        </span>
-                        <span>Students</span>
-                    </a>
-                </router-link>
-            </li>
-
-
-            <li class="exam-comments-tab"
-                role="presentation">
-                <router-link v-bind:to="routeToComments"
-                             v-bind:id="getId('feedback')"
-                >
-                    <a class="feedback-nav" v-bind:class="{ 'exam-nav' : isExam  }">
-                        <span class="icon is-small">
-                            <i class="fa fa-comments-o" aria-hidden="true"></i>
-                        </span>
-                        <span>Feedback</span>
-                    </a>
-                </router-link>
-            </li>
-
-            <!--<li class="exam-stats-tab"-->
-            <!--role="presentation">-->
-            <!--<router-link v-bind:to="routeToExamStats">-->
-            <!--<a class="stats-nav" v-bind:class="{ 'exam-nav' : isExam  }">-->
-            <!--<span class="icon is-small">-->
-            <!--<i class="fa fa-bar-chart" aria-hidden="true"></i>-->
-            <!--</span>-->
-            <!--<span>Stats</span>-->
+            <!--routeToExamDetails"-->
+            <!--&gt;-->
+            <!--<a class="exam-details-nav exam-nav">-->
+                    <!--<span class="icon is-small">-->
+                            <!--<i class="fa fa-pencil" aria-hidden="true"></i>-->
+                        <!--</span>-->
+                <!--<span>Details</span>-->
             <!--</a>-->
             <!--</router-link>-->
-            <!--</li>-->
 
-            <li class="exam-notes-tab" role="presentation">
-                <router-link v-bind:to="routeToNotes">
-                    <a id="notes-nav"
-                       class="notes-nav"
-                       v-bind:class="{ 'exam-nav' : isExam  }"
-                    >
-                        <span class="icon is-small">
-                            <i class="fa fa-sticky-note-o" aria-hidden="true"></i>
-                        </span>
-                        <span>Notes</span>
-                    </a>
-                </router-link>
-            </li>
 
-            <!--These are for post grading task-->
+            <!--&lt;!&ndash;students&ndash;&gt;-->
+            <!--<router-link-->
+                    <!--tag="li"-->
+                    <!--v-bind:active-class="activeClass"-->
+                    <!--v-bind:to="routeToStudents"-->
+            <!--&gt;-->
+                <!--<a class="exam-nav students-nav">-->
+                    <!--<span class="icon is-small">-->
+                            <!--<i class="fa fa-group" aria-hidden="true"></i>-->
+                        <!--</span>-->
+                    <!--<span>Students</span>-->
+                <!--</a>-->
+            <!--</router-link>-->
 
-            <li class="quality-control-tab" role="presentation">
-                <router-link v-bind:to="routeToQuality">
-                    <a class="quality-nav" v-bind:class="{ 'exam-nav' : isExam  }">
-                        <span class="icon is-small">
-                            <i class="fa fa-rocket" aria-hidden="true"></i>
-                        </span>
-                        <span>Quality</span>
-                    </a>
-                </router-link>
-            </li>
+            <!--&lt;!&ndash;comments&ndash;&gt;-->
+            <!--<router-link-->
+                    <!--tag="li"-->
+                    <!--v-bind:active-class="activeClass"-->
+                    <!--v-bind:to="routeToComments"-->
+            <!--&gt;-->
+                <!--<a class="exam-nav feedback-nav"-->
+                   <!--v-on:click="togglePaneVisibility"-->
+                <!--&gt;-->
+                    <!--<span class="icon is-small">-->
+                            <!--<i class="fa fa-comments-o" aria-hidden="true"></i>-->
+                        <!--</span>-->
+                    <!--<span>Feedback</span>-->
+                <!--</a>-->
+            <!--</router-link>-->
 
-            <li class="exam-grades-tab"
-                role="presentation">
-                <router-link v-bind:to="routeToGrades">
-                    <a class="grades-nav" v-bind:class="{ 'exam-nav' : isExam  }">
-                        <span class="icon is-small">
-                            <i class="fa fa-graduation-cap" aria-hidden="true"></i>
-                        </span>
-                        <span>Grades</span>
-                    </a>
-                </router-link>
-            </li>
+            <!--&lt;!&ndash;notes&ndash;&gt;-->
+            <!--<router-link-->
+                    <!--tag="li"-->
+                    <!--v-bind:active-class="activeClass"-->
+                    <!--v-bind:to="routeToNotes"-->
+            <!--&gt;-->
+                <!--<a id="notes-nav"-->
+                   <!--class="exam-nav notes-nav"-->
+                   <!--v-on:click="togglePaneVisibility"-->
+                <!--&gt;-->
+                    <!--<span class="icon is-small">-->
+                            <!--<i class="fa fa-sticky-note-o" aria-hidden="true"></i>-->
+                        <!--</span>-->
+                    <!--<span>Notes</span>-->
+                <!--</a>-->
+            <!--</router-link>-->
 
+            <!--&lt;!&ndash;quality control&ndash;&gt;-->
+            <!--<router-link-->
+                    <!--tag="li"-->
+                    <!--v-bind:active-class="activeClass"-->
+                    <!--v-bind:to="routeToQuality"-->
+            <!--&gt;-->
+                <!--<a class="exam-nav quality-nav"-->
+                   <!--v-on:click="togglePaneVisibility"-->
+                <!--&gt;-->
+                    <!--<span class="icon is-small">-->
+                            <!--<i class="fa fa-rocket" aria-hidden="true"></i>-->
+                        <!--</span>-->
+                    <!--<span>Quality</span>-->
+                <!--</a>-->
+            <!--</router-link>-->
+
+            <!--&lt;!&ndash;grade distribution&ndash;&gt;-->
+            <!--<router-link-->
+                    <!--tag="li"-->
+                    <!--v-bind:active-class="activeClass"-->
+                    <!--v-bind:to="routeToGrades"-->
+            <!--&gt;-->
+                <!--<a class="exam-nav grades-nav"-->
+                   <!--v-on:click="togglePaneVisibility"-->
+                <!--&gt;-->
+                    <!--<span class="icon is-small">-->
+                            <!--<i class="fa fa-graduation-cap" aria-hidden="true"></i>-->
+                        <!--</span>-->
+                    <!--<span>Grades</span>-->
+                <!--</a>-->
+            <!--</router-link>-->
 
         </ul>
     </nav>
@@ -124,117 +141,168 @@
      * Created by adam on 2/18/17.
      */
     export default {
-        props: [ 'serialNumber' ],
+        props: [ 'exam' ],
 
         data: function () {
             return {
-                identifiers: {
-                    exam: 'exam-nav-tabs',
-                    item: 'item-nav-tabs'
-                },
+                activeClass: 'is-active',
+
+                identifier: 'exam-nav-tabs',
+
                 defaults: {
-                    types: [ 'question', 'element' ]
+                    // types: [ 'question', 'element' ]
                 },
                 // currentView: 'item-settings-question',
                 tabs: [
-                    'details', 'comments', 'stats', 'history', 'notes', 'tags'
+                    'details', 'feedback', 'grades', 'students', 'notes', 'quality'
                 ],
-                hiding: true,
-
             };
         },
 
+        watch: {
+            '$route': function () {
+                //Since we are not using the settings button for the exam
+                //we need to make sure that the pane opens when we hit one of
+                //the routes on the exam card.
+                if ( this.watchedPaths.includes( this.$route.path ) ) {
+                    //this first tests whether the pane is visible, if not,
+                    //it shows it
+                    this.togglePaneVisibility();
+                }
+            }
+        },
+
         computed: {
-            routeToComments: function () {
-                if ( this.isExam ) return "/exam-panel-comments/" + this.serialNumber;
-                return "/panel-comments/" + this.serialNumber;
+            watchedPaths: function () {
+                let paths = [];
+                _.forEach( this.routes, ( r ) => {
+                    paths.push( r.path );
+                } );
+                return paths;
             },
 
+            routes: function () {
+                //nb, these need to be in order of display, l to r
+                return [
+                    {
+                        name: 'details',
+                        path: this.routeToExamDetails,
+                        icon: "fa fa-pencil",
+                        label: "Details"
+                    },
+                    {
+                        name: 'students',
+                        path: this.routeToStudents,
+                        icon: "fa fa-group",
+                        label: "Students"
+                    },
+                    {
+                        name: 'comments',
+                        path: this.routeToComments,
+                        icon: "fa fa-comments-o",
+                        label: "Feedback"
+                    },
+
+                    {
+                        name: 'quality',
+                        path: this.routeToQuality,
+                        icon: "fa fa-rocket",
+                        label: 'Quality',
+                    },
+                    {
+                        name: 'grades',
+                        path: this.routeToGrades,
+                        icon: "fa fa-graduation-cap",
+                        label: 'Grades'
+                    },
+
+                    {
+                        name: 'notes',
+                        path: this.routeToNotes,
+                        icon: "fa fa-sticky-note-o",
+                        label: "Notes"
+                    },
+
+                ];
+            },
+
+            //feedback
+            routeToComments: function () {
+                return "/exam-panel-comments/" + this.serialNumber;
+                // return "/panel-comments/" + this.serialNumber;
+            },
+
+            //details
             routeToExamDetails: function () {
                 return "/panel-exam-detail/" + this.serialNumber;
             },
-            //
-            // routeToItemDetails: function () {
-            //     return "/panel-item-detail/" + this.serialNumber;
-            // },
 
+            //grade distributions
             routeToGrades: function () {
                 return "/panel-grades/" + this.serialNumber;
             },
-            //
-            // routeToHistory: function () {
-            //     return "/panel-history/" + this.serialNumber;
-            // },
 
             //Notes
             routeToNotes: function () {
-                if ( this.isExam ) return "/panel-exam-notes/" + this.serialNumber;
-                return "/panel-item-notes/" + this.serialNumber;
+                return "/panel-exam-notes/" + this.serialNumber;
+                // return "/panel-item-notes/" + this.serialNumber;
             },
 
-            // routeToExamStats: function () {
-            //     return "/panel-exam-stats/" + this.serialNumber;
-            // },
-            //
-            // routeToStats: function () {
-            //     return "/panel-stats/" + this.serialNumber;
-            // },
 
+            //quality control
             routeToQuality: function () {
                 return '/panel-quality/' + this.serialNumber;
             },
 
+            //roster management
             routeToStudents: function () {
                 return "/panel-students/" + this.serialNumber;
             },
 
-            // routeToTags: function () {
-            //     return "/panel-tags/" + this.serialNumber;
+
+            // item: function () {
+            //     return this.exam; //$store.getters.getItemBySerialNumber( this.serialNumber );
+            // },
+            //
+            // isExam: function () {
+            //     return true;
+            //     // return this.item ? this.item.isExam() : false;
             // },
 
-            item: function () {
-                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
+            isExamPaneVisible: function () {
+                return this.$store.getters[ gTypes.isExamSettingsVisible ];
             },
 
-            isExam: function () {
-                return this.item ? this.item.isExam() : false;
-            },
+            //
+            // node: function () {
+            //     return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
+            // },
+            //
+            // depth: function () {
+            //     return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
+            // },
+            //
+            //
+            // height: function () {
+            //     return this.$store.getters[ gTypes.getHeightOfNode ]( this.serialNumber );
+            // },
+            //
+            //
+            // parentSerialNumber: function () {
+            //     return this.node.parent;
+            // },
 
-            node: function () {
-                return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
-            },
-
-            depth: function () {
-                return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
-            },
-
-
-            height: function () {
-                return this.$store.getters[ gTypes.getHeightOfNode ]( this.serialNumber );
-            },
-
-
-            parentSerialNumber: function () {
-                return this.node.parent;
-            },
-
-            /**
-             * Gets the appropriate base string for the input
-             * depending on whether it is attached to an exam or
-             * regular item
-             */
-            identifier: function () {
-                return this.isExam ? this.identifiers.exam : this.identifiers.item;
-            },
 
             /**
              * The input's css id
              */
             id: function () {
-                if ( this.isExam ) return this.identifier;
-                return this.identifier + "-" + this.height + '-' + this.depth;
+                return this.identifier;
             },
 
+            serialNumber: function () {
+                return this.exam.serialNumber
+            },
 
             /**
              * Injected into the classes of the input
@@ -247,6 +315,15 @@
         },
 
         methods: {
+
+            togglePaneVisibility: function () {
+                window.console.log( 'exam-card-navigation-tabs', 'togglePaneVisibility', 244, this.isExamPaneVisible );
+                if ( !this.isExamPaneVisible ) {
+                    this.$store.commit( mTypes.toggleExamSettings, Payload.factory( { mutateSilently: true } ) );
+                }
+            },
+
+
             getId: function ( name ) {
                 if ( this.isExam ) return 'exam-' + name + '-nav-' + this.serialNumber;
                 return 'item-' + name + '-nav-' + this.serialNumber;

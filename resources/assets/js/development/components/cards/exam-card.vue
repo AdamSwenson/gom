@@ -6,20 +6,37 @@
     >
 
         <div class="card-content main-body">
+
+            <exam-nav-tabs
+                    :exam="exam"
+
+            ></exam-nav-tabs>
+
             <item-main
                     :item="exam"
                     :is-exam="true"
             ></item-main>
+
         </div>
 
         <div class="card-content  main-body" v-show="isPaneVisible">
-            <nav-tabs
-                    :serial-number="serialNumber"
-                    :is-exam="true"
-            ></nav-tabs>
+            <div class="card">
+                <div class="card-content">
+                    <div class="content">
 
-            <router-view name="examPanels"></router-view>
+                        <div class="level">
+                            <div class="level-left"></div>
+                            <div class="level-right">
+                                <exam-panel-close-control></exam-panel-close-control>
+                            </div>
+                        </div>
 
+                        <!--panels for the exam display here-->
+                        <router-view name="examPanels"></router-view>
+
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="card-footer main-body">
@@ -74,7 +91,8 @@
 
         <!--Check whether the item has children, if it does-->
         <!--we will make a box that will surround the children-->
-        <div class="box graph-paper-background-big" v-if="numberChildren > 0">
+        <div class="box graph-paper-background-big">
+            <!--v-if="numberChildren > 0">-->
 
             <div v-for="item in items">
                 <!--Now we make cards recursively-->
@@ -122,7 +140,8 @@
     import * as gTypes from '../../../store/getter-types'
 
     import itemMain from '../items/item-main.vue';
-    import navTabs from '../navigation/exam-card-navigation-tabs';
+    import examNavTabs from '../navigation/exam-card-navigation-tabs';
+    import examPanelCloseControl from '../navigation/exam-panel-close-control';
 
     export default {
 
@@ -135,7 +154,8 @@
         components: {
             AddChildButton,
             PublicIndicator,
-            'nav-tabs': navTabs,
+            examNavTabs,
+            examPanelCloseControl,
             'item-main': itemMain
         },
 
@@ -190,8 +210,9 @@
             },
 
             numberChildren: function () {
-                return (!_.isUndefined( this.items ) && ! _.isNull(this.items) ) ? this.items.length : 0;
+                return (!_.isUndefined( this.items ) && !_.isNull( this.items )) ? this.items.length : 0;
             },
+
             serialNumber: function () {
                 return this.exam.serialNumber;
             }

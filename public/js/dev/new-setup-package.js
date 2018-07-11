@@ -1941,10 +1941,146 @@ var _examCardNavigationTabs = __webpack_require__(/*! ../navigation/exam-card-na
 
 var _examCardNavigationTabs2 = _interopRequireDefault(_examCardNavigationTabs);
 
+var _examPanelCloseControl = __webpack_require__(/*! ../navigation/exam-panel-close-control */ "./resources/assets/js/development/components/navigation/exam-panel-close-control.vue");
+
+var _examPanelCloseControl2 = _interopRequireDefault(_examPanelCloseControl);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+exports.default = {
+
+    //NB, the decisive consideration in favor of making this
+    //a prop was that we may want to use the exam card on a page
+    //with other exams. It thus won't do to assume that it is
+    //the only exam and have it look up its serial number on its own
+    props: ['exam'], //, 'serialNumber' ],
+
+    components: {
+        AddChildButton: _addChildButton2.default,
+        PublicIndicator: _visibilityControl2.default,
+        examNavTabs: _examCardNavigationTabs2.default,
+        examPanelCloseControl: _examPanelCloseControl2.default,
+        'item-main': _itemMain2.default
+    },
+
+    data: function data() {
+        return {
+            defaults: {},
+            isCommented: false,
+            /**
+             * Whether students can see the name of the item
+             */
+            isNamePublic: false
+        };
+    },
+
+    asyncComputed: {
+
+        /**
+         * The children of the item
+         */
+        items: function items() {
+            if (_.isUndefined(this.exam)) return [];
+
+            var c = this.$store.getters.getItemChildren(this.exam);
+            return !_.isUndefined(c) ? c : [];
+        }
+    },
+
+    computed: {
+
+        divId: function divId() {
+            return "exam-card-" + this.serialNumber;
+        },
+
+        index: function index() {
+            return this.serialNumber;
+        },
+
+        /**
+         * Returns true if the settings pane for this item should be displayed
+         */
+        isPaneVisible: function isPaneVisible() {
+            return this.$store.getters[gTypes.isExamSettingsVisible];
+        },
+
+        /**
+         * The Node representing the item's assignment
+         */
+        node: function node() {
+            this.$store.getters[gTypes.getItemNodeFromOrder](this.serialNumber);
+        },
+
+        numberChildren: function numberChildren() {
+            return !_.isUndefined(this.items) && !_.isNull(this.items) ? this.items.length : 0;
+        },
+
+        serialNumber: function serialNumber() {
+            return this.exam.serialNumber;
+        }
+
+    },
+
+    methods: {
+
+        /**
+         * Toggles whether comments are shown for this item.
+         * Turning comments off does not delete any existing
+         * comments.
+         */
+        toggleCommentsOn: function toggleCommentsOn() {
+            //                console.log( 'CALLED', 'toggleCommentsOn' );
+            this.isCommented = !this.isCommented;
+        },
+
+        /**
+         * Toggles whether comments are shown for this item.
+         * Turning comments off does not delete any existing
+         * comments.
+         */
+        toggleNameVisibility: function toggleNameVisibility() {
+            //                console.log( 'CALLED', 'toggleNameVisibility' );
+            this.isNamePublic = !this.isNamePublic;
+        }
+
+    },
+
+    mounted: function mounted() {},
+
+    directives: {
+        'sortable': {
+            inserted: function inserted(el, binding) {
+                //                    var sortable = new Sortable( el, binding.value || {} );
+            }
+        }
+    },
+
+    events: {
+        'display-settings': function displaySettings() {
+            console.log('itemMain', 'CAUGHT', 'display-settings', this.index);
+        }
+    }
+
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2058,120 +2194,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //    import itemEditPane from './item.edit-pane.component.vue'
 //    import depthControl from './buttons.depth-control.component.vue'
 //    import itemMain from './item-main.vue'
-
-exports.default = {
-
-    //NB, the decisive consideration in favor of making this
-    //a prop was that we may want to use the exam card on a page
-    //with other exams. It thus won't do to assume that it is
-    //the only exam and have it look up its serial number on its own
-    props: ['exam'], //, 'serialNumber' ],
-
-    components: {
-        AddChildButton: _addChildButton2.default,
-        PublicIndicator: _visibilityControl2.default,
-        'nav-tabs': _examCardNavigationTabs2.default,
-        'item-main': _itemMain2.default
-    },
-
-    data: function data() {
-        return {
-            defaults: {},
-            isCommented: false,
-            /**
-             * Whether students can see the name of the item
-             */
-            isNamePublic: false
-        };
-    },
-
-    asyncComputed: {
-
-        /**
-         * The children of the item
-         */
-        items: function items() {
-            if (_.isUndefined(this.exam)) return [];
-
-            var c = this.$store.getters.getItemChildren(this.exam);
-            return !_.isUndefined(c) ? c : [];
-        }
-    },
-
-    computed: {
-
-        divId: function divId() {
-            return "exam-card-" + this.serialNumber;
-        },
-
-        index: function index() {
-            return this.serialNumber;
-        },
-
-        /**
-         * Returns true if the settings pane for this item should be displayed
-         */
-        isPaneVisible: function isPaneVisible() {
-            return this.$store.getters[gTypes.isExamSettingsVisible];
-        },
-
-        /**
-         * The Node representing the item's assignment
-         */
-        node: function node() {
-            this.$store.getters[gTypes.getItemNodeFromOrder](this.serialNumber);
-        },
-
-        numberChildren: function numberChildren() {
-            return !_.isUndefined(this.items) && !_.isNull(this.items) ? this.items.length : 0;
-        },
-        serialNumber: function serialNumber() {
-            return this.exam.serialNumber;
-        }
-
-    },
-
-    methods: {
-
-        /**
-         * Toggles whether comments are shown for this item.
-         * Turning comments off does not delete any existing
-         * comments.
-         */
-        toggleCommentsOn: function toggleCommentsOn() {
-            //                console.log( 'CALLED', 'toggleCommentsOn' );
-            this.isCommented = !this.isCommented;
-        },
-
-        /**
-         * Toggles whether comments are shown for this item.
-         * Turning comments off does not delete any existing
-         * comments.
-         */
-        toggleNameVisibility: function toggleNameVisibility() {
-            //                console.log( 'CALLED', 'toggleNameVisibility' );
-            this.isNamePublic = !this.isNamePublic;
-        }
-
-    },
-
-    mounted: function mounted() {},
-
-    directives: {
-        'sortable': {
-            inserted: function inserted(el, binding) {
-                //                    var sortable = new Sortable( el, binding.value || {} );
-            }
-        }
-    },
-
-    events: {
-        'display-settings': function displaySettings() {
-            console.log('itemMain', 'CAUGHT', 'display-settings', this.index);
-        }
-    }
-
-};
 
 /***/ }),
 
@@ -6120,6 +6142,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
+//
+//
+//
 
 
 exports.default = {
@@ -8295,114 +8320,173 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 exports.default = {
-    props: ['serialNumber'],
+    props: ['exam'],
 
     data: function data() {
         return {
-            identifiers: {
-                exam: 'exam-nav-tabs',
-                item: 'item-nav-tabs'
-            },
+            activeClass: 'is-active',
+
+            identifier: 'exam-nav-tabs',
+
             defaults: {
-                types: ['question', 'element']
+                // types: [ 'question', 'element' ]
             },
             // currentView: 'item-settings-question',
-            tabs: ['details', 'comments', 'stats', 'history', 'notes', 'tags'],
-            hiding: true
-
+            tabs: ['details', 'feedback', 'grades', 'students', 'notes', 'quality']
         };
     },
 
+    watch: {
+        '$route': function $route() {
+            //Since we are not using the settings button for the exam
+            //we need to make sure that the pane opens when we hit one of
+            //the routes on the exam card.
+            if (this.watchedPaths.includes(this.$route.path)) {
+                //this first tests whether the pane is visible, if not,
+                //it shows it
+                this.togglePaneVisibility();
+            }
+        }
+    },
+
     computed: {
-        routeToComments: function routeToComments() {
-            if (this.isExam) return "/exam-panel-comments/" + this.serialNumber;
-            return "/panel-comments/" + this.serialNumber;
+        watchedPaths: function watchedPaths() {
+            var paths = [];
+            _.forEach(this.routes, function (r) {
+                paths.push(r.path);
+            });
+            return paths;
         },
 
+        routes: function routes() {
+            //nb, these need to be in order of display, l to r
+            return [{
+                name: 'details',
+                path: this.routeToExamDetails,
+                icon: "fa fa-pencil",
+                label: "Details"
+            }, {
+                name: 'students',
+                path: this.routeToStudents,
+                icon: "fa fa-group",
+                label: "Students"
+            }, {
+                name: 'comments',
+                path: this.routeToComments,
+                icon: "fa fa-comments-o",
+                label: "Feedback"
+            }, {
+                name: 'quality',
+                path: this.routeToQuality,
+                icon: "fa fa-rocket",
+                label: 'Quality'
+            }, {
+                name: 'grades',
+                path: this.routeToGrades,
+                icon: "fa fa-graduation-cap",
+                label: 'Grades'
+            }, {
+                name: 'notes',
+                path: this.routeToNotes,
+                icon: "fa fa-sticky-note-o",
+                label: "Notes"
+            }];
+        },
+
+        //feedback
+        routeToComments: function routeToComments() {
+            return "/exam-panel-comments/" + this.serialNumber;
+            // return "/panel-comments/" + this.serialNumber;
+        },
+
+        //details
         routeToExamDetails: function routeToExamDetails() {
             return "/panel-exam-detail/" + this.serialNumber;
         },
-        //
-        // routeToItemDetails: function () {
-        //     return "/panel-item-detail/" + this.serialNumber;
-        // },
 
+        //grade distributions
         routeToGrades: function routeToGrades() {
             return "/panel-grades/" + this.serialNumber;
         },
-        //
-        // routeToHistory: function () {
-        //     return "/panel-history/" + this.serialNumber;
-        // },
 
         //Notes
         routeToNotes: function routeToNotes() {
-            if (this.isExam) return "/panel-exam-notes/" + this.serialNumber;
-            return "/panel-item-notes/" + this.serialNumber;
+            return "/panel-exam-notes/" + this.serialNumber;
+            // return "/panel-item-notes/" + this.serialNumber;
         },
 
-        // routeToExamStats: function () {
-        //     return "/panel-exam-stats/" + this.serialNumber;
-        // },
-        //
-        // routeToStats: function () {
-        //     return "/panel-stats/" + this.serialNumber;
-        // },
-
+        //quality control
         routeToQuality: function routeToQuality() {
             return '/panel-quality/' + this.serialNumber;
         },
 
+        //roster management
         routeToStudents: function routeToStudents() {
             return "/panel-students/" + this.serialNumber;
         },
 
-        // routeToTags: function () {
-        //     return "/panel-tags/" + this.serialNumber;
+        // item: function () {
+        //     return this.exam; //$store.getters.getItemBySerialNumber( this.serialNumber );
+        // },
+        //
+        // isExam: function () {
+        //     return true;
+        //     // return this.item ? this.item.isExam() : false;
         // },
 
-        item: function item() {
-            return this.$store.getters.getItemBySerialNumber(this.serialNumber);
+        isExamPaneVisible: function isExamPaneVisible() {
+            return this.$store.getters[gTypes.isExamSettingsVisible];
         },
 
-        isExam: function isExam() {
-            return this.item ? this.item.isExam() : false;
-        },
+        //
+        // node: function () {
+        //     return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
+        // },
+        //
+        // depth: function () {
+        //     return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
+        // },
+        //
+        //
+        // height: function () {
+        //     return this.$store.getters[ gTypes.getHeightOfNode ]( this.serialNumber );
+        // },
+        //
+        //
+        // parentSerialNumber: function () {
+        //     return this.node.parent;
+        // },
 
-        node: function node() {
-            return this.$store.getters.getItemNodeFromOrder(this.serialNumber);
-        },
-
-        depth: function depth() {
-            return this.$store.getters[gTypes.getDepthOfNode](this.serialNumber);
-        },
-
-        height: function height() {
-            return this.$store.getters[gTypes.getHeightOfNode](this.serialNumber);
-        },
-
-        parentSerialNumber: function parentSerialNumber() {
-            return this.node.parent;
-        },
-
-        /**
-         * Gets the appropriate base string for the input
-         * depending on whether it is attached to an exam or
-         * regular item
-         */
-        identifier: function identifier() {
-            return this.isExam ? this.identifiers.exam : this.identifiers.item;
-        },
 
         /**
          * The input's css id
          */
         id: function id() {
-            if (this.isExam) return this.identifier;
-            return this.identifier + "-" + this.height + '-' + this.depth;
+            return this.identifier;
+        },
+
+        serialNumber: function serialNumber() {
+            return this.exam.serialNumber;
         },
 
         /**
@@ -8415,6 +8499,14 @@ exports.default = {
     },
 
     methods: {
+
+        togglePaneVisibility: function togglePaneVisibility() {
+            window.console.log('exam-card-navigation-tabs', 'togglePaneVisibility', 244, this.isExamPaneVisible);
+            if (!this.isExamPaneVisible) {
+                this.$store.commit(mTypes.toggleExamSettings, _Payload2.default.factory({ mutateSilently: true }));
+            }
+        },
+
         getId: function getId(name) {
             if (this.isExam) return 'exam-' + name + '-nav-' + this.serialNumber;
             return 'item-' + name + '-nav-' + this.serialNumber;
@@ -8422,6 +8514,78 @@ exports.default = {
 
     }
 
+};
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/navigation/exam-panel-close-control.vue":
+/*!*********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/navigation/exam-panel-close-control.vue ***!
+  \*********************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mutationTypes = __webpack_require__(/*! ../../../store/mutation-types */ "./resources/assets/js/store/mutation-types.js");
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
+var _getterTypes = __webpack_require__(/*! ../../../store/getter-types */ "./resources/assets/js/store/getter-types.js");
+
+var gTypes = _interopRequireWildcard(_getterTypes);
+
+var _Item = __webpack_require__(/*! ../../../models/Item */ "./resources/assets/js/models/Item.js");
+
+var _Item2 = _interopRequireDefault(_Item);
+
+var _Payload = __webpack_require__(/*! ../../../models/Payload */ "./resources/assets/js/models/Payload.js");
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+exports.default = {
+    name: "exam-panel-close-control",
+
+    data: function data() {
+        return {
+            downIcon: 'fa fa-chevron-down',
+            upIcon: 'fa fa-chevron-up',
+            useIcon: 'fa fa-times'
+        };
+    },
+
+    methods: {
+        handleClick: function handleClick() {
+            // this.useIcon = this.upIcon;
+            this.$store.commit(mTypes.toggleExamSettings, _Payload2.default.factory({ mutateSilently: true }));
+            //remove the active class
+            this.$router.replace('/');
+            // this.useIcon = this.downIcon;
+        }
+    }
 };
 
 /***/ }),
@@ -8550,63 +8714,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 exports.default = {
@@ -8614,6 +8721,7 @@ exports.default = {
 
     data: function data() {
         return {
+            activeClass: 'is-active',
             identifiers: {
                 exam: 'exam-nav-tabs',
                 item: 'item-nav-tabs'
@@ -34794,7 +34902,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, "\n.nav-edit-tabs-component .exam-nav {\n  color: #DDDDDD;\n}\n", ""]);
+exports.push([module.i, "", ""]);
 
 // exports
 
@@ -35365,6 +35473,25 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 // module
 exports.push([module.i, "\n.item-name-input .item-type {\n  font-weight: bold;\n}\n.item-name-input input {\n  /*width: 4em;*/\n  /*outline: none;*/\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-52bad6a4\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/navigation/exam-panel-close-control.vue":
+/*!**********************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-52bad6a4","scoped":true,"hasInlineConfig":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/navigation/exam-panel-close-control.vue ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")();
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -65326,7 +65453,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_c('div', {
     staticClass: "card-content main-body"
-  }, [_c('item-main', {
+  }, [_c('exam-nav-tabs', {
+    attrs: {
+      "exam": _vm.exam
+    }
+  }), _vm._v(" "), _c('item-main', {
     attrs: {
       "item": _vm.exam,
       "is-exam": true
@@ -65339,16 +65470,23 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       expression: "isPaneVisible"
     }],
     staticClass: "card-content  main-body"
-  }, [_c('nav-tabs', {
-    attrs: {
-      "serial-number": _vm.serialNumber,
-      "is-exam": true
-    }
-  }), _vm._v(" "), _c('router-view', {
+  }, [_c('div', {
+    staticClass: "card"
+  }, [_c('div', {
+    staticClass: "card-content"
+  }, [_c('div', {
+    staticClass: "content"
+  }, [_c('div', {
+    staticClass: "level"
+  }, [_c('div', {
+    staticClass: "level-left"
+  }), _vm._v(" "), _c('div', {
+    staticClass: "level-right"
+  }, [_c('exam-panel-close-control')], 1)]), _vm._v(" "), _c('router-view', {
     attrs: {
       "name": "examPanels"
     }
-  })], 1), _vm._v(" "), _c('div', {
+  })], 1)])])]), _vm._v(" "), _c('div', {
     staticClass: "card-footer main-body"
   }, [_c('div', {
     staticClass: "card-footer-item"
@@ -65374,7 +65512,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   })], 1), _vm._v(" "), _c('div', {
     staticClass: "column is-narrow"
-  })])])]), _vm._v(" "), (_vm.numberChildren > 0) ? _c('div', {
+  })])])]), _vm._v(" "), _c('div', {
     staticClass: "box graph-paper-background-big"
   }, _vm._l((_vm.items), function(item) {
     return _c('div', [_c('item-card', {
@@ -65383,7 +65521,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         "item": item
       }
     })], 1)
-  })) : _vm._e()])
+  }))])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "column is-narrow"
@@ -65546,135 +65684,25 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": _vm.id
     }
-  }, [_c('li', {
-    attrs: {
-      "role": "presentation"
-    }
-  }, [_c('router-link', {
-    attrs: {
-      "to": _vm.routeToExamDetails
-    }
-  }, [_c('a', {
-    staticClass: "exam-details-nav",
-    class: {
-      'exam-nav': _vm.isExam
-    }
-  }, [_c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-pencil",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _c('span', [_vm._v("Details")])])])], 1), _vm._v(" "), _c('li', {
-    attrs: {
-      "role": "presentation"
-    }
-  }, [_c('router-link', {
-    attrs: {
-      "to": _vm.routeToStudents
-    }
-  }, [_c('a', {
-    staticClass: "students-nav",
-    class: {
-      'exam-nav': _vm.isExam
-    }
-  }, [_c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-group",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _c('span', [_vm._v("Students")])])])], 1), _vm._v(" "), _c('li', {
-    staticClass: "exam-comments-tab",
-    attrs: {
-      "role": "presentation"
-    }
-  }, [_c('router-link', {
-    attrs: {
-      "to": _vm.routeToComments,
-      "id": _vm.getId('feedback')
-    }
-  }, [_c('a', {
-    staticClass: "feedback-nav",
-    class: {
-      'exam-nav': _vm.isExam
-    }
-  }, [_c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-comments-o",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _c('span', [_vm._v("Feedback")])])])], 1), _vm._v(" "), _c('li', {
-    staticClass: "exam-notes-tab",
-    attrs: {
-      "role": "presentation"
-    }
-  }, [_c('router-link', {
-    attrs: {
-      "to": _vm.routeToNotes
-    }
-  }, [_c('a', {
-    staticClass: "notes-nav",
-    class: {
-      'exam-nav': _vm.isExam
-    },
-    attrs: {
-      "id": "notes-nav"
-    }
-  }, [_c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-sticky-note-o",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _c('span', [_vm._v("Notes")])])])], 1), _vm._v(" "), _c('li', {
-    staticClass: "quality-control-tab",
-    attrs: {
-      "role": "presentation"
-    }
-  }, [_c('router-link', {
-    attrs: {
-      "to": _vm.routeToQuality
-    }
-  }, [_c('a', {
-    staticClass: "quality-nav",
-    class: {
-      'exam-nav': _vm.isExam
-    }
-  }, [_c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-rocket",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _c('span', [_vm._v("Quality")])])])], 1), _vm._v(" "), _c('li', {
-    staticClass: "exam-grades-tab",
-    attrs: {
-      "role": "presentation"
-    }
-  }, [_c('router-link', {
-    attrs: {
-      "to": _vm.routeToGrades
-    }
-  }, [_c('a', {
-    staticClass: "grades-nav",
-    class: {
-      'exam-nav': _vm.isExam
-    }
-  }, [_c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-graduation-cap",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _c('span', [_vm._v("Grades")])])])], 1)])])
+  }, _vm._l((_vm.routes), function(r) {
+    return _c('router-link', {
+      key: r.name,
+      attrs: {
+        "tag": "li",
+        "active-class": _vm.activeClass,
+        "to": r.path
+      }
+    }, [_c('a', {
+      staticClass: "exam-nav"
+    }, [_c('span', {
+      staticClass: "icon is-small"
+    }, [_c('i', {
+      class: r.icon,
+      attrs: {
+        "aria-hidden": "true"
+      }
+    })]), _vm._v(" "), _c('span', [_vm._v(_vm._s(r.label))])])])
+  }))])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {}
@@ -66341,44 +66369,19 @@ if (false) {}
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('nav', {
-    staticClass: "item-card-navigation-tabs nav-edit-tabs-component tabs is-centered"
+    staticClass: "item-card-navigation-tabs tabs is-centered is-boxed"
   }, [_c('ul', {
     attrs: {
       "id": _vm.id
     }
-  }, [(_vm.isExam) ? _c('li', {
-    attrs: {
-      "role": "presentation"
-    }
   }, [_c('router-link', {
     attrs: {
-      "to": _vm.routeToExamDetails
-    }
-  }, [_c('a', {
-    staticClass: "exam-details-nav",
-    class: {
-      'exam-nav': _vm.isExam
-    }
-  }, [_c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-pencil",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _c('span', [_vm._v("Details")])])])], 1) : _c('li', {
-    attrs: {
-      "role": "presentation"
-    }
-  }, [_c('router-link', {
-    attrs: {
+      "tag": "li",
+      "active-class": _vm.activeClass,
       "to": _vm.routeToItemDetails
     }
   }, [_c('a', {
-    staticClass: "item-details-nav",
-    class: {
-      'exam-nav': _vm.isExam
-    }
+    staticClass: "item-details-nav"
   }, [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
@@ -66386,40 +66389,15 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "aria-hidden": "true"
     }
-  })]), _vm._v(" "), _c('span', [_vm._v("Details")])])])], 1), _vm._v(" "), (_vm.isExam) ? _c('li', {
+  })]), _vm._v(" "), _c('span', [_vm._v("Details")])])]), _vm._v(" "), _c('router-link', {
     attrs: {
-      "role": "presentation"
-    }
-  }, [_c('router-link', {
-    attrs: {
-      "to": _vm.routeToStudents
-    }
-  }, [_c('a', {
-    staticClass: "students-nav",
-    class: {
-      'exam-nav': _vm.isExam
-    }
-  }, [_c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-group",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _c('span', [_vm._v("Students")])])])], 1) : _vm._e(), _vm._v(" "), _c('li', {
-    attrs: {
-      "role": "presentation"
-    }
-  }, [_c('router-link', {
-    attrs: {
+      "tag": "li",
+      "active-class": _vm.activeClass,
       "to": _vm.routeToComments,
       "id": _vm.getId('feedback')
     }
   }, [_c('a', {
-    staticClass: "feedback-nav",
-    class: {
-      'exam-nav': _vm.isExam
-    }
+    staticClass: "feedback-nav"
   }, [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
@@ -66427,39 +66405,14 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "aria-hidden": "true"
     }
-  })]), _vm._v(" "), _c('span', [_vm._v("Feedback")])])])], 1), _vm._v(" "), (_vm.isExam) ? _c('li', {
+  })]), _vm._v(" "), _c('span', [_vm._v("Feedback")])])]), _vm._v(" "), _c('router-link', {
     attrs: {
-      "role": "presentation"
-    }
-  }, [_c('router-link', {
-    attrs: {
-      "to": _vm.routeToExamStats
-    }
-  }, [_c('a', {
-    staticClass: "stats-nav",
-    class: {
-      'exam-nav': _vm.isExam
-    }
-  }, [_c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-bar-chart",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _c('span', [_vm._v("Stats")])])])], 1) : _c('li', {
-    attrs: {
-      "role": "presentation"
-    }
-  }, [_c('router-link', {
-    attrs: {
+      "tag": "li",
+      "active-class": _vm.activeClass,
       "to": _vm.routeToStats
     }
   }, [_c('a', {
-    staticClass: "stats-nav",
-    class: {
-      'exam-nav': _vm.isExam
-    }
+    staticClass: "stats-nav"
   }, [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
@@ -66467,19 +66420,14 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "aria-hidden": "true"
     }
-  })]), _vm._v(" "), _c('span', [_vm._v("Stats")])])])], 1), _vm._v(" "), (!_vm.isExam) ? _c('li', {
+  })]), _vm._v(" "), _c('span', [_vm._v("Stats")])])]), _vm._v(" "), _c('router-link', {
     attrs: {
-      "role": "presentation"
-    }
-  }, [_c('router-link', {
-    attrs: {
+      "tag": "li",
+      "active-class": _vm.activeClass,
       "to": _vm.routeToHistory
     }
   }, [_c('a', {
-    staticClass: "history-nav",
-    class: {
-      'exam-nav': _vm.isExam
-    }
+    staticClass: "history-nav"
   }, [_c('span', {
     staticClass: "icon is-small"
   }, [_c('i', {
@@ -66487,19 +66435,14 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "aria-hidden": "true"
     }
-  })]), _vm._v(" "), _c('span', [_vm._v("History")])])])], 1) : _vm._e(), _vm._v(" "), _c('li', {
+  })]), _vm._v(" "), _c('span', [_vm._v("History")])])]), _vm._v(" "), _c('router-link', {
     attrs: {
-      "role": "presentation"
-    }
-  }, [_c('router-link', {
-    attrs: {
+      "tag": "li",
+      "active-class": _vm.activeClass,
       "to": _vm.routeToNotes
     }
   }, [_c('a', {
     staticClass: "notes-nav",
-    class: {
-      'exam-nav': _vm.isExam
-    },
     attrs: {
       "id": "notes-nav"
     }
@@ -66510,27 +66453,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "aria-hidden": "true"
     }
-  })]), _vm._v(" "), _c('span', [_vm._v("Notes")])])])], 1), _vm._v(" "), (_vm.isExam) ? _c('li', {
-    attrs: {
-      "role": "presentation"
-    }
-  }, [_c('router-link', {
-    attrs: {
-      "to": _vm.routeToGrades
-    }
-  }, [_c('a', {
-    staticClass: "grades-nav",
-    class: {
-      'exam-nav': _vm.isExam
-    }
-  }, [_c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-graduation-cap",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _c('span', [_vm._v("Grades")])])])], 1) : _vm._e()])])
+  })]), _vm._v(" "), _c('span', [_vm._v("Notes")])])])], 1)])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {}
@@ -67719,14 +67642,14 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "serial-number": _vm.serialNumber
     }
-  })], 1), _vm._v(" "), _c('p', {
+  })], 1), _vm._v(" "), (!_vm.isExam) ? _c('p', {
     staticClass: "control"
   }, [_c('settings-button', {
     attrs: {
       "serial-number": _vm.serialNumber,
       "is-exam": _vm.isExam
     }
-  })], 1), _vm._v(" "), _c('p', {
+  })], 1) : _vm._e(), _vm._v(" "), _c('p', {
     staticClass: "control"
   }, [_c('children-display-control', {
     attrs: {
@@ -68387,6 +68310,33 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     }
   })
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-52bad6a4\",\"hasScoped\":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/navigation/exam-panel-close-control.vue":
+/*!******************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-52bad6a4","hasScoped":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/navigation/exam-panel-close-control.vue ***!
+  \******************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('a', {
+    staticClass: "exam-panel-close-control button",
+    on: {
+      "click": _vm.handleClick
+    }
+  }, [_c('span', {
+    staticClass: "icon is-small"
+  }, [_c('i', {
+    class: _vm.useIcon,
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })])])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {}
@@ -70981,6 +70931,26 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var update = __webpack_require__(/*! ../../../../../../node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("a4098508", content, false, {});
+// Hot Module Replacement
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-52bad6a4\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/navigation/exam-panel-close-control.vue":
+/*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-52bad6a4","scoped":true,"hasInlineConfig":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/navigation/exam-panel-close-control.vue ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader!../../../../../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-52bad6a4","scoped":true,"hasInlineConfig":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./exam-panel-close-control.vue */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-52bad6a4\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/navigation/exam-panel-close-control.vue");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(/*! ../../../../../../node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("70b00614", content, false, {});
 // Hot Module Replacement
 if(false) {}
 
@@ -94128,6 +94098,42 @@ var Component = __webpack_require__(/*! ../../../../../../node_modules/vue-loade
 Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/navigation/exam-card-navigation-tabs.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] exam-card-navigation-tabs.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ "./resources/assets/js/development/components/navigation/exam-panel-close-control.vue":
+/*!********************************************************************************************!*\
+  !*** ./resources/assets/js/development/components/navigation/exam-panel-close-control.vue ***!
+  \********************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(/*! !vue-loader/node_modules/vue-style-loader!css-loader!../../../../../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-52bad6a4","scoped":true,"hasInlineConfig":true}!../../../../../../node_modules/vue-loader/lib/selector?type=styles&index=0!./exam-panel-close-control.vue */ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-52bad6a4\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/navigation/exam-panel-close-control.vue")
+}
+var Component = __webpack_require__(/*! ../../../../../../node_modules/vue-loader/lib/component-normalizer */ "./node_modules/vue-loader/lib/component-normalizer.js")(
+  /* script */
+  __webpack_require__(/*! !babel-loader?cacheDirectory!../../../../../../node_modules/vue-loader/lib/selector?type=script&index=0!./exam-panel-close-control.vue */ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/navigation/exam-panel-close-control.vue"),
+  /* template */
+  __webpack_require__(/*! !../../../../../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-52bad6a4","hasScoped":true}!../../../../../../node_modules/vue-loader/lib/selector?type=template&index=0!./exam-panel-close-control.vue */ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-52bad6a4\",\"hasScoped\":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/navigation/exam-panel-close-control.vue"),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  "data-v-52bad6a4",
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/navigation/exam-panel-close-control.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] exam-panel-close-control.vue: functional components are not supported with templates, they should use render functions.")}
 
 /* hot reload */
 if (false) {}
