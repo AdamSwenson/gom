@@ -109,7 +109,7 @@
                 //nb, these need to be in order of display, l to r
                 return [
                     {
-                        name: 'details',
+                        name: 'exam-details',
                         path: this.routeToExamDetails,
                         icon: "fa fa-pencil",
                         label: "Details"

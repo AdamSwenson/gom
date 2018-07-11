@@ -8304,7 +8304,7 @@ exports.default = {
         routes: function routes() {
             //nb, these need to be in order of display, l to r
             return [{
-                name: 'details',
+                name: 'exam-details',
                 path: this.routeToExamDetails,
                 icon: "fa fa-pencil",
                 label: "Details"
@@ -8596,6 +8596,25 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 exports.default = {
@@ -8604,28 +8623,49 @@ exports.default = {
     data: function data() {
         return {
             activeClass: 'is-active',
-            identifiers: {
-                exam: 'exam-nav-tabs',
-                item: 'item-nav-tabs'
-            },
+            identifier: 'item-nav-tabs',
+
             defaults: {
                 types: ['question', 'element']
             },
             // currentView: 'item-settings-question',
-            tabs: ['details', 'comments', 'stats', 'history', 'notes', 'tags'],
-            hiding: true
+            tabs: ['details', 'comments', 'stats', 'history', 'notes', 'tags']
 
         };
     },
 
     computed: {
-        routeToComments: function routeToComments() {
-            if (this.isExam) return "/exam-panel-comments/" + this.serialNumber;
-            return "/panel-comments/" + this.serialNumber;
+        routes: function routes() {
+            return [{
+                name: 'item-details',
+                path: this.routeToItemDetails,
+                icon: "fa fa-pencil",
+                label: "Details"
+            }, {
+                name: 'comments',
+                path: this.routeToComments,
+                icon: "fa fa-comments-o",
+                label: "Feedback"
+            }, {
+                name: 'stats',
+                path: this.routeToStats,
+                icon: "fa fa-bar-chart",
+                label: "Stats"
+            }, {
+                name: 'history',
+                path: this.routeToHistory,
+                icon: "fa fa-book",
+                label: "History"
+            }, {
+                name: 'notes',
+                path: this.routeToNotes,
+                icon: "fa fa-sticky-note-o",
+                label: "Notes"
+            }];
         },
 
-        routeToExamDetails: function routeToExamDetails() {
-            return "/panel-exam-detail/" + this.serialNumber;
+        routeToComments: function routeToComments() {
+            return "/panel-comments/" + this.serialNumber;
         },
 
         routeToItemDetails: function routeToItemDetails() {
@@ -8642,26 +8682,11 @@ exports.default = {
 
         //Notes
         routeToNotes: function routeToNotes() {
-
-            if (this.isExam) return "/panel-exam-notes/" + this.serialNumber;
-
             return "/panel-item-notes/" + this.serialNumber;
-        },
-
-        routeToExamStats: function routeToExamStats() {
-            return "/panel-exam-stats/" + this.serialNumber;
         },
 
         routeToStats: function routeToStats() {
             return "/panel-stats/" + this.serialNumber;
-        },
-
-        routeToStudents: function routeToStudents() {
-            return "/panel-students/" + this.serialNumber;
-        },
-
-        routeToTags: function routeToTags() {
-            return "/panel-tags/" + this.serialNumber;
         },
 
         item: function item() {
@@ -8669,48 +8694,44 @@ exports.default = {
         },
 
         isExam: function isExam() {
-            return this.item ? this.item.isExam() : false;
-        },
-
-        node: function node() {
-            return this.$store.getters.getItemNodeFromOrder(this.serialNumber);
-        },
-
-        depth: function depth() {
-            return this.$store.getters[gTypes.getDepthOfNode](this.serialNumber);
-        },
-
-        height: function height() {
-            return this.$store.getters[gTypes.getHeightOfNode](this.serialNumber);
-        },
-
-        parentSerialNumber: function parentSerialNumber() {
-            return this.node.parent;
-        },
-
-        /**
-         * Gets the appropriate base string for the input
-         * depending on whether it is attached to an exam or
-         * regular item
-         */
-        identifier: function identifier() {
-            return this.isExam ? this.identifiers.exam : this.identifiers.item;
-        },
-
-        /**
-         * The input's css id
-         */
-        id: function id() {
-            if (this.isExam) return this.identifier;
-            return this.identifier + "-" + this.height + '-' + this.depth;
-        },
-
-        /**
-         * Injected into the classes of the input
-         * */
-        styling: function styling() {
-            return this.identifier; // + '-' + this.serialNumber;
+            return false;
+            // return this.item ? this.item.isExam() : false;
         }
+        //
+        // node: function () {
+        //     return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
+        // },
+        //
+        // depth: function () {
+        //     return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
+        // },
+        //
+        //
+        // height: function () {
+        //     return this.$store.getters[ gTypes.getHeightOfNode ]( this.serialNumber );
+        // },
+        //
+        // parentSerialNumber: function () {
+        //     return this.node.parent;
+        // },
+        //
+        //
+        // /**
+        //  * The input's css id
+        //  */
+        // id: function () {
+        //     if ( this.isExam ) return this.identifier;
+        //     return this.identifier + "-" + this.height + '-' + this.depth;
+        // },
+        //
+        //
+        // /**
+        //  * Injected into the classes of the input
+        //  * */
+        // styling: function () {
+        //     return this.identifier; // + '-' + this.serialNumber;
+        // }
+
 
     },
 
@@ -66254,88 +66275,27 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "item-card-navigation-tabs tabs is-centered is-boxed"
   }, [_c('ul', {
     attrs: {
-      "id": _vm.id
+      "id": _vm.identifier
     }
-  }, [_c('router-link', {
-    attrs: {
-      "tag": "li",
-      "active-class": _vm.activeClass,
-      "to": _vm.routeToItemDetails
-    }
-  }, [_c('a', {
-    staticClass: "item-details-nav"
-  }, [_c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-pencil",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _c('span', [_vm._v("Details")])])]), _vm._v(" "), _c('router-link', {
-    attrs: {
-      "tag": "li",
-      "active-class": _vm.activeClass,
-      "to": _vm.routeToComments,
-      "id": _vm.getId('feedback')
-    }
-  }, [_c('a', {
-    staticClass: "feedback-nav"
-  }, [_c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-comments-o",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _c('span', [_vm._v("Feedback")])])]), _vm._v(" "), _c('router-link', {
-    attrs: {
-      "tag": "li",
-      "active-class": _vm.activeClass,
-      "to": _vm.routeToStats
-    }
-  }, [_c('a', {
-    staticClass: "stats-nav"
-  }, [_c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-bar-chart",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _c('span', [_vm._v("Stats")])])]), _vm._v(" "), _c('router-link', {
-    attrs: {
-      "tag": "li",
-      "active-class": _vm.activeClass,
-      "to": _vm.routeToHistory
-    }
-  }, [_c('a', {
-    staticClass: "history-nav"
-  }, [_c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-book",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _c('span', [_vm._v("History")])])]), _vm._v(" "), _c('router-link', {
-    attrs: {
-      "tag": "li",
-      "active-class": _vm.activeClass,
-      "to": _vm.routeToNotes
-    }
-  }, [_c('a', {
-    staticClass: "notes-nav",
-    attrs: {
-      "id": "notes-nav"
-    }
-  }, [_c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-sticky-note-o",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _c('span', [_vm._v("Notes")])])])], 1)])
+  }, _vm._l((_vm.routes), function(r) {
+    return _c('router-link', {
+      key: r.name,
+      attrs: {
+        "tag": "li",
+        "active-class": _vm.activeClass,
+        "to": r.path
+      }
+    }, [_c('a', {
+      staticClass: "exam-nav"
+    }, [_c('span', {
+      staticClass: "icon is-small"
+    }, [_c('i', {
+      class: r.icon,
+      attrs: {
+        "aria-hidden": "true"
+      }
+    })]), _vm._v(" "), _c('span', [_vm._v(_vm._s(r.label))])])])
+  }))])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {}
@@ -97280,6 +97240,17 @@ _vue2.default.use(_vueAsyncComputed2.default);
 // import BootstrapVue from 'bootstrap-vue';
 // Vue.use( BootstrapVue );
 // Vue.use( Sortable );
+
+// Register a global custom directive called `v-focus`
+// which auto-focuses an element when the page loads.
+// See: https://vuejs.org/v2/guide/custom-directive.html#Intro
+_vue2.default.directive('focus', {
+    // When the bound element is inserted into the DOM...
+    inserted: function inserted(el) {
+        // Focus the element
+        el.focus();
+    }
+});
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~ Globally register components ~~~~~~~~~~~~~~~~~~~~~~ */
 

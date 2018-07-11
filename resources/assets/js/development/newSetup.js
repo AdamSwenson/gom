@@ -20,6 +20,21 @@ Vue.use( AsyncComputed )
 
 import App from './new-setup.vue'
 
+
+// Register a global custom directive called `v-focus`
+// which auto-focuses an element when the page loads.
+// See: https://vuejs.org/v2/guide/custom-directive.html#Intro
+Vue.directive('focus', {
+    // When the bound element is inserted into the DOM...
+    inserted: function (el) {
+        // Focus the element
+        el.focus()
+    }
+})
+
+
+
+
 /* ~~~~~~~~~~~~~~~~~~~~~~~~ Globally register components ~~~~~~~~~~~~~~~~~~~~~~ */
 
 
@@ -70,6 +85,7 @@ Vue.component( 'item-card', itemCard );
 //Universal helpers
 import infoButton from './components/helpers/info-button.vue';
 Vue.component( 'info-button', infoButton );
+
 
 
 
