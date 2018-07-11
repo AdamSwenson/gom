@@ -8545,76 +8545,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 exports.default = {
@@ -8635,6 +8565,10 @@ exports.default = {
     },
 
     computed: {
+        isSettingPaneVisible: function isSettingPaneVisible() {
+            return this.$store.getters[gTypes.isItemSettingsVisible](this.serialNumber);
+        },
+
         routes: function routes() {
             return [{
                 name: 'item-details',
@@ -8695,43 +8629,7 @@ exports.default = {
 
         isExam: function isExam() {
             return false;
-            // return this.item ? this.item.isExam() : false;
         }
-        //
-        // node: function () {
-        //     return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
-        // },
-        //
-        // depth: function () {
-        //     return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
-        // },
-        //
-        //
-        // height: function () {
-        //     return this.$store.getters[ gTypes.getHeightOfNode ]( this.serialNumber );
-        // },
-        //
-        // parentSerialNumber: function () {
-        //     return this.node.parent;
-        // },
-        //
-        //
-        // /**
-        //  * The input's css id
-        //  */
-        // id: function () {
-        //     if ( this.isExam ) return this.identifier;
-        //     return this.identifier + "-" + this.height + '-' + this.depth;
-        // },
-        //
-        //
-        // /**
-        //  * Injected into the classes of the input
-        //  * */
-        // styling: function () {
-        //     return this.identifier; // + '-' + this.serialNumber;
-        // }
-
 
     },
 
@@ -8739,16 +8637,16 @@ exports.default = {
         getId: function getId(name) {
             if (this.isExam) return 'exam-' + name + '-nav-' + this.serialNumber;
             return 'item-' + name + '-nav-' + this.serialNumber;
-        }
+        },
 
-        //            show: function () {
-        //                console.log('itemSetting', 'CALLED', 'show');
-        //                this.$store.commit( mTypes.showItemSettings( Payload.factory( { index: this.index } ) ) );
-        //            },
-        //            hide: function () {
-        //                console.log('itemSetting', 'CALLED', 'hide');
-        //                this.$store.commit( mTypes.hideItemSettings( Payload.factory( { index: this.index } ) ) );
-        //            },
+        togglePaneVisibility: function togglePaneVisibility() {
+            var pl = _Payload2.default.factory({ serialNumber: this.serialNumber, mutateSilently: true });
+            if (this.isSettingPaneVisible) {
+                this.$store.commit(mTypes.hideItemSettings, pl);
+            } else {
+                this.$store.commit(mTypes.showItemSettings, pl);
+            }
+        }
 
     },
 
