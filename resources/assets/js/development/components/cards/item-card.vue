@@ -15,7 +15,7 @@
              v-show="isPaneVisible"
         >
             <nav-tabs
-                    :serial-number="serialNumber"
+                    :item="item"
                     :is-exam="false">
             </nav-tabs>
             <router-view

@@ -8548,7 +8548,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 
 exports.default = {
-    props: ['serialNumber'],
+    props: ['item'],
 
     data: function data() {
         return {
@@ -8562,6 +8562,28 @@ exports.default = {
             tabs: ['details', 'comments', 'stats', 'history', 'notes', 'tags']
 
         };
+    },
+
+    watch: {
+        $route: function $route() {
+
+            //We need to make sure any other open pane's close when the
+            // route changes. This is because all pane's will have their
+            // serial number from the current route. Thus they will all
+            // show the same item, despite appearing in the item cards of other
+            // items. See GOM-326 for info.
+
+            // So, obviously, we need not worry unless our pane is open
+            if (!this.isSettingPaneVisible) return true;
+
+            // We want to know whether the route that is now open
+            // is one of the panels for this item. If it is not, we
+            // need to close our area
+            if (!this.watchedPaths.includes(this.$route.path)) {
+                var pl = _Payload2.default.factory({ serialNumber: this.serialNumber, mutateSilently: true });
+                this.$store.commit(mTypes.hideItemSettings, pl);
+            }
+        }
     },
 
     computed: {
@@ -8623,12 +8645,20 @@ exports.default = {
             return "/panel-stats/" + this.serialNumber;
         },
 
-        item: function item() {
-            return this.$store.getters.getItemBySerialNumber(this.serialNumber);
-        },
-
         isExam: function isExam() {
             return false;
+        },
+
+        serialNumber: function serialNumber() {
+            return this.item.serialNumber;
+        },
+
+        watchedPaths: function watchedPaths() {
+            var paths = [];
+            _.forEach(this.routes, function (r) {
+                paths.push(r.path);
+            });
+            return paths;
         }
 
     },
@@ -64328,7 +64358,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_c('nav-tabs', {
     attrs: {
-      "serial-number": _vm.serialNumber,
+      "item": _vm.item,
       "is-exam": false
     }
   }), _vm._v(" "), _c('router-view', {

@@ -46,7 +46,7 @@
      * Created by adam on 2/18/17.
      */
     export default {
-        props: [ 'serialNumber' ],
+        props: [ 'item' ],
 
         data: function () {
             return {
@@ -63,6 +63,30 @@
 
             };
         },
+
+
+        watch: {
+            $route: function () {
+
+                //We need to make sure any other open pane's close when the
+                // route changes. This is because all pane's will have their
+                // serial number from the current route. Thus they will all
+                // show the same item, despite appearing in the item cards of other
+                // items. See GOM-326 for info.
+
+                // So, obviously, we need not worry unless our pane is open
+                if ( !this.isSettingPaneVisible ) return true;
+
+                // We want to know whether the route that is now open
+                // is one of the panels for this item. If it is not, we
+                // need to close our area
+                if ( !this.watchedPaths.includes( this.$route.path ) ) {
+                    let pl = Payload.factory( { serialNumber: this.serialNumber, mutateSilently: true } );
+                    this.$store.commit( mTypes.hideItemSettings, pl );
+                }
+            }
+        },
+
 
         computed: {
             isSettingPaneVisible: function () {
@@ -133,13 +157,22 @@
                 return "/panel-stats/" + this.serialNumber;
             },
 
-            item: function () {
-                return this.$store.getters.getItemBySerialNumber( this.serialNumber );
-            },
-
             isExam: function () {
                 return false;
             },
+
+            serialNumber: function () {
+                return this.item.serialNumber;
+            },
+
+            watchedPaths: function () {
+                let paths = [];
+                _.forEach( this.routes, ( r ) => {
+                    paths.push( r.path );
+                } );
+                return paths;
+            },
+
 
         },
 
