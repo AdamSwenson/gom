@@ -3773,6 +3773,15 @@ exports.default = {
 
             isFinishButtonVisible: false,
 
+            /**
+             * Which tab should be open by default
+             * when a new user is selected.
+             * It will be set from an event emitted by
+             * the grading-nav-tabs component after it has
+             * finished asynchronously creating the routes
+             */
+            defaultQuestionTabRoute: '',
+
             defaults: {}
         };
     },
@@ -3782,11 +3791,24 @@ exports.default = {
             return this.$store.getters[nggTypes.getActiveExam];
         },
 
+        /**
+         * The student whose exam is presently being graded
+         */
+        selectedStudent: {
+            get: function get() {
+                return this.$store.getters[nggTypes.getActiveStudent];
+            },
+            watch: function watch() {
+                this.setQuestionTabToDefault();
+            }
+        },
+
         students: function students() {
             return this.$store.getters[gTypes.getStudentsFromRoster];
         }
 
     },
+
     computed: {
         examName: function examName() {
             return this.exam ? this.exam.name : '';
@@ -3802,6 +3824,19 @@ exports.default = {
     methods: {
 
         /**
+         * Handles the set-default-route event
+         * emitted by grading-nav-tabs when it is
+         * done asynchronously creating the routes for
+         * the question selection tabs.
+         */
+        setDefaultQuestionTabRoute: function setDefaultQuestionTabRoute(route) {
+            this.defaultQuestionTabRoute = route;
+            //and since this will only be caught the first time the page
+            //loads, we set the question to default
+            this.setQuestionTabToDefault();
+        },
+
+        /**
          * Sets the grading timer to running
          */
         requestTimerStart: function requestTimerStart() {
@@ -3813,9 +3848,17 @@ exports.default = {
          * Sends an event requesting that the timer stop
          */
         requestTimerStop: function requestTimerStop() {
-
             window.console.log('gradeVue', 'sending stop-timer-request');
             this.$store.commit(ngmTypes.stopTimer);
+        },
+
+        /**
+         * Makes the default question active
+         */
+        setQuestionTabToDefault: function setQuestionTabToDefault() {
+            if (this.defaultQuestionTabRoute !== '') {
+                this.$router.push(this.defaultQuestionTabRoute);
+            }
         },
 
         /* ------------------------------ Display ------------------------------ */
@@ -3857,6 +3900,10 @@ exports.default = {
         });
     }
 }; //
+//
+//
+//
+//
 //
 //
 //
@@ -5104,7 +5151,6 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
-//
 
 exports.default = {
 
@@ -5114,31 +5160,21 @@ exports.default = {
 
     data: function data() {
         return {
+            linkClass: 'grading-question-nav',
             activeClass: 'is-active',
-            selectedNumber: 0, //assumes always initially shows the q0
             defaults: {}
         };
     },
 
     asyncComputed: {
         questions: function questions() {
-            // return [];
             return this.$store.getters.getQuestionLevelItems;
         },
 
-        questionNumbers: function questionNumbers() {
-            if (_.isUndefined(this.questions) || _.isNull(this.questions) || this.questions.length === 0) return [];
-
-            var r = [];
-            for (var i = 0; i <= this.questions.length; i++) {
-
-                // r.push( { number: i, route: this.getRoute(this.questions[i].serialNumber) } );
-
-                r.push(i);
-            }
-            return r;
-        },
-
+        /**
+         * String representations of the routes to each
+         * question grading panel
+         */
         questionRoutes: function questionRoutes() {
             if (_.isUndefined(this.questions) || _.isNull(this.questions) || this.questions.length === 0) return [];
 
@@ -5149,6 +5185,9 @@ exports.default = {
                     routes.push({ number: i, route: this.getRoute(q.serialNumber) });
                 }
             }
+            //notify the parent of what the default route is supposed to be
+            this.$emit('set-default-question-tab-route', routes[0].route);
+
             return routes;
         }
 
@@ -5156,9 +5195,12 @@ exports.default = {
     computed: {},
 
     methods: {
-        handleClick: function handleClick(number) {
-            this.selectedNumber = number;
-        },
+
+        /**
+         * Constructs a string of the route
+         * @param serialNumber
+         * @returns {string}
+         */
         getRoute: function getRoute(serialNumber) {
             var root = '/grading-questions/';
             return root + serialNumber;
@@ -66142,24 +66184,14 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _c('div', {
     staticClass: "grading-nav-tabs tabs"
   }, [_c('ul', _vm._l((_vm.questionRoutes), function(r) {
-    return _c('li', {
-      staticClass: "grading-nav-link",
-      class: [_vm.selectedNumber === r.number ? _vm.activeClass : ''],
+    return _c('router-link', {
+      key: r.route,
       attrs: {
-        "role": "presentation"
+        "tag": "li",
+        "to": r.route,
+        "active-class": _vm.activeClass
       }
-    }, [_c('router-link', {
-      attrs: {
-        "to": r.route
-      }
-    }, [_c('a', {
-      staticClass: "grading-question-nav",
-      on: {
-        "click": function($event) {
-          _vm.handleClick(r.number)
-        }
-      }
-    }, [_vm._v(" Q" + _vm._s(r.number) + " ")])])], 1)
+    }, [_c('a', [_vm._v("Q" + _vm._s(r.number))])])
   }))])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
@@ -67679,7 +67711,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "questionAndSliderColumn"
     }
-  }, [(!_vm.isQuestionAreaVisible) ? _c('h4', {
+  }, [(!_vm.isQuestionAreaVisible) ? _c('p', {
+    staticClass: "subtitle",
     attrs: {
       "id": "selectPrompt"
     }
@@ -67693,7 +67726,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "questionArea"
     }
-  }, [_c('grading-nav-tabs'), _vm._v(" "), _c('router-view', {
+  }, [_c('grading-nav-tabs', {
+    on: {
+      "set-default-question-tab-route": _vm.setDefaultQuestionTabRoute
+    }
+  }), _vm._v(" "), _c('router-view', {
     attrs: {
       "name": "questionPanelArea"
     }

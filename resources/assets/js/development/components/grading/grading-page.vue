@@ -20,14 +20,18 @@
                          class="questionAndSliderColumn tile is-child box"
                     >
 
-                        <h4 v-if="! isQuestionAreaVisible"
-                            id="selectPrompt">Select a student to begin grading</h4>
+                        <p class="subtitle"
+                           v-if="! isQuestionAreaVisible"
+                           id="selectPrompt"
+                        >Select a student to begin grading</p>
 
                         <div id="questionArea"
                              v-show="isQuestionAreaVisible"
                         >
                             <!-- Create one Question Tab for each question -->
-                            <grading-nav-tabs></grading-nav-tabs>
+                            <grading-nav-tabs
+                                    v-on:set-default-question-tab-route="setDefaultQuestionTabRoute"
+                            ></grading-nav-tabs>
 
                             <!-- question panel -->
                             <router-view name="questionPanelArea"></router-view>
@@ -157,12 +161,21 @@
 
         data: function () {
             return {
-                isReadyToRock : false,
+                isReadyToRock: false,
 
                 //temporary while developing as separate page
                 examId: window.examId,
 
                 isFinishButtonVisible: false,
+
+                /**
+                 * Which tab should be open by default
+                 * when a new user is selected.
+                 * It will be set from an event emitted by
+                 * the grading-nav-tabs component after it has
+                 * finished asynchronously creating the routes
+                 */
+                defaultQuestionTabRoute: '',
 
                 defaults: {}
             }
@@ -173,12 +186,26 @@
                 return this.$store.getters[ nggTypes.getActiveExam ];
             },
 
+            /**
+             * The student whose exam is presently being graded
+             */
+            selectedStudent: {
+                get: function () {
+                    return this.$store.getters[ nggTypes.getActiveStudent ];
+                },
+                watch: function(){
+                    this.setQuestionTabToDefault();
+                }
+            },
+
             students: function () {
                 return this.$store.getters[ gTypes.getStudentsFromRoster ];
             },
 
 
         },
+
+
         computed: {
             examName: function () {
                 return this.exam ? this.exam.name : '';
@@ -194,6 +221,19 @@
 
         methods: {
 
+            /**
+             * Handles the set-default-route event
+             * emitted by grading-nav-tabs when it is
+             * done asynchronously creating the routes for
+             * the question selection tabs.
+             */
+            setDefaultQuestionTabRoute: function ( route ) {
+                this.defaultQuestionTabRoute = route;
+                //and since this will only be caught the first time the page
+                //loads, we set the question to default
+                this.setQuestionTabToDefault();
+            },
+
 
             /**
              * Sets the grading timer to running
@@ -207,9 +247,17 @@
              * Sends an event requesting that the timer stop
              */
             requestTimerStop: function () {
-
                 window.console.log( 'gradeVue', 'sending stop-timer-request' );
                 this.$store.commit( ngmTypes.stopTimer );
+            },
+
+            /**
+             * Makes the default question active
+             */
+            setQuestionTabToDefault: function () {
+                if(this.defaultQuestionTabRoute !== ''){
+                    this.$router.push(this.defaultQuestionTabRoute);
+                }
 
             },
 
@@ -244,7 +292,7 @@
                             me.$store.dispatch( 'loadScoresFromServer', me.exam ).then( function () {
                                 //we now have all the basic items we need, so we can
                                 //let other processes know
-                                me.$store.commit('notifyReady');
+                                me.$store.commit( 'notifyReady' );
                                 //finally we get grading times
                                 me.$store.dispatch( ngaTypes.loadTimesFromServer, me.exam )
                                 //and are done.

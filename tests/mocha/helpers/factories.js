@@ -19,6 +19,15 @@ import * as mTypes from "../../../resources/assets/js/store/mutation-types";
 // Factories
 
 /* ------------- Create multiple objects ------------------- */
+export const makeItems = ( number ) => {
+    let items = [];
+    for (let i = 0; i < number; i++) {
+        items.push( itemFactory() );
+    }
+    return items;
+}
+
+
 export const makeKumis = ( number ) => {
     let kumis = [];
     for (let i = 0; i < number; i++) {
