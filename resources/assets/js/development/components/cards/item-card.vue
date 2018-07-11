@@ -117,7 +117,7 @@
     import itemImportButton from '../items/item-import-button.vue';
     import movementControl from '../items/card-movement-control.vue';
     import navTabs from '../navigation/item-card-navigation-tabs.vue'
-    import PublicIndicator from '../input/visibility-control.vue'
+    import PublicIndicator from '../items/visibility-control.vue'
     import siblingAddButton from '../items/add-sibling-button.vue'
 
 

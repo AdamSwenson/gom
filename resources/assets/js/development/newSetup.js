@@ -58,7 +58,7 @@ Vue.component( 'item-number', itemNumber );
 // import valenceButton from './components/setup/comment/valence-buttons.vue'
 // Vue.component( 'valence-button', valenceButton );
 
-import deleteButton from './components/input/item-delete-button.vue'
+import deleteButton from './components/items/item-delete-button.vue'
 Vue.component( 'delete-item-button', deleteButton );
 
 import removeButton from './components/items/item-remove-button.vue'

@@ -1,7 +1,7 @@
 //The name of the tested component
 var compName = 'item-name-input';
 //The path to the tested component
-var Component = require( '../../../../resources/assets/js/development/components/input/item-name-input.vue' );
+var Component = require( '../../../../resources/assets/js/development/components/items/item-name-input.vue' );
 
 require( '../../injectglobals' );
 

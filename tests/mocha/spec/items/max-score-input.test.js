@@ -1,7 +1,7 @@
 //The name of the tested component
 var compName = 'max-score-input';
 //The path to the tested component
-var Component = require( '../../../../resources/assets/js/development/components/input/max-score-input.vue' );
+var Component = require( '../../../../resources/assets/js/development/components/items/max-score-input.vue' );
 
 require( '../../injectglobals' );
 

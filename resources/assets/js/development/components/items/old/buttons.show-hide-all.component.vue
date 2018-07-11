@@ -11,7 +11,7 @@
 <script>
 
 
-    import deleteButton from '../../items/item-remove-button.vue'
+    import deleteButton from '../item-remove-button.vue'
     import panelExamDetail from '../../setup/exam-detail-panel.vue'
 
     import Item from '../../../../models/Item'

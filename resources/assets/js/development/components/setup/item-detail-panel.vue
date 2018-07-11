@@ -72,7 +72,7 @@
     //    import tagMenu from '../menus/tags-menu.vue';
     import tagDisplay from '../tags/tag-display.vue';
 
-    import MaxScore from '../input/max-score-input.vue'
+    import MaxScore from '../items/max-score-input.vue'
 
     export default {
         props: [ 'item' ],

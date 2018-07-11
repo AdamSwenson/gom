@@ -131,7 +131,7 @@
     //    import itemMain from './item-main.vue'
 
     import AddChildButton from '../items/add-child-button.vue';
-    import PublicIndicator from '../input/visibility-control.vue';
+    import PublicIndicator from '../items/visibility-control.vue';
 
 
     import Item from '../../../models/Item'

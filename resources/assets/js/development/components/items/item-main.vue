@@ -55,14 +55,14 @@
 
 <script>
 
-    import ChildrenDisplayControl from '../input/children-display-control.vue'
+    import ChildrenDisplayControl from './children-display-control.vue'
     // Vue.component( 'children-display-control', childrenDisplayButton )
 
 
-    import ItemName from '../input/item-name-input.vue'
+    import ItemName from './item-name-input.vue'
     // Vue.component( 'item-name', itemName );
 
-    import SettingsButton from '../input/settings-display-control.vue'
+    import SettingsButton from './settings-display-control.vue'
     // Vue.component( 'settings-button', settingsButton );
 
 

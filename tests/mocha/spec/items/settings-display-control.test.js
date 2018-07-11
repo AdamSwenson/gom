@@ -2,7 +2,7 @@
 //The name of the tested component
 var compName = 'settings-display-control';
 //The path to the tested component
-var Component = require('../../../../resources/assets/js/development/components/input/settings-display-control.vue');
+var Component = require('../../../../resources/assets/js/development/components/items/settings-display-control.vue');
 
 
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
