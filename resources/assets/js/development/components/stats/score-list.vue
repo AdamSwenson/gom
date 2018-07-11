@@ -28,8 +28,9 @@
 //    import * as mTypes from '../../../../store/mutation-types';
 //    import Payload from '../../../../models/Payload';
 
+import * as nggTypes from '../../../store/new-grading-getter-types';
 
-   import * as ngaTypes from '../../../store/new-grading-getter-types';
+   import * as ngaTypes from '../../../store/new-grading-action-types';
 
     import statsRequests from '../../../api/requests/statsRequests';
     import loadingIndicator from '../helpers/loading-indicator.vue';
@@ -92,7 +93,7 @@
 
                 //thus when it is complete, we get them from the store
                 return p.then( function (data) {
-                    this.$store.dispatch( 'processScoreForStatsResponse', data );
+                    me.$store.dispatch( 'processScoreForStatsResponse', data );
 
                     let stats = me.$store.getters[nggTypes.getAnonScoresForItemStats]( me.item );
                     //done loading

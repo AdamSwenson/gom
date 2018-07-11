@@ -6247,8 +6247,11 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 //
 //
 //
+//
+//
+//
 
-window._ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+// window._ = require( 'lodash' );
 exports.default = {
     props: ['index', 'item'],
 
@@ -6262,11 +6265,17 @@ exports.default = {
                 countsInTotal: 'Counts toward total score'
             },
 
+            helpText: {
+                countsInTotal: "If this is unchecked, you will still be able to capture data and give feedback. ",
+                maxScore: ''
+            },
+
             title: 'Maximum possible score for this item',
 
             placeholders: {
                 'score': 100
             },
+
             defaults: {
                 score: 100,
                 countsInTotal: true
@@ -6296,7 +6305,7 @@ exports.default = {
                 var pl = _Payload2.default.factory({
                     obj: this.item,
                     updateProp: 'maxScore',
-                    updateVal: _.toInteger(value)
+                    updateVal: _.toNumber(value)
                 });
                 this.$store.commit(mTypes.updateItem, pl);
             }
@@ -13387,6 +13396,21 @@ exports.default = {
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /**
  * This is the settings component which contains
@@ -16595,10 +16619,13 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //    import * as mTypes from '../../../../store/mutation-types';
 //    import Payload from '../../../../models/Payload';
 
-
 var _newGradingGetterTypes = __webpack_require__(/*! ../../../store/new-grading-getter-types */ "./resources/assets/js/store/new-grading-getter-types.js");
 
-var ngaTypes = _interopRequireWildcard(_newGradingGetterTypes);
+var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
+
+var _newGradingActionTypes = __webpack_require__(/*! ../../../store/new-grading-action-types */ "./resources/assets/js/store/new-grading-action-types.js");
+
+var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
 var _statsRequests = __webpack_require__(/*! ../../../api/requests/statsRequests */ "./resources/assets/js/api/requests/statsRequests.js");
 
@@ -16665,7 +16692,7 @@ exports.default = {
 
             //thus when it is complete, we get them from the store
             return p.then(function (data) {
-                this.$store.dispatch('processScoreForStatsResponse', data);
+                me.$store.dispatch('processScoreForStatsResponse', data);
 
                 var stats = me.$store.getters[nggTypes.getAnonScoresForItemStats](me.item);
                 //done loading
@@ -32389,7 +32416,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, "\n.max-score-field {\n  text-align: left;\n}\n\n/*input {*/\n/*width: 4em;*/\n/*outline: none;*/\n/*}*/\n.max-score-input {\n  width: 5em;\n}\n", ""]);
+exports.push([module.i, "\n.max-score-input {\n  /*input {*/\n  /*width: 4em;*/\n  /*outline: none;*/\n  /*}*/\n}\n.max-score-input .max-score-field {\n    width: 7em;\n    /*text-align: left;*/\n}\n", ""]);
 
 // exports
 
@@ -62982,7 +63009,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _c('div', {
     staticClass: "max-score-input"
   }, [_c('div', {
-    staticClass: "field"
+    staticClass: "field max-score-field"
   }, [_c('label', {
     staticClass: "label max-score-label"
   }, [_vm._v(_vm._s(_vm.labels.scoreInput))]), _vm._v(" "), _c('p', {
@@ -62994,7 +63021,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       value: (_vm.maxScore),
       expression: "maxScore"
     }],
-    staticClass: "input max-score-field",
+    staticClass: "input ",
     attrs: {
       "type": "number",
       "id": _vm.maxScoreId,
@@ -63009,7 +63036,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.maxScore = $event.target.value
       }
     }
-  })])]), _vm._v(" "), _c('div', {
+  })]), _vm._v(" "), _c('p', {
+    staticClass: "help"
+  }, [_vm._v(_vm._s(_vm.helpText.maxScore))])]), _vm._v(" "), _c('div', {
     staticClass: "field"
   }, [_c('p', {
     staticClass: "control"
@@ -63023,7 +63052,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       expression: "countsInTotal"
     }],
     attrs: {
-      "type": "checkbox"
+      "type": "checkbox",
+      "readonly": ""
     },
     domProps: {
       "checked": Array.isArray(_vm.countsInTotal) ? _vm._i(_vm.countsInTotal, null) > -1 : (_vm.countsInTotal)
@@ -63046,7 +63076,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         }
       }
     }
-  }), _vm._v("\n                " + _vm._s(_vm.labels.countsInTotal) + "\n            ")])])])])
+  }), _vm._v("\n                " + _vm._s(_vm.labels.countsInTotal) + "\n            ")])]), _vm._v(" "), _c('p', {
+    staticClass: "help"
+  }, [_vm._v(_vm._s(_vm.helpText.countsInTotal) + " ")])])])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {}
@@ -66469,11 +66501,21 @@ if (false) {}
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "item-detail-panel"
+  }, [_c('div', {
+    staticClass: "tile is-ancestor"
+  }, [_c('div', {
+    staticClass: "tile is-parent is-vertical"
+  }, [_c('div', {
+    staticClass: "tile is-parent"
+  }, [_c('div', {
+    staticClass: "tile is-child"
   }, [_c('max-score', {
     attrs: {
       "item": _vm.item
     }
-  }), _vm._v(" "), _c('div', {
+  })], 1), _vm._v(" "), _c('div', {
+    staticClass: "tile is-child"
+  }, [_c('div', {
     staticClass: "question-text-area field "
   }, [_c('label', {
     staticClass: "label "
@@ -66503,11 +66545,15 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.text = $event.target.value
       }
     }
-  })])]), _vm._v(" "), _c('tag-display', {
+  })])])])]), _vm._v(" "), _c('div', {
+    staticClass: "tile is-parent"
+  }, [_c('div', {
+    staticClass: "tile is-child"
+  }, [_c('tag-display', {
     attrs: {
       "object": _vm.item
     }
-  })], 1)
+  })], 1)])])])])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {}

@@ -1,25 +1,40 @@
 <template>
     <!-- Used by "edit_question" to hold fields and buttons for an individual question -->
     <div class="item-detail-panel">
+        <div class="tile is-ancestor">
+            <div class="tile is-parent is-vertical">
+                <div class="tile is-parent">
+                    <div class="tile is-child">
+                        <max-score :item="item"></max-score>
+                    </div>
 
-        <max-score :item="item"></max-score>
+                    <div class="tile is-child">
 
-        <div class="question-text-area field ">
-            <label class="label ">{{ labels.questionText }}</label>
+                        <div class="question-text-area field ">
+                            <label class="label ">{{ labels.questionText }}</label>
 
-            <p class="control">
-                        <textarea v-bind:id="itemTextId"
-                                  class="question-text textarea"
-                                  rows="3"
-                                  v-bind:placeholder="placeholders.questionText"
-                                  v-model.lazy="text">
-                        </textarea>
-            </p>
+                            <p class="control">
+                            <textarea
+                                    v-bind:id="itemTextId"
+                                    class="question-text textarea"
+                                    rows="3"
+                                    v-bind:placeholder="placeholders.questionText"
+                                    v-model.lazy="text"
+                            ></textarea>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tile is-parent">
+                    <div class="tile is-child">
+                        <tag-display
+                                :object="item"
+                        ></tag-display>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <tag-display
-                :object="item"
-        ></tag-display>
     </div>
 
 </template>
@@ -55,12 +70,12 @@
     import Item from '../../../models/Item'
 
     //    import tagMenu from '../menus/tags-menu.vue';
-import tagDisplay from '../tags/tag-display.vue';
+    import tagDisplay from '../tags/tag-display.vue';
 
     import MaxScore from '../input/max-score-input.vue'
 
     export default {
-        props: ['item'],
+        props: [ 'item' ],
 
         components: {
             MaxScore,

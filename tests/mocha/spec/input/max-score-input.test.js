@@ -6,10 +6,6 @@ var Component = require( '../../../../resources/assets/js/development/components
 require( '../../injectglobals' );
 
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
-import sinon from 'sinon';
-import VueRouter from 'vue-router';
-import Vuex from 'vuex';
-import moxios from 'moxios';
 
 //helpers
 import { assertExpectedDivIsDisplayed } from '../../helpers/assertions';
