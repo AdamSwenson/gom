@@ -8245,98 +8245,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 exports.default = {
@@ -8357,27 +8265,42 @@ exports.default = {
     },
 
     watch: {
-        '$route': function $route() {
+        $route: function $route() {
             //Since we are not using the settings button for the exam
             //we need to make sure that the pane opens when we hit one of
             //the routes on the exam card.
             if (this.watchedPaths.includes(this.$route.path)) {
                 //this first tests whether the pane is visible, if not,
                 //it shows it
-                this.togglePaneVisibility();
+                if (!this.isExamPaneVisible) {
+
+                    this.togglePaneVisibility();
+                }
+            } else {
+                //if an item settings pane is opened
+                // while the exam pane is open, the url will change so that
+                // the content no longer displays. Thus we need to make sure
+                // we close the whole pane so we don't just have the close button
+                // hanging out all alone
+                if (this.isExamPaneVisible) {
+                    this.togglePaneVisibility();
+                }
             }
         }
     },
 
     computed: {
-        watchedPaths: function watchedPaths() {
-            var paths = [];
-            _.forEach(this.routes, function (r) {
-                paths.push(r.path);
-            });
-            return paths;
+
+        /**
+         * Whether the pane is open
+         */
+        isExamPaneVisible: function isExamPaneVisible() {
+            return this.$store.getters[gTypes.isExamSettingsVisible];
         },
 
+        /**
+         * These are the routes for the exam settings pane
+         */
         routes: function routes() {
             //nb, these need to be in order of display, l to r
             return [{
@@ -8445,55 +8368,16 @@ exports.default = {
             return "/panel-students/" + this.serialNumber;
         },
 
-        // item: function () {
-        //     return this.exam; //$store.getters.getItemBySerialNumber( this.serialNumber );
-        // },
-        //
-        // isExam: function () {
-        //     return true;
-        //     // return this.item ? this.item.isExam() : false;
-        // },
-
-        isExamPaneVisible: function isExamPaneVisible() {
-            return this.$store.getters[gTypes.isExamSettingsVisible];
-        },
-
-        //
-        // node: function () {
-        //     return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
-        // },
-        //
-        // depth: function () {
-        //     return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
-        // },
-        //
-        //
-        // height: function () {
-        //     return this.$store.getters[ gTypes.getHeightOfNode ]( this.serialNumber );
-        // },
-        //
-        //
-        // parentSerialNumber: function () {
-        //     return this.node.parent;
-        // },
-
-
-        /**
-         * The input's css id
-         */
-        id: function id() {
-            return this.identifier;
-        },
-
         serialNumber: function serialNumber() {
             return this.exam.serialNumber;
         },
 
-        /**
-         * Injected into the classes of the input
-         * */
-        styling: function styling() {
-            return this.identifier; // + '-' + this.serialNumber;
+        watchedPaths: function watchedPaths() {
+            var paths = [];
+            _.forEach(this.routes, function (r) {
+                paths.push(r.path);
+            });
+            return paths;
         }
 
     },
@@ -8501,16 +8385,14 @@ exports.default = {
     methods: {
 
         togglePaneVisibility: function togglePaneVisibility() {
-            window.console.log('exam-card-navigation-tabs', 'togglePaneVisibility', 244, this.isExamPaneVisible);
-            if (!this.isExamPaneVisible) {
-                this.$store.commit(mTypes.toggleExamSettings, _Payload2.default.factory({ mutateSilently: true }));
-            }
-        },
-
-        getId: function getId(name) {
-            if (this.isExam) return 'exam-' + name + '-nav-' + this.serialNumber;
-            return 'item-' + name + '-nav-' + this.serialNumber;
+            this.$store.commit(mTypes.toggleExamSettings, _Payload2.default.factory({ mutateSilently: true }));
         }
+
+        // getId: function ( name ) {
+        //     if ( this.isExam ) return 'exam-' + name + '-nav-' + this.serialNumber;
+        //     return 'item-' + name + '-nav-' + this.serialNumber;
+        // }
+
 
     }
 
@@ -65682,7 +65564,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "exam-card-navigation-tabs tabs is-centered"
   }, [_c('ul', {
     attrs: {
-      "id": _vm.id
+      "id": _vm.identifier
     }
   }, _vm._l((_vm.routes), function(r) {
     return _c('router-link', {
