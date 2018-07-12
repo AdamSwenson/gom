@@ -2446,6 +2446,18 @@ exports.default = {
         },
 
         /**
+         * Whether this item's children are visible
+         * If they exist and are hidden, that's usually due to the children-display-control
+         * being clicked.
+         */
+        isChildrenVisible: function isChildrenVisible() {
+            //no need to display the box area if nothing is going in it
+            if (this.numberChildren === 0) return true;
+
+            return this.$store.getters.isItemChildrenVisible(this.serialNumber);
+        },
+
+        /**
          * Returns true if the settings pane for this item should be displayed
          */
         isPaneVisible: function isPaneVisible() {
@@ -4932,7 +4944,12 @@ exports.default = {
             identifiers: {
                 exam: 'exam-children-display-button',
                 item: 'item-children-display-button'
+            },
+            styles: {
+                unselected: "is-info is-outlined",
+                selected: "is-info"
             }
+
         };
     },
 
@@ -4945,66 +4962,40 @@ exports.default = {
             return this.item ? this.item.isExam() : false;
         },
 
-        // node: function () {
-        //     return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
-        // },
-        //
-        // depth: function () {
-        //     return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
-        // },
-        //
-        //
-        // height: function () {
-        //     return this.$store.getters[ gTypes.getHeightOfNode ]( this.serialNumber );
-        // },
-        //
-        //
-        // /**
-        //  * Gets the appropriate base string for the input
-        //  * depending on whether it is attached to an exam or
-        //  * regular item
-        //  */
-        // identifier: function () {
-        //     return this.isExam ? this.identifiers.exam : this.identifiers.item;
-        // },
-        //
-        // /**
-        //  * The input's css id
-        //  */
-        // id: function () {
-        //     return this.identifier
-        //     // if ( this.isExam ) return this.identifier;
-        //
-        //     // return this.identifier + "-" + this.height + '-' + this.depth;
-        // },
-        //
-        // /**
-        //  * Injected into the classes of the input
-        //  * */
-        // styling: function () {
-        //     return this.identifier; // + '-' + this.serialNumber;
-        // },
+        numberChildren: function numberChildren() {
+            var c = this.$store.getters.getItemChildren(this.item);
+            return !_.isUndefined(c) && !_.isNull(c) ? c.length : 0;
+        },
 
-        //for toggling the display state of the button
-        isActive: function isActive() {}
+        styling: function styling() {
+            var isVisible = this.$store.getters.isItemChildrenVisible(this.serialNumber);
 
+            if (isVisible) {
+                return this.styles.unselected;
+            }
+            return this.styles.selected;
+        }
     },
 
     methods: {
         toggleVisibility: function toggleVisibility() {
             //change stored state
-            window.console.log('children-display-control', 'toggleVisibility', 45, this.serialNumber);
-            //            this.$state.commit();
+            // window.console.log( 'children-display-control', 'toggleVisibility', 45, this.serialNumber );
+
             if (this.isExam) {
                 this.$store.commit('toggleExamChildrenVisibility');
             } else {
-                var payload = _Payload2.default.factory({ serialNumber: this.serialNumber });
-                this.$store.commit('toggleChildrenVisibility', payload);
+                //only add the item to the list if it actually has children
+                if (this.numberChildren > 0) {
+                    var payload = _Payload2.default.factory({ serialNumber: this.serialNumber, mutateSilently: true });
+                    this.$store.commit('toggleChildrenVisibility', payload);
+                }
             }
         }
     }
 
 }; //
+//
 //
 //
 //
@@ -35949,7 +35940,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -64404,7 +64395,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "item": _vm.item
     }
-  }), _vm._v(" "), (_vm.numberChildren > 0) ? _c('div', {
+  }), _vm._v(" "), (_vm.isChildrenVisible) ? _c('div', {
     staticClass: "box"
   }, _vm._l((_vm.items), function(item) {
     return _c('div', [_c('item-card', {
@@ -69623,7 +69614,8 @@ if (false) {}
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('button', {
-    staticClass: "children-display-control button is-info is-outlined is-large",
+    staticClass: "children-display-control button is-large",
+    class: _vm.styling,
     on: {
       "click": _vm.toggleVisibility
     }

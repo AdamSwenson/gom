@@ -1,7 +1,8 @@
 <template>
 
     <button
-            class="children-display-control button is-info is-outlined is-large"
+            class="children-display-control button is-large"
+            v-bind:class="styling"
             v-on:click="toggleVisibility"
     >
         <span class="icon is-large">
@@ -38,7 +39,12 @@
                 identifiers: {
                     exam: 'exam-children-display-button',
                     item: 'item-children-display-button'
-                }
+                },
+                styles: {
+                    unselected: "is-info is-outlined",
+                    selected: "is-info"
+                },
+
             };
         },
 
@@ -51,63 +57,35 @@
                 return this.item ? this.item.isExam() : false;
             },
 
-            // node: function () {
-            //     return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
-            // },
-            //
-            // depth: function () {
-            //     return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
-            // },
-            //
-            //
-            // height: function () {
-            //     return this.$store.getters[ gTypes.getHeightOfNode ]( this.serialNumber );
-            // },
-            //
-            //
-            // /**
-            //  * Gets the appropriate base string for the input
-            //  * depending on whether it is attached to an exam or
-            //  * regular item
-            //  */
-            // identifier: function () {
-            //     return this.isExam ? this.identifiers.exam : this.identifiers.item;
-            // },
-            //
-            // /**
-            //  * The input's css id
-            //  */
-            // id: function () {
-            //     return this.identifier
-            //     // if ( this.isExam ) return this.identifier;
-            //
-            //     // return this.identifier + "-" + this.height + '-' + this.depth;
-            // },
-            //
-            // /**
-            //  * Injected into the classes of the input
-            //  * */
-            // styling: function () {
-            //     return this.identifier; // + '-' + this.serialNumber;
-            // },
+            numberChildren: function(){
+                let c = this.$store.getters.getItemChildren( this.item );
+                return (!_.isUndefined( c ) && ! _.isNull(c) ) ? c.length : 0;
+            },
 
-            //for toggling the display state of the button
-            isActive: function () {
+            styling: function () {
+                let isVisible = this.$store.getters.isItemChildrenVisible( this.serialNumber );
+
+                if ( isVisible ) {
+                    return this.styles.unselected;
+                }
+                return this.styles.selected;
 
             }
-
         },
 
         methods: {
             toggleVisibility: function () {
                 //change stored state
-                window.console.log( 'children-display-control', 'toggleVisibility', 45, this.serialNumber );
-//            this.$state.commit();
+                // window.console.log( 'children-display-control', 'toggleVisibility', 45, this.serialNumber );
+
                 if ( this.isExam ) {
                     this.$store.commit( 'toggleExamChildrenVisibility' )
                 } else {
-                    let payload = Payload.factory( { serialNumber: this.serialNumber } );
-                    this.$store.commit( 'toggleChildrenVisibility', payload );
+                    //only add the item to the list if it actually has children
+                    if ( this.numberChildren > 0 ) {
+                        let payload = Payload.factory( { serialNumber: this.serialNumber, mutateSilently: true } );
+                        this.$store.commit( 'toggleChildrenVisibility', payload );
+                    }
                 }
             }
         },

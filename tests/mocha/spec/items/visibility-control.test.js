@@ -4,6 +4,7 @@ var compName = 'visibility-control';
 var Component = require( '../../../../resources/assets/js/development/components/items/visibility-control.vue' );
 
 
+
 import { mount, shallow, createLocalVue } from 'vue-test-utils';
 import sinon from 'sinon';
 import VueRouter from 'vue-router';

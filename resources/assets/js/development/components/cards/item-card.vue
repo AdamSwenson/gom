@@ -59,7 +59,7 @@
 
         <!--Check whether the item has children, if it does-->
         <!--we will make a box that will surround the children-->
-        <div class="box" v-if="numberChildren > 0">
+        <div class="box" v-if="isChildrenVisible">
 
             <div v-for="item in items">
                 <!--Now we make cards recursively-->
@@ -198,6 +198,19 @@
 
             height: function () {
                 return this.$store.getters[ gTypes.getHeightOfNode ]( this.serialNumber );
+            },
+
+            /**
+             * Whether this item's children are visible
+             * If they exist and are hidden, that's usually due to the children-display-control
+             * being clicked.
+             */
+            isChildrenVisible: function(){
+                //no need to display the box area if nothing is going in it
+                if(this.numberChildren === 0) return true;
+
+                return this.$store.getters.isItemChildrenVisible(this.serialNumber);
+
             },
 
 
