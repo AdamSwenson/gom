@@ -4,22 +4,16 @@
         <div class="tile is-ancestor">
             <div class="tile is-parent is-vertical ">
 
-                <div class="tile is-child">
-                    <item-input :item="item"
-                                :level="0"
-                    ></item-input>
-                </div>
+                <question-grading-area :item="item" :level="0"></question-grading-area>
 
                 <!-- element area holds all sliders and comments for this question -->
-                <div class="tile is-child "
-                     v-if="!isElementsEmpty"
-                     v-for="item in elements">
-                    <item-input
-                            v-bind:key="item.serialNumber"
-                            :item="item"
-                            :level="1"
-                    ></item-input>
-                </div>
+                <question-grading-area
+                        v-if="!isElementsEmpty"
+                        v-for="e in elements"
+                        v-bind:key="e.item.serialNumber"
+                        :item="e.item"
+                        :level="e.level"
+                ></question-grading-area>
 
                 <!--add some text if no elements for this question -->
                 <div class=" noElementsDiv tile is-child "
@@ -46,11 +40,27 @@
     import QuestionScore from '../inputs/question-score.vue';
     import CommentText from "../inputs/comment-text.vue";
     import ScoreSlider from "../inputs/score-slider.vue";
+    import QuestionGradingArea from "./question-grading-area";
 
+    const getChildren = function ( store, item, level, els = [] ) {
+        let js = store.getters.getItemChildren( item );
+        //if there are no children, we're done
+        if ( _.isUndefined( js ) || js.length === 0 ) return els;
+
+        level += 1;
+
+        _.forEach( js, function ( item ) {
+            //push each into the list
+            els.push( { item: item, level: level } );
+            //call recursively on each child
+            getChildren( store, item, level, els );
+        } );
+    }
 
     export default {
 
         components: {
+            QuestionGradingArea,
             ItemInput,
             CommentText,
             ScoreSlider,
@@ -88,20 +98,31 @@
                 return !_.isUndefined( s ) ? s : ''
             },
 
+            qs: function () {
+            },
+
 
             //the associated child items
             elements: function () {
                 let els = [];
+                let me = this;
                 if ( !_.isUndefined( this.item ) && !_.isNull( this.item ) ) {
                     let level = 0;
-                    // _.forEach( this.$store.getters.getItemChildren( this.item ), function ( item ) {
-                    //     els.push( { level: 1, item: item } );
-                    // } );
-
-
-                    return this.$store.getters.getItemChildren( this.item );
+                    getChildren( this.$store, this.item, level, els );
                 }
                 return els;
+                //
+                // let els = [];
+                // if ( !_.isUndefined( this.item ) && !_.isNull( this.item ) ) {
+                //     let level = 0;
+                //     // _.forEach( this.$store.getters.getItemChildren( this.item ), function ( item ) {
+                //     //     els.push( { level: 1, item: item } );
+                //     // } );
+                //
+                //
+                //     return this.$store.getters.getItemChildren( this.item );
+                // }
+                // return els;
             },
 
             isElementsEmpty: function () {

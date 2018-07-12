@@ -4082,6 +4082,67 @@ exports.default = {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/grading/panels/question-grading-area.vue":
+/*!**********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/grading/panels/question-grading-area.vue ***!
+  \**********************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _itemInput = __webpack_require__(/*! ../inputs/item-input.vue */ "./resources/assets/js/development/components/grading/inputs/item-input.vue");
+
+var _itemInput2 = _interopRequireDefault(_itemInput);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+    props: ['item', 'level'],
+    name: 'question-grading-area',
+    components: {
+        ItemInput: _itemInput2.default
+    },
+
+    data: function data() {
+        return {
+            defaults: {}
+        };
+    },
+
+    asyncComputed: {},
+
+    computed: {},
+
+    methods: {},
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/grading/panels/question-panel.vue":
 /*!***************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/grading/panels/question-panel.vue ***!
@@ -4130,6 +4191,10 @@ var _scoreSlider = __webpack_require__(/*! ../inputs/score-slider.vue */ "./reso
 
 var _scoreSlider2 = _interopRequireDefault(_scoreSlider);
 
+var _questionGradingArea = __webpack_require__(/*! ./question-grading-area */ "./resources/assets/js/development/components/grading/panels/question-grading-area.vue");
+
+var _questionGradingArea2 = _interopRequireDefault(_questionGradingArea);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -4166,16 +4231,28 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
+
+var getChildren = function getChildren(store, item, level) {
+    var els = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+
+    var js = store.getters.getItemChildren(item);
+    //if there are no children, we're done
+    if (_.isUndefined(js) || js.length === 0) return els;
+
+    level += 1;
+
+    _.forEach(js, function (item) {
+        //push each into the list
+        els.push({ item: item, level: level });
+        //call recursively on each child
+        getChildren(store, item, level, els);
+    });
+};
 
 exports.default = {
 
     components: (_components = {
+        QuestionGradingArea: _questionGradingArea2.default,
         ItemInput: _itemInput2.default,
         CommentText: _commentText2.default,
         ScoreSlider: _scoreSlider2.default
@@ -4211,19 +4288,29 @@ exports.default = {
             return !_.isUndefined(s) ? s : '';
         },
 
+        qs: function qs() {},
+
         //the associated child items
         elements: function elements() {
             var els = [];
+            var me = this;
             if (!_.isUndefined(this.item) && !_.isNull(this.item)) {
                 var level = 0;
-                // _.forEach( this.$store.getters.getItemChildren( this.item ), function ( item ) {
-                //     els.push( { level: 1, item: item } );
-                // } );
-
-
-                return this.$store.getters.getItemChildren(this.item);
+                getChildren(this.$store, this.item, level, els);
             }
             return els;
+            //
+            // let els = [];
+            // if ( !_.isUndefined( this.item ) && !_.isNull( this.item ) ) {
+            //     let level = 0;
+            //     // _.forEach( this.$store.getters.getItemChildren( this.item ), function ( item ) {
+            //     //     els.push( { level: 1, item: item } );
+            //     // } );
+            //
+            //
+            //     return this.$store.getters.getItemChildren( this.item );
+            // }
+            // return els;
         },
 
         isElementsEmpty: function isElementsEmpty() {
@@ -35086,6 +35173,25 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 // module
 exports.push([module.i, "\n.item-main {\n  /*.itemName {*/\n  /*margin-bottom: 0;*/\n  /*margin-top: 0;*/\n  /*}*/\n}\n.item-main h5 {\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5);\n}\n.item-main .indexDisplay {\n    width: 2em;\n    text-shadow: 0 -2px 3px white, 0 2px 3px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5);\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4bc0e7d6\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/grading/panels/question-grading-area.vue":
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-4bc0e7d6","scoped":false,"hasInlineConfig":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/grading/panels/question-grading-area.vue ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
 
 // exports
 
@@ -67276,6 +67382,28 @@ if (false) {}
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-4bc0e7d6\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/grading/panels/question-grading-area.vue":
+/*!********************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-4bc0e7d6","hasScoped":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/grading/panels/question-grading-area.vue ***!
+  \********************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "tile is-child"
+  }, [_c('item-input', {
+    attrs: {
+      "item": _vm.item,
+      "level": _vm.level
+    }
+  })], 1)
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {}
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-4bcee034\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/setup/detail/input-and-selector.vue":
 /*!***************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-4bcee034","hasScoped":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/setup/detail/input-and-selector.vue ***!
@@ -68448,23 +68576,19 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "tile is-ancestor"
   }, [_c('div', {
     staticClass: "tile is-parent is-vertical "
-  }, [_c('div', {
-    staticClass: "tile is-child"
-  }, [_c('item-input', {
+  }, [_c('question-grading-area', {
     attrs: {
       "item": _vm.item,
       "level": 0
     }
-  })], 1), _vm._v(" "), _vm._l((_vm.elements), function(item) {
-    return (!_vm.isElementsEmpty) ? _c('div', {
-      staticClass: "tile is-child "
-    }, [_c('item-input', {
-      key: item.serialNumber,
+  }), _vm._v(" "), _vm._l((_vm.elements), function(e) {
+    return (!_vm.isElementsEmpty) ? _c('question-grading-area', {
+      key: e.item.serialNumber,
       attrs: {
-        "item": item,
-        "level": 1
+        "item": e.item,
+        "level": e.level
       }
-    })], 1) : _vm._e()
+    }) : _vm._e()
   }), _vm._v(" "), (_vm.isElementsEmpty) ? _c('div', {
     staticClass: " noElementsDiv tile is-child "
   }, [_c('i', [_vm._v("No elements for this question")])]) : _vm._e()], 2)])])
@@ -74842,6 +74966,26 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var update = __webpack_require__(/*! ../../../../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")("7abfca9a", content, false);
+// Hot Module Replacement
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4bc0e7d6\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/grading/panels/question-grading-area.vue":
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-4bc0e7d6","scoped":false,"hasInlineConfig":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/grading/panels/question-grading-area.vue ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(/*! !../../../../../../../node_modules/css-loader!../../../../../../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-4bc0e7d6","scoped":false,"hasInlineConfig":true}!../../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./question-grading-area.vue */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4bc0e7d6\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/grading/panels/question-grading-area.vue");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(/*! ../../../../../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")("99acee32", content, false);
 // Hot Module Replacement
 if(false) {}
 
@@ -92523,6 +92667,42 @@ module.exports = {
     */
 
 // import gTypes from '../../../../store/getter-types';
+
+/***/ }),
+
+/***/ "./resources/assets/js/development/components/grading/panels/question-grading-area.vue":
+/*!*********************************************************************************************!*\
+  !*** ./resources/assets/js/development/components/grading/panels/question-grading-area.vue ***!
+  \*********************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(/*! !vue-style-loader!css-loader!../../../../../../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-4bc0e7d6","scoped":false,"hasInlineConfig":true}!sass-loader!../../../../../../../node_modules/vue-loader/lib/selector?type=styles&index=0!./question-grading-area.vue */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4bc0e7d6\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/grading/panels/question-grading-area.vue")
+}
+var Component = __webpack_require__(/*! ../../../../../../../node_modules/vue-loader/lib/component-normalizer */ "./node_modules/vue-loader/lib/component-normalizer.js")(
+  /* script */
+  __webpack_require__(/*! !babel-loader?cacheDirectory!../../../../../../../node_modules/vue-loader/lib/selector?type=script&index=0!./question-grading-area.vue */ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/grading/panels/question-grading-area.vue"),
+  /* template */
+  __webpack_require__(/*! !../../../../../../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-4bc0e7d6","hasScoped":false}!../../../../../../../node_modules/vue-loader/lib/selector?type=template&index=0!./question-grading-area.vue */ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-4bc0e7d6\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/grading/panels/question-grading-area.vue"),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/grading/panels/question-grading-area.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] question-grading-area.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {}
+
+module.exports = Component.exports
+
 
 /***/ }),
 
@@ -112980,6 +113160,7 @@ module.exports = {
                 var student = getters.getStudentFromRosterById(d.student_id);
                 var score = parseFloat(d.score);
 
+                window.console.log('itemscores.loaders', 'dd', 81, d.item_id, item, student);
                 //record the score (this will initialize the object too)
                 commit(ngmTypes.updateScore, _PayloadScore2.default.factory({
                     exam: exam,
