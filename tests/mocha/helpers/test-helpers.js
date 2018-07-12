@@ -175,7 +175,7 @@ export const makeFakeServerResponse = () => {
  */
 export const testAction = ( action, payload, state, expectedMutations, ...kwargs ) => {
     let count = 0
-    let { verbose = false, getters = {} } = kwargs[ 0 ];
+    let { verbose = false, getters = {}, done = undefined } = kwargs[ 0 ];
     // if ( typeof kwargs[ 0 ] != 'undefined' && typeof kwargs[ 0 ][ 'verbose' ] != 'undefined' ) {
     //     verbose = kwargs[ 0 ].verbose;
     // }
@@ -199,9 +199,6 @@ export const testAction = ( action, payload, state, expectedMutations, ...kwargs
             if ( verbose ) {
                 console.log( 'mutation', mutation, 'payload', payload );
             }
-
-
-
             if ( typeof mutation.payload == 'object' ) {
                 if ( verbose ) {
                     console.log( 'type is object', typeof mutation.payload );

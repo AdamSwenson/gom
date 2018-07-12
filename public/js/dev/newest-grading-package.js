@@ -104582,6 +104582,7 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.handleNodes = exports.handleItems = exports.handleAssociations = undefined;
 
 var _mutationTypes = __webpack_require__(/*! ../../mutation-types */ "./resources/assets/js/store/mutation-types.js");
 
@@ -104727,6 +104728,9 @@ var actions = {
      * It takes as its payload an object with the properties: itemObjectJson
      * and itemOrderJson
      *
+     * NB, this is broken up into a series of helper functions which carry out
+     * the subsidiary tasks. This is to make testing and maintenance easier.
+     *
      * @param state
      * @param commit
      * @param dispatch
@@ -104744,62 +104748,118 @@ var actions = {
             var itemObjectJson = objs.itemObjectJson,
                 itemOrderJson = objs.itemOrderJson;
 
-            //Get a list of item objects from the data
 
-            var items = (0, _JsonHelpers.processItemObjectsFromJson)(itemObjectJson);
-
-            //push the item objects into state.items
-            _.forEach(items, function (item) {
-                commit(mTypes.addNewItem, _Payload2.default.factory({
-                    obj: item,
-                    mutateSilently: true
-                }));
-            });
-
-            var nodes = [];
+            var items = handleItems(commit, getters, itemObjectJson);
             //We're first going to go through and make a bunch of nodes.
             //Then we'll figure out how to get them into the store correctly
-
-            _.forEach(itemOrderJson, function (d, i) {
-                //if the parent is null, we are operating on the exam, so we can skip
-                if (d.parentId === null) return true;
-
-                var item = getters[gTypes.getItemById](d.itemId);
-                var parentItem = getters[gTypes.getItemById](d.parentId);
-
-                //Make the new node with the item serial number
-                var itemNode = new _Node2.default(item.serialNumber, parentItem.serialNumber);
-                nodes.push(itemNode);
-            });
+            var nodes = handleNodes(commit, getters, itemOrderJson);
 
             //now that we are assured that we have all the nodes created
             //we can go back through the list of nodes and push them into their
             //respective parents.
             //This should maintain relative order at each level, assuming that the
             //server sent everything in order.
-            _.forEach(nodes, function (node) {
-                var parentNode = nodes[_.findIndex(nodes, { data: node.parent })];
+            handleAssociations(commit, getters, nodes);
 
-                if (_.isUndefined(parentNode)) {
-                    //this is the exam
-                    parentNode = getters[gTypes.getItemNodeFromOrder](node.parent);
-                }
-
-                //Add the new node to the order store
-                var pl = _Payload2.default.factory({ objNode: node, parentNode: parentNode });
-                commit('addNodeAsChild', pl);
-            });
-
-            //Each loaded item has a tags list which contains
+            //Finally, each loaded Item has a tags list which contains
             //bare data objects. This action replaces the
             //data objects with Tag objects from the central store
-            var pm = dispatch('processItemTags');
-            pm.then(function () {
+            var p3 = dispatch('processItemTags');
+            p3.then(function () {
                 resolve();
             });
         });
     }
 
+};
+
+/* +++ The following are all components of the above methods +++ */
+/* +++ They are not meant to be called on their own          +++ */
+
+/**
+ * Consumes a list of node objects and stores the
+ * associations which they represent.
+ *
+ * @param commit
+ * @param getters
+ * @param items
+ * @param nodes
+ */
+var handleAssociations = exports.handleAssociations = function handleAssociations(commit, getters, nodes) {
+    //now that we are assured that we have all the nodes created
+    //we can go back through the list of nodes and push them into their
+    //respective parents.
+    //This should maintain relative order at each level, assuming that the
+    //server sent everything in order.
+    _.forEach(nodes, function (node) {
+        var parentNode = nodes[_.findIndex(nodes, { data: node.parent })];
+
+        if (_.isUndefined(parentNode)) {
+            //this is the exam
+            parentNode = getters[gTypes.getItemNodeFromOrder](node.parent);
+        }
+
+        //Add the new node to the order store
+        var pl = _Payload2.default.factory({ objNode: node, parentNode: parentNode });
+        commit('addNodeAsChild', pl);
+    });
+};
+
+/**
+ * Subtask of processAndStoreLoadedItems
+ *
+ * Consumes a list of generic objects from the incoming
+ * json, creates Items from them, and stores the items
+ *
+ * @param state
+ * @param commit
+ * @param dispatch
+ * @param getters
+ * @param itemObjectJson
+ * @returns {Promise<any>}
+ */
+var handleItems = exports.handleItems = function handleItems(commit, getters, itemObjectJson) {
+    //Get a list of item objects from the data
+    var items = (0, _JsonHelpers.processItemObjectsFromJson)(itemObjectJson);
+
+    //push the item objects into state.items
+    _.forEach(items, function (item) {
+        commit(mTypes.addNewItem, _Payload2.default.factory({
+            obj: item,
+            mutateSilently: true
+        }));
+    });
+
+    return items;
+};
+
+/**
+ * Consumes the json item order object and
+ * creates the relevant nodes.
+ * Does not associate them with each other.
+ * @param state
+ * @param commit
+ * @param dispatch
+ * @param getters
+ * @param itemOrderJson
+ * @returns list
+ */
+var handleNodes = exports.handleNodes = function handleNodes(commit, getters, itemOrderJson) {
+    var nodes = [];
+
+    _.forEach(itemOrderJson, function (d, i) {
+        //if the parent is null, we are operating on the exam, so we can skip
+        if (d.parentId === null) return true;
+
+        var item = getters[gTypes.getItemById](d.itemId);
+        var parentItem = getters[gTypes.getItemById](d.parentId);
+
+        //Make the new node with the item serial number
+        var itemNode = new _Node2.default(item.serialNumber, parentItem.serialNumber);
+        nodes.push(itemNode);
+    });
+
+    return nodes;
 };
 
 exports.default = {
