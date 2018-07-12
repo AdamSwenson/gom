@@ -104576,7 +104576,10 @@ var actions = {
                 }));
             });
 
-            //Store the order of the items
+            var nodes = [];
+            //We're first going to go through and make a bunch of nodes.
+            //Then we'll figure out how to get them into the store correctly
+
             _.forEach(itemOrderJson, function (d, i) {
                 //if the parent is null, we are operating on the exam, so we can skip
                 if (d.parentId === null) return true;
@@ -104584,12 +104587,26 @@ var actions = {
                 var item = getters[gTypes.getItemById](d.itemId);
                 var parentItem = getters[gTypes.getItemById](d.parentId);
 
-                //Get or make the new node for the item's position
-                var parentNode = getters[gTypes.getItemNodeFromOrder](parentItem.serialNumber);
-                var itemNode = new _Node2.default(item.serialNumber, parentNode.data);
+                //Make the new node with the item serial number
+                var itemNode = new _Node2.default(item.serialNumber, parentItem.serialNumber);
+                nodes.push(itemNode);
+            });
+
+            //now that we are assured that we have all the nodes created
+            //we can go back through the list of nodes and push them into their
+            //respective parents.
+            //This should maintain relative order at each level, assuming that the
+            //server sent everything in order.
+            _.forEach(nodes, function (node) {
+                var parentNode = nodes[_.findIndex(nodes, { data: node.parent })];
+
+                if (_.isUndefined(parentNode)) {
+                    //this is the exam
+                    parentNode = getters[gTypes.getItemNodeFromOrder](node.parent);
+                }
 
                 //Add the new node to the order store
-                var pl = _Payload2.default.factory({ objNode: itemNode, parentNode: parentNode });
+                var pl = _Payload2.default.factory({ objNode: node, parentNode: parentNode });
                 commit('addNodeAsChild', pl);
             });
 

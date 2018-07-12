@@ -7,6 +7,8 @@ var Component = require( '../../../../../../resources/assets/js/store/modules/it
 
 require( '../../../../injectglobals' );
 
+import {makeFilledState} from "../../../../../spec/helpers/items.tests.helpers";
+
 import { processItemObjectsFromJson } from "../../../../../../resources/assets/js/store/utlities/JsonHelpers";
 import itemRequests from "../../../../../../resources/assets/js/api/requests/itemRequests";
 import Node from "../../../../../../resources/assets/js/models/Node";
@@ -18,16 +20,22 @@ let {mutations,actions } = Component.default;
 
 describe( compName, () => {
     let listOfValues, test;
+    let data;
     let payload, exam, item, kumi, kumis, student, grade;
-    
+
+    let itemJson, itemOrderJson;
     beforeEach( () => {
+        let data = JSON.parse('{"exam":{"id":12,"user_id":2,"term":null,"year":null,"name":"A","public_name":null,"description":null,"family":null,"locked":false,"released":false,"created_at":"2018-07-11 17:25:50","updated_at":"2018-07-11 17:25:57","previously_released":false},"itemObjects":[{"id":42,"name":"a1","text":"","displayText":null,"comment_text":null,"max_score":100,"settings":null,"exam_id":null,"user_id":2,"created_at":"2018-07-11 17:26:04","updated_at":"2018-07-11 17:26:07","deleted_at":null,"is_extra_credit":null,"comments":[],"tags":[]},{"id":43,"name":"a2","text":"","displayText":null,"comment_text":null,"max_score":100,"settings":null,"exam_id":null,"user_id":2,"created_at":"2018-07-11 17:26:14","updated_at":"2018-07-11 17:26:19","deleted_at":null,"is_extra_credit":null,"comments":[],"tags":[]},{"id":41,"name":"a","text":"","displayText":null,"comment_text":null,"max_score":100,"settings":null,"exam_id":null,"user_id":2,"created_at":"2018-07-11 17:25:58","updated_at":"2018-07-11 17:26:04","deleted_at":null,"is_extra_credit":null,"comments":[],"tags":[]}],"itemOrder":[{"examId":12,"itemId":42,"parentId":41,"itemOrder":0},{"examId":12,"itemId":43,"parentId":42,"itemOrder":0},{"examId":12,"itemId":41,"parentId":12,"itemOrder":0}]}');
+
+
+        // let s = makeFilledState()
 
     } );
 
 
     describe( " actions", () => {
 
-        it('loadItemsFromPageJson', (  ) => {
+        it.skip('loadItemsFromPageJson', (  ) => {
         //
         // /**
         //  * Loads item object and item order data from json
@@ -59,7 +67,7 @@ describe( compName, () => {
 
         });
 
-        it('loadItemsFromServer', (  ) => {
+        it.skip('loadItemsFromServer', (  ) => {
 
             /**
              * Requests item object and item order data from the server
@@ -100,6 +108,14 @@ describe( compName, () => {
         });
 
         it('processAndStoreLoadedItems', (  ) => {
+
+            let payload =  {
+                itemObjectJson: data.itemObjects,
+                itemOrderJson: data.itemOrder
+            };
+
+            window.console.log( 'items.loaders.test', 'd', 110, data.itemOrder);
+
             // /**
             //  * Once we have loaded some item data as json objects, from
             //  * either the server or a json on the page, this action
