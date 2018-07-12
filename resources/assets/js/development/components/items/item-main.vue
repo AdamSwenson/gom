@@ -118,7 +118,7 @@
 
             displayIndex: function () {
                 if ( this.isExam ) return 'Exam';
-                let idx = this.position + 1;
+                let idx = this.position;
                 // let parentIdx = this.$parent.displayIndex;
                 // if ( parentIdx ) return `${parentIdx} - ${idx}`;
                 return idx;

@@ -5522,7 +5522,7 @@ exports.default = {
 
         displayIndex: function displayIndex() {
             if (this.isExam) return 'Exam';
-            var idx = this.position + 1;
+            var idx = this.position;
             // let parentIdx = this.$parent.displayIndex;
             // if ( parentIdx ) return `${parentIdx} - ${idx}`;
             return idx;
