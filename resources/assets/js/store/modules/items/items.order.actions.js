@@ -3,9 +3,6 @@
  */
 
 
-const _ = window._ = require( 'lodash' );
-// const Vue = require( 'vue' );
-
 import * as mTypes from '../../mutation-types'
 import * as aTypes from '../../action-types'
 import * as gTypes from '../../getter-types'

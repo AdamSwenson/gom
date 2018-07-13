@@ -105665,17 +105665,14 @@ var getters = _extends({}, _items4.default.getters, _items2.default.getters, (_e
     (function recurse(currentNode) {
         var cnt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
-        // window.console.log( 'items', 'recurse', 129, currentNode);
         // step 2
         for (var i = 0; i < currentNode.children.length; i++) {
             // step 3
             recurse(currentNode.children[i], i);
         }
-        // window.console.log( 'items', 'recurse', 153, currentNode );
         // step 4
         var item = getters[gTypes.getItemBySerialNumber](currentNode.data);
-        // holdForIdLoading(item);
-        // window.console.log( 'items', 'recurse', 193, 'post hold', item);
+        // window.console.log( 'items', 'recurse', 193, 'post hold', item, currentNode);
         if (!_.isUndefined(item)) {
             var exam = item.isExam() ? item : getters[gTypes.getActiveExam];
             var parent = getters.getItemBySerialNumber(currentNode.parent);
@@ -106240,7 +106237,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
         commit = _ref3.commit,
         getters = _ref3.getters;
 
-    window.console.log('items', 'toggleItemPublic', 365, payload);
+    // window.console.log( 'items', 'toggleItemPublic', 365, payload );
 
     if (_Payload2.default.checkIfPayload(payload)) {
         var item = getters.getItemByIndex(payload.index);
@@ -106805,7 +106802,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
         resolve();
     });
 }), _defineProperty(_module$exports, mTypes.updateComment, function (state, payload) {
-    window.console.log(mTypes.updateComment, payload, state);
+    // window.console.log( mTypes.updateComment, payload, state );
 
     //get the item
     var itm = getItemFromPayload(state, payload);
@@ -107031,14 +107028,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-/**
- * Created by adam on 6/12/17.
- */
-
-var _ = window._ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
-// const Vue = require( 'vue' );
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Created by adam on 6/12/17.
+                                                                                                                                                                                                                   */
 
 module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.addItemToOrder, function (_ref, payload) {
     var state = _ref.state,
@@ -107480,7 +107472,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
         parent.children.push(obj);
     }
 }), _defineProperty(_module$exports, mTypes.removeNodeFromOrder, function (state, payload) {
-    window.console.log('items.order.mutations', 'removenode', 57, payload);
+    // window.console.log( 'items.order.mutations', 'removenode', 57, payload );
     var obj = payload.obj,
         parent = payload.parent;
     //Merge its children into its parent's children

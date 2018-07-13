@@ -143,7 +143,7 @@ module.exports = {
      * @param payload
      */
     [ mTypes.updateComment ]: ( state, payload ) => {
-        window.console.log( mTypes.updateComment, payload, state );
+        // window.console.log( mTypes.updateComment, payload, state );
 
         //get the item
         let itm = getItemFromPayload( state, payload );

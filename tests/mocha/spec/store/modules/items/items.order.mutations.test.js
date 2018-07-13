@@ -220,7 +220,10 @@ describe( compName, () => {
                 numChildren = parent.children.length;
                 toAddSerial = faker.random.number();
                 toAdd = new Node( toAddSerial, parent.data ); //this step is handled by the action in the real code
-                index = faker.random.number( { min: 0, max: parent.children.length - 1 } )
+                //nb. this causes an error when the min is 0, bc that's equivalent to replacing the exam
+                index = faker.random.number( { min: 1, max: parent.children.length - 1 } )
+
+                // window.console.log( 'items.order.mutations.test', 'index', 224, index);
 
                 let payload = Payload.factory( {
                     objNode: toAdd,

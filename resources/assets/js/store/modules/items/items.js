@@ -117,17 +117,14 @@ const getters = {
         // Doing this depth first
         // this is a recurse and immediately-invoking function
         (function recurse( currentNode, cnt = 0 ) {
-            // window.console.log( 'items', 'recurse', 129, currentNode);
             // step 2
             for (var i = 0; i < currentNode.children.length; i++) {
                 // step 3
                 recurse( currentNode.children[ i ], i );
             }
-            // window.console.log( 'items', 'recurse', 153, currentNode );
             // step 4
             let item = getters[ gTypes.getItemBySerialNumber ]( currentNode.data );
-            // holdForIdLoading(item);
-            // window.console.log( 'items', 'recurse', 193, 'post hold', item);
+            // window.console.log( 'items', 'recurse', 193, 'post hold', item, currentNode);
             if ( !_.isUndefined( item ) ) {
                 let exam = item.isExam() ? item : getters[ gTypes.getActiveExam ];
                 let parent = getters.getItemBySerialNumber( currentNode.parent );

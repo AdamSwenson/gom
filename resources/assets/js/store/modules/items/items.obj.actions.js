@@ -56,7 +56,7 @@ module.exports = {
 
 
     [ aTypes.toggleItemPublic ]: ( { state, dispatch, commit, getters }, payload ) => {
-        window.console.log( 'items', 'toggleItemPublic', 365, payload );
+        // window.console.log( 'items', 'toggleItemPublic', 365, payload );
 
         if ( Payload.checkIfPayload( payload ) ) {
             let item = getters.getItemByIndex( payload.index );

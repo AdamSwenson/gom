@@ -23,7 +23,8 @@ module.exports = {
 
     /**
      * Returns the children array of
-     * the exam stored as itemMap. It includes the exam
+     * the exam stored as itemMap. It includes the exam.
+     * This is used when we need to alter the data for some temporary operation
      * @param state
      * @param getters
      * @returns {Node}

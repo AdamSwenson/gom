@@ -67,7 +67,7 @@ module.exports = {
 
 
     [ mTypes.removeNodeFromOrder ]: ( state, payload ) => {
-        window.console.log( 'items.order.mutations', 'removenode', 57, payload );
+        // window.console.log( 'items.order.mutations', 'removenode', 57, payload );
         let { obj, parent } = payload;
         //Merge its children into its parent's children
         parent.children.concat( obj.children );
