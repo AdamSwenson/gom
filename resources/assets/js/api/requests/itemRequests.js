@@ -23,7 +23,7 @@ module.exports = {
      * @param item
      * @returns {Promise<T> | *}
      */
-    createItemRequest: function(){
+    createItemRequest: function () {
         let toSend = {
             requestVersion: REQUEST_VERSION,
         };
@@ -33,9 +33,9 @@ module.exports = {
         //Thus, this request is to create the item.
         //When the server has done this, it will send back an id
         return window.axios.post( Routes.createItem(), toSend ).then( ( response ) => {
-                // window.console.log( 'itemRequests', 'axios', 44, response );
-                return response.data;
-            } )
+            // window.console.log( 'itemRequests', 'axios', 44, response );
+            return response.data;
+        } )
             .catch( function ( error ) {
                 errorHandling( error );
             } );
@@ -43,19 +43,17 @@ module.exports = {
 
 
     getItemsForExam: ( exam ) => {
-        let to = 'items/exam/' + exam.id;
+        let to = Routes.loadAllItemsForExam( exam.id );
+        // let to = 'items/exam/' + exam.id;
 
         return window.axios.get( to )
             .then( function ( response ) {
-// //The returned array  will have the keys
-//             //  'itemObjects'
-//             //  'itemOrder'
-
+                //The returned array  will have the keys
+                //  'itemObjects'
+                //  'itemOrder'
                 return response.data;
-
             } ).catch( function ( error ) {
                 errorHandling( error );
-
             } );
     },
 

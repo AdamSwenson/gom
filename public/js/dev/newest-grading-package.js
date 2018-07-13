@@ -86266,6 +86266,9 @@ var Routes = exports.Routes = {
     loadAllItems: function loadAllItems() {
         return 'items';
     },
+    loadAllItemsForExam: function loadAllItemsForExam(examId) {
+        return 'items/exam/' + examId;
+    },
     updateItem: function updateItem(item) {
         return 'items/' + item.id;
     },
@@ -87241,13 +87244,13 @@ module.exports = {
     },
 
     getItemsForExam: function getItemsForExam(exam) {
-        var to = 'items/exam/' + exam.id;
+        var to = _apiSettings.Routes.loadAllItemsForExam(exam.id);
+        // let to = 'items/exam/' + exam.id;
 
         return window.axios.get(to).then(function (response) {
-            // //The returned array  will have the keys
-            //             //  'itemObjects'
-            //             //  'itemOrder'
-
+            //The returned array  will have the keys
+            //  'itemObjects'
+            //  'itemOrder'
             return response.data;
         }).catch(function (error) {
             (0, _responseHandlers.errorHandling)(error);

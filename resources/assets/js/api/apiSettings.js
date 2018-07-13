@@ -80,6 +80,9 @@ export const Routes = {
     loadAllItems: () => {
         return 'items';
     },
+    loadAllItemsForExam: ( examId ) => {
+        return 'items/exam/' + examId;
+    },
     updateItem: ( item ) => {
         return 'items/' + item.id;
     },

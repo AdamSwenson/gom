@@ -1,4 +1,6 @@
 //The name of the tested component
+import { Routes } from "../../../../../../resources/assets/js/api/apiSettings";
+
 var compName = 'items.loaders';
 //The path to the tested component
 // var Component = require( '../../../../../../resources/assets/js/store/modules/items/items.loaders.js' );
@@ -88,74 +90,34 @@ describe( compName, () => {
         describe( 'loadItemsFromServer', () => {
             it( " dispatches correct action with the received data", ( done ) => {
                 let exam = factories.examFactory();
-                let spy = sinon.spy();
+                let dispatch = sinon.stub();
+                dispatch.resolves(true);
 
-
-                moxios.wait( function () {
-                    moxios.requests.mostRecent().respondWith( {
-                        status: 200,
-                        response: data
-                    } )
+                moxios.stubRequest( Routes.loadAllItemsForExam(exam.id), {
+                    status: 200,
+                    response: data
                 } );
-//call
+
+                //call
                 let p = actions.loadItemsFromServer( {
                     state: {},
                     commit: {},
-                    dispatch: spy,
+                    dispatch,
                     getters
                 }, exam );
 
                 p.then( function () {
-                    // .then( function () {
-                    //made a request to the server
-                    expect( requests.callCount ).toBe( 1 );
-                    //with the correct payload
-                    expect( requests.args[ 0 ][ 0 ] ).toMatchObject( exam );
                     //some action was dispatched
-                    expect( spy.callCount ).toBe( 1 );
+                    expect( dispatch.callCount ).toBe( 1 );
                     //oh. it was the correct action
-                    expect( spy.args[ 0 ][ 0 ] ).toBe( 'processAndStoreLoadedItems' );
+                    expect( dispatch.args[ 0 ][ 0 ] ).toBe( 'processAndStoreLoadedItems' );
                     //and it had the right payload
-                    expect( spy.args[ 0 ][ 1 ] ).toMatchObject( payload );
+                    expect( dispatch.args[ 0 ][ 1 ] ).toMatchObject( payload );
                     done();
-                    // } );
                 } ).catch( function () {
                     expect( false ).toBeTruthy();
                     done();
                 } );
-
-
-                // //
-                // // //prep
-                // // let exam = factories.examFactory();
-                // // let spy = sinon.spy();
-                // // let requests = sinon.mock( Component.itemRequests);
-                // // requests.expects('getItemsForExam' )
-                // //     .once()
-                // //     .resolves( data );
-                //
-                // //call
-                // let p = actions.loadItemsFromServer( {
-                //     state: {},
-                //     commit: {},
-                //     dispatch: spy,
-                //     getters
-                // }, exam );
-
-                //check
-                // p.then( function () {
-                //     //made a request to the server
-                //     expect( requests.callCount ).toBe( 1 );
-                //     //with the correct payload
-                //     expect( requests.args[ 0 ][ 0 ] ).toMatchObject( exam );
-                //     //some action was dispatched
-                //     expect( spy.callCount ).toBe( 1 );
-                //     //oh. it was the correct action
-                //     expect( spy.args[ 0 ][ 0 ] ).toBe( 'processAndStoreLoadedItems' );
-                //     //and it had the right payload
-                //     expect( spy.args[ 0 ][ 1 ] ).toMatchObject( payload );
-                //     done();
-                // } );
 
             } );
 
