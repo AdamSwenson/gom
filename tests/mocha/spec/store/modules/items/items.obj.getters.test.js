@@ -61,7 +61,7 @@ describe( compName, () => {
     } );
 
     describe( description( gTypes.getItemById ), function () {
-        it( "happy path", function () {
+        it( "returns the Item object with the given id", function () {
             _.forEach( state.items, ( item ) => {
                 let result = store.getters[ gTypes.getItemById ]( item.id );
                 //check
@@ -72,7 +72,7 @@ describe( compName, () => {
     } );
 
     describe( description( gTypes.getItemByIndex ), function () {
-        it( "happy path", function () {
+        it( "returns the Item object in the given index position", function () {
             _.forEach( state.items, ( item ) => {
                 let result = store.getters[ gTypes.getItemByIndex ]( item.index );
                 //check
@@ -83,7 +83,7 @@ describe( compName, () => {
     } );
 
     describe( description( gTypes.getItemBySerialNumber ), function () {
-        it( "happy path", function () {
+        it( "returns the Item object with the given serial number", function () {
             _.forEach( state.items, ( item ) => {
                 let result = store.getters[ gTypes.getItemBySerialNumber ]( item.serialNumber );
                 //check
@@ -94,14 +94,8 @@ describe( compName, () => {
     } );
 
 
-    // describe.skip( 'getAllIndexesList | ', function () {
-    //     xit( "happy path | ", function () {
-    //         //todo
-    //     } );
-    // } );
-
     describe( description( gTypes.getAllItems ), function () {
-        it( "happy path | ", function () {
+        it( "returns all existing items", function () {
             //call
             let result = store.getters[ gTypes.getAllItems ];
 
@@ -114,7 +108,7 @@ describe( compName, () => {
     } );
 
     describe( description( gTypes.getAllItemsList ), function () {
-        it( "happy path | ", function () {
+        it( "returns a list of all items", function () {
             //call
             let result = store.getters[ gTypes.getAllItemsList ];
 
@@ -123,14 +117,13 @@ describe( compName, () => {
                 expect( typeof result[ i ] ).toBe( 'object' );
                 expect( result[ i ] instanceof global.Item.constructor ).toBe( true );
             }
-
         } );
 
     } );
 
 
     describe( description( gTypes.getItemCount ), function () {
-        it( "happy path ", function () {
+        it( "returns the count of existing items ", function () {
             //call
             let result = store.getters[ gTypes.getItemCount ];
             //check
@@ -138,7 +131,7 @@ describe( compName, () => {
         } );
     } );
 
-} );//getters
+} );
 
 
 //

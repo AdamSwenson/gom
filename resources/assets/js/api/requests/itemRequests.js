@@ -63,7 +63,7 @@ module.exports = {
      * @param store
      * @returns {Promise}
      */
-    updateItemsOrder: ( exam, ordering ) => {
+    updateItemsOrderRequest: function( exam, ordering ){
 
         let payload = {
             examId: exam.id,
@@ -76,9 +76,10 @@ module.exports = {
         return window.axios
             .post( route, payload )
             .then( ( response ) => {
-                // window.console.log( 'apiPlugin', '#### SERVER SAYS ####', 169, response );
+                // window.console.log( 'apiPlugin', '#### SERVER SAYS ####', 169, response , 'j');
                 //No need to update our internally stored objects
                 //on the basis of the result
+                return response
             } )
             .catch( function ( error ) {
                 errorHandling( error );

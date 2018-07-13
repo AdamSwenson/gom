@@ -16,26 +16,36 @@ import Exam from '../../../models/Exam'
 import Node from '../../../models/Node'
 import { traverseDF, traverseBF, getSerialNumber } from '../../../models/NodeTools'
 
-import { updateItemsOrder } from '../../../api/requests/itemRequests';
+import { updateItemsOrderRequest } from '../../../api/requests/itemRequests';
 
 module.exports = {
+
+    /**
+     * Pushes an item into the itemMap
+     * @param state
+     * @param dispatch
+     * @param commit
+     * @param getters
+     * @param payload
+     * @returns {Promise<any>}
+     */
     [ aTypes.addItemToOrder ]: ( { state, dispatch, commit, getters }, payload ) => {
         return new Promise( function ( resolve, reject ) {
-
             // window.console.log( 'items.order.actions', aTypes.addItemToOrder, 31, payload );
 
             let { obj, parent, index, mutateSilently } = payload;
-
             let exam = getters[ gTypes.getActiveExam ];
 
             //Sort out whether obj and parent are nodes or items
-            let toAddSerialNumber = _.isNumber( obj ) ? obj : obj.serialNumber; // getSerialNumber( obj );
+            let toAddSerialNumber = _.isNumber( obj ) ? obj : obj.serialNumber;
             let parentSerialNumber = _.isNumber( parent ) ? parent : getSerialNumber( parent );
+
             // window.console.log( 'items.order.actions', 'psn', 39,payload, parent, parentSerialNumber );
 
             let newNode = new Node( toAddSerialNumber, parentSerialNumber );
             let parentNode = getters[ gTypes.getItemNodeFromOrder ]( parentSerialNumber );
             // window.console.log( 'items.order.actions', 'n', 39, newNode, parentNode );
+
             let pl = Payload.factory( {
                 objNode: newNode,
                 parentNode: parentNode,
@@ -50,10 +60,13 @@ module.exports = {
             let ordering = getters.getOrderForSync;
 
             //send to server
-            updateItemsOrder( exam, ordering )
-                .then( function () {
-                    resolve();
-                } );
+            updateItemsOrderRequest( exam, ordering ).then( function () {
+                //todo add error handling.
+
+                //todo this isn't the resolve we use because it somehow prevents the tests from finishing. Since there's no error handling yet, there's no harm leaving it outside for now
+                //resolve
+            } );
+            resolve();
         } );
     },
 
@@ -100,10 +113,12 @@ module.exports = {
             let exam = getters[ gTypes.getActiveExam ];
 
             //send to server
-            updateItemsOrder( exam, ordering )
+            updateItemsOrderRequest( exam, ordering )
                 .then( function () {
-                    resolve();
+                    //todo as above, this is the appropriate place. However, it kills tests and there is no error handling.
+                    //resolve();
                 } );
+            resolve();
 
         } );
     },

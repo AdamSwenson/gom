@@ -86,6 +86,9 @@ module.exports = {
 
     /**
      * Return list of Item objects
+     * This used to be used when items was different data structure
+     * Now it just serves as an alias
+     *
      * @deprecated
      * @param state
      * @param getters
@@ -93,11 +96,7 @@ module.exports = {
      * @returns []
      */
     [ gTypes.getAllItemsList ]: ( state, getters, rootState ) => {
-//alias.
-// used to be used when items was different data structure
-//         return this.getAllItems( state, getters );
         return state.items;
-
     },
 
     /**
@@ -116,7 +115,7 @@ module.exports = {
         // console.log('getItem', state, payload);
         if ( isItemsEmpty( state ) ) return false;
         if ( Payload.checkIfPayload( payload ) ) {
-            window.console.log( 'items.obj.getters', 'pay', 119, payload);
+            // window.console.log( 'items.obj.getters', 'pay', 119, payload );
             // let { index, id } = payload;
             if ( typeof payload.index !== 'undefined' ) {
                 return getters[ gTypes.getItemByIndex ]( payload.index );
@@ -124,7 +123,7 @@ module.exports = {
             }
 
             if ( typeof payload.id !== 'undefined' ) {
-                return getters[ gTypes.getItemById ](payload.id );
+                return getters[ gTypes.getItemById ]( payload.id );
                 // return getters[ gTypes.getItemById ]( state, getters, payload.id );
             }
         }

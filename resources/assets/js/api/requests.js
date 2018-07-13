@@ -140,7 +140,7 @@ module.exports = {
      * @param store
      * @returns {Promise}
      */
-    updateItemsOrder: ( exam, ordering ) => {
+    updateItemsOrderRequest: ( exam, ordering ) => {
 
         let payload = {
             examId: exam.id,
