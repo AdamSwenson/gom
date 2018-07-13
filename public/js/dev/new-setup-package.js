@@ -7995,7 +7995,12 @@ exports.default = {
             defaults: {
                 delay: 3000,
                 bodyText: "There was a problem. "
-            }
+            },
+
+            /**
+             * This will hold the timer, once it is created
+             */
+            timer: false
 
         };
     },
@@ -8007,29 +8012,22 @@ exports.default = {
          * so that if this modal is opened, we can set the
          * timer to automatically close it.
          */
-        isModalVisible: function isModalVisible(val, oldVal) {
+        isModalVisible: function isModalVisible(newState, oldState) {
+
             if (this.modalKind === 'auto-closing') {
-                // window.console.log( 'auto-closing-modal', 'isModalVisible', 58, val, oldVal );
                 //if modal was not visible and now is,
-                //we need to start the timer so it will automatically close
-                if (val && !oldVal) this.setAutoCloseDelayTimer();
+                //we need to start the timer
+                //so it will automatically close
+                if (!oldState && newState) {
+                    window.console.log('auto-closing-modal', 'isModalVisible', 74, 'close', oldState, newState);
+                    this.setAutoCloseDelayTimer();
+                }
             }
         }
     },
 
     computed: {
-        // /**
-        //  * Whether or not the modal is presently visible
-        //  * @returns {*}
-        //  */
-        // isModalVisible: function () {
-        //     //     //use the prop if provided
-        //     //     if ( ! _.isUndefined( this.isVisible ) ) return this.isVisible;
-        //
-        //     //this is defined in the mixin
-        //     // return this.isErrorModalVisible;
-        //     return this.$store.getters[this.getterNames.visibility];
-        // },
+        // Mixin defines: isModalVisible, isErrorModalVisible
 
 
         notificationStyles: function notificationStyles() {
@@ -8041,7 +8039,6 @@ exports.default = {
                     return "is-warning";
                 default:
                     return "is-danger";
-
             }
         },
 
@@ -8058,12 +8055,25 @@ exports.default = {
     methods: {
 
         /**
+         * Clears the delay timer.
+         * This is usually used if the user
+         * manually closes the modal while the timer
+         * is counting.
+         */
+        overrideDelayTimer: function overrideDelayTimer() {
+            window.console.log('auto-closing-modal', 'overrideDelayTimer', 120, 'override!');
+            if (this.timer) clearTimeout(this.timer);
+
+            this.timer = false;
+        },
+
+        /**
          * Sets a timer for the modal being displayed.
          * When time runs out, calls the method to close the modal
          */
         setAutoCloseDelayTimer: function setAutoCloseDelayTimer() {
             var me = this;
-            setTimeout(function () {
+            me.timer = setTimeout(function () {
                 me.closeModal();
             }, me.closingDelay);
         }
@@ -8071,6 +8081,7 @@ exports.default = {
     }
 
 }; //
+//
 //
 //
 //
@@ -8163,35 +8174,9 @@ exports.default = {
             return this.isConfirmationModalVisible;
         }
 
-        // modalDataObject: function () {
-        //     let obj = this.$store.getters.getModalData;
-        //     if ( !_.isUndefined( obj )  && ! _.isNull(obj)) return obj;
-        //     return false;
-        // },
-        //
-        // modalText: function () {
-        //     if ( this.modalDataObject ) return this.modalDataObject.text;
-        // }
     },
 
-    methods: {
-        // closeModal: function () {
-        //     this.$store.commit( 'toggleErrorModal' );
-        // },
-        //
-        // handleCancellation: function () {
-        //     this.$emit( 'cancel-selected' );
-        //     this.closeModal();
-        // },
-        //
-        // handleConfirmation: function () {
-        //     //hit the callback provided
-        //     if (  this.modalDataObject  ) this.modalDataObject.confirmationCallback();
-        //
-        //     this.$emit( 'confirm-selected' );
-        //     this.closeModal();
-        // }
-    }
+    methods: {}
 
 }; //
 //
@@ -93995,6 +93980,11 @@ module.exports = {
     methods: {
         closeModal: function closeModal() {
             this.$store.commit(this.mutationNames.toggleVisibility);
+
+            //for the autoclosing modal, we need to cancel the timer
+            if (!_.isUndefined(this.timer) && this.timer) {
+                this.overrideDelayTimer();
+            }
         },
 
         handleCancellation: function handleCancellation() {
@@ -113226,7 +113216,7 @@ module.exports = {
                 var student = getters.getStudentFromRosterById(d.student_id);
                 var score = parseFloat(d.score);
 
-                window.console.log('itemscores.loaders', 'dd', 81, d.item_id, item, student);
+                // window.console.log( 'itemscores.loaders', 'dd', 81, d.item_id, item, student);
                 //record the score (this will initialize the object too)
                 commit(ngmTypes.updateScore, _PayloadScore2.default.factory({
                     exam: exam,

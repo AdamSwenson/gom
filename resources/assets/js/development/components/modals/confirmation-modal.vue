@@ -96,34 +96,9 @@
                 return this.isConfirmationModalVisible;
             },
 
-            // modalDataObject: function () {
-            //     let obj = this.$store.getters.getModalData;
-            //     if ( !_.isUndefined( obj )  && ! _.isNull(obj)) return obj;
-            //     return false;
-            // },
-            //
-            // modalText: function () {
-            //     if ( this.modalDataObject ) return this.modalDataObject.text;
-            // }
         },
 
         methods: {
-            // closeModal: function () {
-            //     this.$store.commit( 'toggleErrorModal' );
-            // },
-            //
-            // handleCancellation: function () {
-            //     this.$emit( 'cancel-selected' );
-            //     this.closeModal();
-            // },
-            //
-            // handleConfirmation: function () {
-            //     //hit the callback provided
-            //     if (  this.modalDataObject  ) this.modalDataObject.confirmationCallback();
-            //
-            //     this.$emit( 'confirm-selected' );
-            //     this.closeModal();
-            // }
         },
 
     }

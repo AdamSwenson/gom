@@ -278,6 +278,6 @@ describe( compName, () => {
             //
 
         } );
-        
+
     } );
 } );

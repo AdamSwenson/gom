@@ -78,7 +78,7 @@ module.exports = {
                     let student = getters.getStudentFromRosterById( d.student_id );
                     let score = parseFloat( d.score );
 
-                    window.console.log( 'itemscores.loaders', 'dd', 81, d.item_id, item, student);
+                    // window.console.log( 'itemscores.loaders', 'dd', 81, d.item_id, item, student);
                     //record the score (this will initialize the object too)
                     commit( ngmTypes.updateScore, PayloadScore.factory( {
                         exam: exam,

@@ -2,7 +2,8 @@
     <div class="auto-closing-modal modal"
          v-bind:class="[isModalVisible ? 'is-active' : '' ]"
     >
-        <div class="modal-background" v-on:click="closeModal"
+        <div class="modal-background"
+             v-on:click="closeModal"
         ></div>
 
         <div class="modal-content">
@@ -52,6 +53,11 @@
                     bodyText: "There was a problem. "
                 },
 
+                /**
+                 * This will hold the timer, once it is created
+                 */
+                timer: false,
+
             }
         },
 
@@ -62,29 +68,22 @@
              * so that if this modal is opened, we can set the
              * timer to automatically close it.
              */
-            isModalVisible: function ( val, oldVal ) {
+            isModalVisible: function ( newState, oldState ) {
+
                 if ( this.modalKind === 'auto-closing' ) {
-                    // window.console.log( 'auto-closing-modal', 'isModalVisible', 58, val, oldVal );
                     //if modal was not visible and now is,
-                    //we need to start the timer so it will automatically close
-                    if ( val && !oldVal ) this.setAutoCloseDelayTimer();
+                    //we need to start the timer
+                    //so it will automatically close
+                    if ( ! oldState && newState){
+                        window.console.log( 'auto-closing-modal', 'isModalVisible', 74, 'close', oldState, newState);
+                        this.setAutoCloseDelayTimer();
+                    }
                 }
             }
         },
 
         computed: {
-            // /**
-            //  * Whether or not the modal is presently visible
-            //  * @returns {*}
-            //  */
-            // isModalVisible: function () {
-            //     //     //use the prop if provided
-            //     //     if ( ! _.isUndefined( this.isVisible ) ) return this.isVisible;
-            //
-            //     //this is defined in the mixin
-            //     // return this.isErrorModalVisible;
-            //     return this.$store.getters[this.getterNames.visibility];
-            // },
+            // Mixin defines: isModalVisible, isErrorModalVisible
 
 
             notificationStyles: function () {
@@ -96,7 +95,6 @@
                         return "is-warning";
                     default:
                         return "is-danger";
-
                 }
             },
 
@@ -113,12 +111,25 @@
         methods: {
 
             /**
+             * Clears the delay timer.
+             * This is usually used if the user
+             * manually closes the modal while the timer
+             * is counting.
+             */
+            overrideDelayTimer: function(){
+                window.console.log( 'auto-closing-modal', 'overrideDelayTimer', 120, 'override!');
+                if(this.timer) clearTimeout(this.timer);
+
+                this.timer = false;
+            },
+
+            /**
              * Sets a timer for the modal being displayed.
              * When time runs out, calls the method to close the modal
              */
             setAutoCloseDelayTimer: function () {
                 let me = this;
-                setTimeout( function () {
+                me.timer = setTimeout( function () {
                     me.closeModal();
                 }, me.closingDelay )
             },

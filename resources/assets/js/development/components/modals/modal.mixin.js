@@ -1,5 +1,3 @@
-
-
 module.exports = {
 
     computed: {
@@ -10,18 +8,16 @@ module.exports = {
         isModalVisible: function () {
             //If the prop is set, use it
             if ( !_.isUndefined( this.isVisible ) ) return this.isVisible;
-            //use the data in the store
-            return this.$store.getters[this.getterNames.visibility] ;
-        },
-
-
+                //use the data in the store
+                return this.$store.getters[ this.getterNames.visibility ];
+         },
 
         /**
          * Used to control the error modal
          * @param state
          * @returns {boolean}
          */
-        isErrorModalVisible: function (  ) {
+        isErrorModalVisible: function () {
             return this.$store.getters.isErrorModalVisible;
         },
 
@@ -30,7 +26,7 @@ module.exports = {
          * @param state
          * @returns {boolean}
          */
-        isConfirmationModalVisible: function (  ) {
+        isConfirmationModalVisible: function () {
             return this.$store.getters.isConfirmationModalVisible;
         },
 
@@ -49,7 +45,7 @@ module.exports = {
          * @returns {string}
          */
         modalText: function () {
-            if(this.content) return this.content;
+            if ( this.content ) return this.content;
 
             if ( this.modalDataObject ) return this.modalDataObject.text;
 
@@ -59,7 +55,7 @@ module.exports = {
              * But this will
              * work for older uses.
              */
-            if( ! _.isUndefined(this.defaults.bodyText))  return this.defaults.bodyText;
+            if ( !_.isUndefined( this.defaults.bodyText ) ) return this.defaults.bodyText;
         },
 
         /**
@@ -67,9 +63,9 @@ module.exports = {
          * This will govern the classes used in the modal
          * @returns {binding.getOSType}
          */
-        modalType: function (  ) {
+        modalType: function () {
             //if the prop is set, use that
-            if( _.isUndefined(this.type)) return this.type;
+            if ( _.isUndefined( this.type ) ) return this.type;
 
             if ( this.modalDataObject ) return this.modalDataObject.type;
         },
@@ -79,16 +75,21 @@ module.exports = {
     methods: {
         closeModal: function () {
             this.$store.commit( this.mutationNames.toggleVisibility );
+
+            //for the autoclosing modal, we need to cancel the timer
+            if ( !_.isUndefined( this.timer ) && this.timer ) {
+                this.overrideDelayTimer()
+            }
         },
 
         handleCancellation: function () {
-            window.console.log( 'modal.mixin', 'handleCancellation', 65, this.modalDataObject);
+            window.console.log( 'modal.mixin', 'handleCancellation', 65, this.modalDataObject );
             this.$emit( 'cancel-selected' );
             this.closeModal();
         },
 
         handleConfirmation: function () {
-            window.console.log( 'modal.mixin', 'handleConfirmation', 70, this.modalDataObject);
+            window.console.log( 'modal.mixin', 'handleConfirmation', 70, this.modalDataObject );
             //hit the callback provided
             if ( this.modalDataObject ) this.modalDataObject.confirmationCallback();
             this.$emit( 'confirm-selected' );
