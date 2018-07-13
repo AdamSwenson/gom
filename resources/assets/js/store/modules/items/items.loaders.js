@@ -152,8 +152,14 @@ const actions = {
 
 };
 
-/* +++ The following are all components of the above methods +++ */
-/* +++ They are not meant to be called on their own          +++ */
+/* ++++++++++++++++++++++++++
+The following are all components of the above methods. They were broken out
+to make testing and maintenance easier.
+
+They are not meant to be called on their own.
+Thus while they are exported to make it easier to test them,
+they are only actually used in this file.
+++++++++++++++++++++++++++ */
 
 
 /**
