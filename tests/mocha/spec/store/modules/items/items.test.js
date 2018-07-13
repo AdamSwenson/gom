@@ -1,4 +1,4 @@
-import * as gTypes from "../../../../../../resources/assets/js/store/getter-types";
+import { testActionAsync } from "../../../../helpers/test-helpers";
 
 var compName = 'items';
 //The path to the tested component
@@ -11,10 +11,11 @@ import { addNodes, makeFilledState } from "../../../../helpers/item-test-helpers
 import Node from "../../../../../../resources/assets/js/models/Node";
 import Item from "../../../../../../resources/assets/js/models/Item";
 
-//tested object
+import { Routes } from "../../../../../../resources/assets/js/api/apiSettings";
 
 import { createLocalVue } from 'vue-test-utils';
-import { itemFactory } from "../../../../helpers/factories";
+
+window.axios = require( 'axios' );
 
 const localVue = createLocalVue();
 localVue.use( Vuex )
@@ -24,64 +25,104 @@ let { actions, getters, mutations, state } = Component.default;
 describe( compName, () => {
     let listOfValues, test;
     let payload, exam, item, kumi, kumis, student, grade;
-    let filledState, numItems, expectedIds;
+    let filledState, numItems, expectedIds, expectedId;
     let parent;
-    beforeEach( () => {
-
-    } );
 
 
     describe( description( "actions (defined in items.js, not imported" ), function () {
+        let dispatch, commit, expectedItem, expectedPayload;
         describe( description( aTypes.createItem ), function () {
             beforeEach( function () {
+                moxios.install();
                 let s = { itemMap: new Node( 0, 0 ) };
                 filledState = makeFilledState( s, numItems );
+
+                expectedId = helpers.randomInteger();
+                let state = { itemMap: new Node( 0, 0 ) };
+                makeFilledState( state, 5 );
+                //prep
+                parent = state.itemMap.children[ 1 ]; //has to be a parent
+                payload = parent.data; //has to be a parent
+                expectedItem = Item.factory( { parent: parent.data, id: expectedId } );
+
+                moxios.stubRequest( Routes.createItem(), {
+                    status: 200,
+                    response: { id: expectedId }
+                } );
+
+                //since it will need to dispatch the add item to order action
+                dispatch = sinon.stub();
+                dispatch.resolves( true );
+
+                expectedPayload = Payload.factory( {
+                    obj: expectedItem,
+                    parent: parent.data,
+                    mutateSilently: true
+                } );
+
+                commit = sinon.spy();
+
+
+                // let p = actions[ aTypes.createItem ]( { state, commit, dispatch, getters }, )
+
+
+                // helpers.testActionAsync( actions[ aTypes.createItem ], payload, state, expectedMutations, done, { getters: getters, dispatch  } );
+                //
+            } );
+            afterEach( () => {
+                moxios.uninstall();
             } );
 
-            describe( description( "Happy path" ), function () {
-                it( "parent defined", function ( done ) {
-
-                    let state = { itemMap: new Node( 0, 0 ) };
-                    makeFilledState( state, 5 );
-                    //prep
-                    let parent = state.itemMap.children[ 1 ]; //has to be a parent
-                    let payload = parent.data; //has to be a parent
-                    let expectedItem = Item.factory( { parent: parent.data } );
-
-                    let expectedMutations = [
-                        {
-                            type: mTypes.addNewItem,
-                            payload: {
-                                parent: parent.data,
-                                // obj: expectedItem //this won't work because of serial numbers
-                            }
-                        },
-                        {
-                            type: mTypes.insertNodeIntoOrder
-                        }
-                    ];
-
-                    testAction( actions[ aTypes.createItem ], payload, state, expectedMutations, { getters: getters } );
+            it( " calls addNewItem mutation after getting new id from the server", ( done ) => {
+                let p = actions[ aTypes.createItem ]( { state, commit, dispatch, getters }, payload );
+                p.then( function () {
+                    //a mutation was called
+                    expect( commit.callCount ).toBe( 1 );
+                    //it was the correct one
+                    expect( commit.args[ 0 ][ 0 ] ).toBe( mTypes.addNewItem );
+                    //it had the correct payload
+                    // we have to do this piecemeal rather than
+                    // just comparing the payloads because a new item
+                    // thus it will have different properties than the factory created item
+                    let receivedPayload = commit.args[ 0 ][ 1 ];
+                    //the thing we care most about is that the id from the server was added
+                    expect( receivedPayload.obj.id ).toBe( expectedPayload.obj.id );
+                    expect( receivedPayload.mutateSilently ).toBe( expectedPayload.mutateSilently );
+                    expect( receivedPayload.parent ).toBe( expectedPayload.parent );
                     done();
                 } );
 
-                // xit( "parent not defined", function () {
-                //
-                // } );
             } );
 
+            it( " dispatches the addItemToOrder action", ( done ) => {
+                let p = actions[ aTypes.createItem ]( { state, commit, dispatch, getters }, payload );
+                p.then( function () {
+                    expect( dispatch.callCount ).toBe( 1 );
+                    //it was the correct action
+                    expect( dispatch.args[ 0 ][ 0 ] ).toBe( aTypes.addItemToOrder );
+                    //it had the correct payload
+                    //Again we have to do this piecemeal rather than
+                    // just comparing the payloads because a new item
+                    // thus it will have different properties than the factory created item
+                    let receivedPayload = dispatch.args[ 0 ][ 1 ];
+                    expect( receivedPayload.obj.id ).toBe( expectedPayload.obj.id );
+                    expect( receivedPayload.mutateSilently ).toBe( expectedPayload.mutateSilently );
+                    expect( receivedPayload.parent ).toBe( expectedPayload.parent );
+                    done();
+                } );
+
+            } );
         } );
     } );
-
 
     describe( 'getters (defined in items.js, not imported)', () => {
         let rootId, root, parentId, store;
 
         beforeEach( function () {
             item = factories.itemFactory();
-            exam = factories.examFactory();
+            parent = factories.examFactory();
 
-            parent = itemFactory();
+            // parent = itemFactory();
             filledState = {
                 items: [ parent ],
                 itemMap: new Node( parent.serialNumber, parent.serialNumber )
@@ -95,7 +136,7 @@ describe( compName, () => {
             // parent = new Node( parentId, rootId );
             // root.children.push( parent );
 
-            getters[ gTypes.getActiveExam ] = (  ) => (  ) =>  exam;
+            getters[ gTypes.getActiveExam ] = () => () => exam;
             // getters[gTypes.getItemBySerialNumber] = (  ) => (  ) => item;
 
             store = new Vuex.Store( {
@@ -109,6 +150,7 @@ describe( compName, () => {
             it( "happy path", function () {
                 //call
                 let result = store.getters.getOrderForSync;
+
                 expect( result ).toBeTruthy();
             } );
         } );
@@ -151,9 +193,10 @@ describe( compName, () => {
                 // window.console.log( 'items.spec', 'state', 275, state );
                 let result = store.getters[ gTypes.getSortedIds ];
                 var expectedIds = [];
-                _.forEach(filledState.items, function ( item ) {
-                    expectedIds.push(item);
-                })
+                _.forEach( filledState.items, function ( item ) {
+                    expectedIds.push( item );
+                } )
+
                 let tester = function ( currentNode ) {
                     // window.console.log( 'items.spec', 'tester', 182, currentNode);
                     //ignore the exam1

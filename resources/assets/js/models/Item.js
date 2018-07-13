@@ -148,8 +148,103 @@ export default class Item extends IModel {
         return this.fillObject( obj, params, Item.aliasMap );
     }
 
+    //----------------- ordering
+    promote() {
+        if ( this.depth > 0 ) {
+            this.depth -= 1;
+        }
+    }
 
-    //-----------------  comments
+    demote() {
+        this.depth += 1;
+    }
+
+
+    get idx() {
+        return this.idxStore.split( separator );
+    } //[ this.index,  this.depth];}
+
+    set idx( index ) {
+        this.idxStore = Item.buildKeyFromIdx( index );
+    }
+
+    /* ------------------------ Publicity   -------------------- */
+    togglePublic() {
+        // console.log('Item', 'CALLED', 'togglePublic', this._public);
+        this.publicity = !this.publicity;
+        // console.log(this._public);
+    }
+
+    /**
+     * Makes able to appear in student-viewable outputs
+     */
+    makePublic() {
+        this.publicity = true;
+    }
+
+    /**
+     * Makes no longer visible to students
+     */
+    hide() {
+        this.publicity = false;
+    }
+
+
+    /* ------------------------ Status and role queries  -------------------- */
+    /**
+     * Tells whether the item has a valid id and thus can
+     * be synced with the server.
+     * Valid ids are assumed to be numbers starting with 0
+     * @returns {boolean}
+     */
+    canSync() {
+        return this.id >= 0 ;
+    }
+
+    static checkIfItem( obj ) {
+        //received payload object case
+        if ( obj instanceof Item ) return true;
+
+        if ( obj.kind === 'item' ) return true;
+
+        return false;
+    }
+
+
+    /**
+     * The role played by the item
+     */
+    get type() {
+        return this.determineType();
+    }
+
+    /**
+     * utility for determining which of the older types
+     * this item belongs to
+     */
+    determineType() {
+        return this.depth > 0 ? 'element' : 'question';
+    }
+
+    isNew() {
+        return this.id === -1;
+    }
+
+    /**
+     * Getter for whether this can currently appear in student-viewable outputs
+     * @returns {boolean|*}
+     */
+    isPublic() {
+        return this.publicity;
+    }
+
+
+    /* ------------------------ Comments -------------------- */
+    /**
+     * Makes the comment the item's comment for the specified valence
+     * @param valence
+     * @param comment
+     */
     addComment( valence, comment ) {
         // this.comments.push( comment );
         // Vue.set(this.comments, valence, comment );
@@ -174,83 +269,6 @@ export default class Item extends IModel {
         }
     }
 
-
-    //----------------- ordering
-    promote() {
-        if ( this.depth > 0 ) {
-            this.depth -= 1;
-        }
-    }
-
-    demote() {
-        this.depth += 1;
-    }
-
-
-    //----------------- Publicity
-    togglePublic() {
-        // console.log('Item', 'CALLED', 'togglePublic', this._public);
-        this.publicity = !this.publicity;
-        // console.log(this._public);
-    }
-
-    /**
-     * Makes able to appear in student-viewable outputs
-     */
-    makePublic() {
-        this.publicity = true;
-    }
-
-    /**
-     * Makes no longer visible to students
-     */
-    hide() {
-        this.publicity = false;
-    }
-
-
-    /* ------------------------ Status queries  -------------------- */
-    /**
-     * Tells whether the item has a valid id and thus can
-     * be synced with the server.
-     * Valid ids are assumed to be numbers starting with 0
-     * @returns {boolean}
-     */
-    canSync() {
-        return this.id >= 0 ;
-    }
-
-    static checkIfItem( obj ) {
-        //received payload object case
-        if ( obj instanceof Item ) return true;
-
-        if ( obj.kind === 'item' ) return true;
-
-        return false;
-    }
-
-    /**
-     * utility for determining which of the older types
-     * this item belongs to
-     */
-    determineType() {
-        return this.depth > 0 ? 'element' : 'question';
-    }
-
-    isNew() {
-        return this.id === -1;
-    }
-
-    /**
-     * Getter for whether this can currently appear in student-viewable outputs
-     * @returns {boolean|*}
-     */
-    isPublic() {
-        return this.publicity;
-    }
-
-
-    /* ------------------------ Getters and setters -------------------- */
 
     //----------------- Comments
     /**
@@ -352,23 +370,6 @@ export default class Item extends IModel {
             'id',
             'index'
         ]
-    }
-
-    //----------------- Ordering
-    get idx() {
-        return this.idxStore.split( separator );
-    } //[ this.index,  this.depth];}
-
-    set idx( index ) {
-        this.idxStore = Item.buildKeyFromIdx( index );
-    }
-
-    //----------------- Type and role of item
-    /**
-     * The role played by the item
-     */
-    get type() {
-        return this.determineType();
     }
 
 

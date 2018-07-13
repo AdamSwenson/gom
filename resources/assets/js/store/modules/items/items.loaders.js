@@ -96,7 +96,7 @@ const actions = {
                     itemObjectJson: objectJson,
                     itemOrderJson: orderJson
                 } ).then( function () {
-                    resolve();
+                    return resolve();
                 } );
             } );
         } );

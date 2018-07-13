@@ -60,6 +60,7 @@ export const makeFilledState = ( state, numItems = 5, testIndex = null ) => {
 
         state.items += moreNewItems;
     }
+    return state;
 
 };
 

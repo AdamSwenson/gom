@@ -126,7 +126,7 @@ describe( compName, () => {
     } );
 
     describe( description( "demote" ), function () {
-        it( "makes the node into the child of its immediately older sibiling", function () {
+        it( "makes the node into the child of its immediately older sibling", function () {
             //prep
             let c1 = new Node( 4, parentId );
             let c2 = new Node( 5, parentId );
@@ -182,43 +182,45 @@ describe( compName, () => {
 
     describe( description( mTypes.insertNodeIntoOrder ), function () {
 
-            it( "it pushes the node onto the end of the parent's children list when no index is provided", function (  ) {
+        it( "it pushes the node onto the end of the parent's children list when no index is provided", function () {
 
-                let parent = filledState.itemMap.children[ testItemIndex ].children[ testItemIndex ];
-                let numChildren = parent.children.length;
-                let toAddSerial = faker.random.number();
-                let toAdd = new Node( toAddSerial, parent.data ); //this step is handled by the action in the real code
+            let parent = filledState.itemMap.children[ testItemIndex ].children[ testItemIndex ];
+            let numChildren = parent.children.length;
+            let toAddSerial = faker.random.number();
+            let toAdd = new Node( toAddSerial, parent.data ); //this step is handled by the action in the real code
 
-                let payload = Payload.factory( {
-                    objNode: toAdd,
-                    parentNode: parent,
-                    mutateSilently: true
-                } );
-
-                //call
-                mutations[ mTypes.insertNodeIntoOrder ]( filledState, payload );
-
-                //check
-                let result = filledState.itemMap.children[ testItemIndex ].children[ testItemIndex ];
-                //parent properties are unchanged (other than children)
-                expect( result.data ).toBe( parent.data );
-                expect( result.parent ).toBe( parent.parent );
-                expect( result.children.length ).toBe( numChildren + 1 );
-                //check the node we added
-                let added = result.children[ result.children.length - 1 ];
-                expect( added ).toBe( toAdd );
-                // explicitly check that it has the parent's isn set properly
-                expect( added.parent ).toBe( parent.data );
+            let payload = Payload.factory( {
+                objNode: toAdd,
+                parentNode: parent,
+                mutateSilently: true
             } );
 
-            it( "pushes the node into correct location when an index is provided", function (  ) {
+            //call
+            mutations[ mTypes.insertNodeIntoOrder ]( filledState, payload );
+
+            //check
+            let result = filledState.itemMap.children[ testItemIndex ].children[ testItemIndex ];
+            //parent properties are unchanged (other than children)
+            expect( result.data ).toBe( parent.data );
+            expect( result.parent ).toBe( parent.parent );
+            expect( result.children.length ).toBe( numChildren + 1 );
+            //check the node we added
+            let added = result.children[ result.children.length - 1 ];
+            expect( added ).toBe( toAdd );
+            // explicitly check that it has the parent's isn set properly
+            expect( added.parent ).toBe( parent.data );
+        } );
+
+        describe( "pushes the node into correct location when an index is provided", function () {
+            let parent, numChildren, toAddSerial, toAdd, index, payload, result;
+            beforeEach( () => {
                 //Should splice into particular location of
                 // the parent's children array
-                let parent = filledState.itemMap.children[ testItemIndex ];//.children[ testItemIndex ];
-                let numChildren = parent.children.length;
-                let toAddSerial = faker.random.number();
-                let toAdd = new Node( toAddSerial, parent.data ); //this step is handled by the action in the real code
-                let index = faker.random.number( { min: 0, max: parent.children.length - 1 } )
+                parent = filledState.itemMap.children[ testItemIndex ];//.children[ testItemIndex ];
+                numChildren = parent.children.length;
+                toAddSerial = faker.random.number();
+                toAdd = new Node( toAddSerial, parent.data ); //this step is handled by the action in the real code
+                index = faker.random.number( { min: 0, max: parent.children.length - 1 } )
 
                 let payload = Payload.factory( {
                     objNode: toAdd,
@@ -231,20 +233,25 @@ describe( compName, () => {
                 mutations[ mTypes.insertNodeIntoOrder ]( filledState, payload );
 
                 //check
-                let result = filledState.itemMap.children[ testItemIndex ];
+                result = filledState.itemMap.children[ testItemIndex ];
+            } );
 
-                //parent properties are unchanged (other than children)
+            it( "did not change the parent's properties (other than the children list)", () => {
                 expect( result.data ).toBe( parent.data );
                 expect( result.parent ).toBe( parent.parent );
                 expect( result.children.length ).toBe( numChildren + 1 );
+            } );
 
-                //check the node we added
+            it( "correctly added the intended node", () => {
                 let added = result.children[ index ];
                 expect( added.data ).toBe( toAddSerial );
                 expect( added.children.length ).toBe( toAdd.children.length );
-                // explicitly check that it has the parent's isn set properly
-                expect( added.parent ).toBe( parent.data );
+            } );
 
+            it( "the target node has the parent's isn set properly", () => {
+                let added = result.children[ index ];
+                expect( added.parent ).toBe( parent.data );
+            } );
 
         } );
 

@@ -15,7 +15,7 @@ import { traverseDF, traverseBF, getNode } from '../../../models/NodeTools'
 
 import JsonReaders from '../../utlities/JsonReaders'
 import { initializeItemsWithExam } from '../../utlities/itemHelpers';
-import { createItem } from '../../../api/requests/itemRequests';
+import { createItemRequest } from '../../../api/requests/itemRequests';
 
 const Vue = require( 'vue' );
 const _ = window._ = require( 'lodash' );
@@ -197,8 +197,9 @@ const actions = {
                 parentSN = exam.serialNumber;
             }
 
-            //directly create the item on the server
-            createItem()
+            //create a new item on the server
+            //and get the id
+            createItemRequest()
                 .then( function ( data ) {
                     //create an item from the data returned
                     //this will set the id

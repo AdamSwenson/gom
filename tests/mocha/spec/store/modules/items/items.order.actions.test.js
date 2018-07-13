@@ -64,7 +64,8 @@ describe( compName, () => {
             //Checks that the appropriate mutations are called
             testAction( actions[ aTypes.addItemToOrder ], payload, filledState, expectedMutations, {
                 verbose: false,
-                getters: getters
+                getters: getters,
+                // done
             } );
             done();
         } );
@@ -96,7 +97,8 @@ describe( compName, () => {
             //Checks that the appropriate mutations are called
             testAction( actions[ aTypes.addItemToOrder ], payload, filledState, expectedMutations, {
                 verbose: false,
-                getters: getters
+                getters: getters,
+                // done
             } );
             done();
         } );
@@ -112,18 +114,8 @@ describe( compName, () => {
             spyGetter.onCall(1).returns(parent);
 
             let getters = {
-                [ gTypes.getItemNodeFromOrder ]: () =>  spyGetter// new Node()
+                [ gTypes.getItemNodeFromOrder ]: spyGetter
             };
-            //
-             //
-            // // //now create a spy for the getters object it expects
-            // let spyGetter = sinon.mock( getters, gTypes.getItemNodeFromOrder );
-            // spyGetter.expects( gTypes.getItemNodeFromOrder )
-            //     .withArgs( toRemove.data )
-            //     .returns( toRemove );
-            // spyGetter.expects( gTypes.getItemNodeFromOrder )
-            //     .withArgs( toRemove.parent )
-            //     .returns( parent );
 
             //Expected endpoint
             let expectedPayload = Payload.factory( { parent: parent, obj: toRemove } );
@@ -140,7 +132,7 @@ describe( compName, () => {
             } );
 
             //check that the method was called on the spy
-            // expect( spyGetter.verify() ).toBe( true );
+            expect( spyGetter.callCount ).toBe( 2 );
 
         } );
     } );

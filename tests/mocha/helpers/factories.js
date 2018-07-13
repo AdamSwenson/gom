@@ -74,8 +74,8 @@ export const commentFactory = ( id, index, text, valence ) => {
     let e = new Comment();
     e.id = _.isUndefined( id ) ? faker.random.number() : id;
     e.index = _.isUndefined( index ) ? faker.random.number() : index;
-    e.text = _.isUndefined( text) ? faker.company.bs() : text;
-    e.valence = _.isUndefined( valence) ? faker.random.arrayElement(Comment.valences) : valence;
+    e.text = _.isUndefined( text ) ? faker.company.bs() : text;
+    e.valence = _.isUndefined( valence ) ? faker.random.arrayElement( Comment.valences ) : valence;
     return e;
 }
 
@@ -94,6 +94,12 @@ export const itemFactory = ( index ) => {
     e.name = faker.company.bsNoun();
     e.text = faker.company.bsNoun();
     e.maxScore = faker.random.number();
+
+    _.forEach( Comment.valences, function ( valence ) {
+        let c = Comment.factory({ valence: valence, text: faker.company.bs()});
+        e.addComment( valence, c );
+    } );
+
     return e;
 };
 
@@ -138,12 +144,12 @@ export const studentFactory = ( index ) => {
     return s;
 };
 
-export const tagFactory = (  id, text, name) => {
+export const tagFactory = ( id, text, name ) => {
     let tag = new Tag();
-    tag.id = _.isUndefined(id) ? faker.random.number() : id;
-    tag.text = _.isUndefined(text)? faker.hacker.phrase() : text;
+    tag.id = _.isUndefined( id ) ? faker.random.number() : id;
+    tag.text = _.isUndefined( text ) ? faker.hacker.phrase() : text;
     tag.props = {};
-    tag.name = _.isUndefined(name)? faker.hacker.phrase() : name;
+    tag.name = _.isUndefined( name ) ? faker.hacker.phrase() : name;
     return tag;
 };
 

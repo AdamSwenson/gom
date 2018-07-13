@@ -41,22 +41,8 @@ Vue.directive('focus', {
 import toolsDashboard from './components/dashboard.tools.component.vue'
 Vue.component( 'tools-dashboard', toolsDashboard );
 
-
-//Item card and parts
-// import depthControl from './components/input/buttons.depth-control.component.vue'
-// Vue.component( 'depth-control', depthControl );
-
-// import maxScore from './components/input/max-score-input.vue'
-// Vue.component( 'max-score', maxScore );
-
 import itemNumber from './components/field.item-number.component.vue'
 Vue.component( 'item-number', itemNumber );
-//
-// import itemAddButton from './components/input/new-item-button.vue'
-// Vue.component( 'item-add-button', itemAddButton );
-//
-// import valenceButton from './components/setup/comment/valence-buttons.vue'
-// Vue.component( 'valence-button', valenceButton );
 
 import deleteButton from './components/items/item-delete-button.vue'
 Vue.component( 'delete-item-button', deleteButton );
@@ -68,19 +54,6 @@ Vue.component( 'remove-item-button', removeButton );
 //Cards
 import itemCard from './components/cards/item-card.vue'
 Vue.component( 'item-card', itemCard );
-
-
-// //lists
-// import examList from './components/menus/existing-exams-list.vue'
-// Vue.component( 'existing-exams-menu', examList )
-//
-// import itemList from './components/menus/existing-items-list.vue'
-// Vue.component( 'existing-items-menu', itemList )
-
-
-// //Tags
-// import tagDisplay from './components/setup/tag/tag-display.vue';
-// Vue.component( 'tag-display', tagDisplay );
 
 //Universal helpers
 import infoButton from './components/helpers/info-button.vue';

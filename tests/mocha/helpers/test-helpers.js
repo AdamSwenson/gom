@@ -161,6 +161,28 @@ export const makeFakeServerResponse = () => {
     ];
 };
 
+/**
+ * Wraps the action tester in a promise
+ * which calls done when complete
+ * @param action
+ * @param payload
+ * @param state
+ * @param expectedMutations
+ * @param done
+ * @param kwargs
+ */
+export const testActionAsync =  ( action, payload, state, expectedMutations, done, ...kwargs ) =>
+{
+    let p =  new Promise(function(resolve, reject){
+        testAction(action, payload, state, expectedMutations, kwargs);
+        resolve();
+    });
+
+    return p.then(function(){
+        done();
+    });
+
+}
 
 /**
  * helper for testing action with expected mutations
@@ -175,7 +197,7 @@ export const makeFakeServerResponse = () => {
  */
 export const testAction = ( action, payload, state, expectedMutations, ...kwargs ) => {
     let count = 0
-    let { verbose = false, getters = {}, done = undefined } = kwargs[ 0 ];
+    let { verbose = false, getters = {}, done = undefined, dispatch = undefined } = kwargs[ 0 ];
     // if ( typeof kwargs[ 0 ] != 'undefined' && typeof kwargs[ 0 ][ 'verbose' ] != 'undefined' ) {
     //     verbose = kwargs[ 0 ].verbose;
     // }
@@ -184,9 +206,11 @@ export const testAction = ( action, payload, state, expectedMutations, ...kwargs
         console.log( 'verbose', verbose, kwargs );
     }
 
-    // window.console.log( 'vuex.spec.helpers', 'getters', 115, getters);
-    const dispatch = ( type, payload ) => {
-    };
+    if(_.isUndefined(dispatch)){
+        // window.console.log( 'vuex.spec.helpers', 'getters', 115, getters);
+        dispatch = ( type, payload ) => {};
+    }
+
 
     // mock commit
     const commit = ( type, payload ) => {
@@ -234,6 +258,7 @@ export const testAction = ( action, payload, state, expectedMutations, ...kwargs
         count++
         if ( count >= expectedMutations.length ) {
             if ( typeof done != 'undefined' ) {
+                window.console.log( 'test-helpers', 'commit', 237, 'calling done');
                 done();
             }
         }
@@ -246,6 +271,7 @@ export const testAction = ( action, payload, state, expectedMutations, ...kwargs
     if ( expectedMutations.length === 0 ) {
         expect( count ).toBe( 0 )
         if ( typeof done != 'undefined' ) {
+            window.console.log( 'test-helpers', 'testAction', 250, 'calling done');
             done();
         }
     }

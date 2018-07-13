@@ -77,9 +77,6 @@ module.exports = {
      * @param payload Expecting Item object to be in payload.obj
      */
     [ mTypes.addNewItem ]: ( state, payload ) => {
-        // console.log( mTypes.addNewItem, state, payload );
-
-        // return new Promise( ( resolve, reject ) => {
 
             if ( Payload.checkIfPayload( payload ) ) {
                 let { obj, callback } = payload;
@@ -94,10 +91,8 @@ module.exports = {
                 state.items.push( obj );
 
                 if(! _.isUndefined(callback)) callback(payload);
-                // return resolve();
             }
-        // } );
-    },
+       },
 
     //utility, not called from outside
     cleanupEmptyItems: ( state ) => {
@@ -122,8 +117,8 @@ module.exports = {
     /**
      * Push an Item into storage at a particular index
      * Payload should have keys: obj, index
-     This is not watched by the api, so it can be called without
-     triggering an update to the server
+     * This is not watched by the api, so it can be called without
+     * triggering an update to the server
      *
      * @param state
      * @param payload Expecting Item object to be in payload.obj
@@ -148,7 +143,8 @@ module.exports = {
      * @param payload
      */
     [ mTypes.updateComment ]: ( state, payload ) => {
-        // console.log( mTypes.updateComment, payload, state );
+        window.console.log( mTypes.updateComment, payload, state );
+
         //get the item
         let itm = getItemFromPayload( state, payload );
         // window.console.log( 'items', 'updateComment', 145, itm, state.items );
@@ -164,8 +160,9 @@ module.exports = {
 
             //Push the altered item back into the array
             //set it in the array with vue
+            //todo This is probably not doing anything since no index is being passed in. Consider removing it.
             Vue.set( state.items, payload.index, itm );
-            // state.items.$set( payload.index, itm );
+
             // window.console.log( 'items', 'updateComment', 145, itm, state.items );
         }
     },
@@ -173,7 +170,6 @@ module.exports = {
     /**
      * Alters the the property named in updateProp to have the
      * the value set in updateVal
-     * @todo update so that can have payload identifying the item by its id, index, or seriaLNumber
      * @param state
      * @param payload
      */
@@ -189,7 +185,8 @@ module.exports = {
 
     /**
      * Alters the the property named in updateProp to have the
-     * the value set in updateVal
+     * the value set in updateVal.
+     *
      * @param state
      * @param payload
      */
@@ -205,6 +202,7 @@ module.exports = {
 
     /**
      * Make sure the property index matches the lookup index
+     * @deprecated (I think....Seems like this isn't used -- it should be in item.order.mutations)
      * @param state
      * @param payload
      */

@@ -44,13 +44,13 @@ describe( compName, () => {
         } );
 
     } );
-
-    describe( description( aTypes.deleteItem ), function () {
-        //todo
-        it.skip( 'happy path', () => {
-
-        } )
-    } );
+    //
+    // describe( description( aTypes.deleteItem ), function () {
+    //     //todo
+    //     it.skip( 'happy path', () => {
+    //
+    //     } )
+    // } );
 
 
     describe( description( aTypes.onUpdate ), function () {

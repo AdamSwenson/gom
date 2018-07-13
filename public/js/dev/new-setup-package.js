@@ -89384,7 +89384,7 @@ module.exports = _extends({}, _examRequests2.default, {
      * @param item
      * @returns {Promise}
      */
-    createItem: function createItem(store, item) {
+    createItemRequest: function createItemRequest(store, item) {
         //Make sure the item is kosher
         //If not, something might be expecting a promise
         //so we make one and immediately reject it
@@ -89911,10 +89911,8 @@ module.exports = {
      * @param item
      * @returns {Promise<T> | *}
      */
-    createItem: function createItem() {
-
+    createItemRequest: function createItemRequest() {
         var toSend = {
-
             requestVersion: _apiSettings.REQUEST_VERSION
         };
 
@@ -89923,7 +89921,7 @@ module.exports = {
         //Thus, this request is to create the item.
         //When the server has done this, it will send back an id
         return window.axios.post(_apiSettings.Routes.createItem(), toSend).then(function (response) {
-            window.console.log('itemRequests', 'axios', 44, response);
+            // window.console.log( 'itemRequests', 'axios', 44, response );
             return response.data;
         }).catch(function (error) {
             (0, _responseHandlers.errorHandling)(error);
@@ -89939,7 +89937,9 @@ module.exports = {
             //             //  'itemOrder'
 
             return response.data;
-        }).catch(function () {});
+        }).catch(function (error) {
+            (0, _responseHandlers.errorHandling)(error);
+        });
     },
 
     /**
@@ -97348,20 +97348,7 @@ _vue2.default.directive('focus', {
 
 _vue2.default.component('tools-dashboard', _dashboardToolsComponent2.default);
 
-//Item card and parts
-// import depthControl from './components/input/buttons.depth-control.component.vue'
-// Vue.component( 'depth-control', depthControl );
-
-// import maxScore from './components/input/max-score-input.vue'
-// Vue.component( 'max-score', maxScore );
-
 _vue2.default.component('item-number', _fieldItemNumberComponent2.default);
-//
-// import itemAddButton from './components/input/new-item-button.vue'
-// Vue.component( 'item-add-button', itemAddButton );
-//
-// import valenceButton from './components/setup/comment/valence-buttons.vue'
-// Vue.component( 'valence-button', valenceButton );
 
 _vue2.default.component('delete-item-button', _itemDeleteButton2.default);
 
@@ -97370,18 +97357,6 @@ _vue2.default.component('remove-item-button', _itemRemoveButton2.default);
 //Cards
 
 _vue2.default.component('item-card', _itemCard2.default);
-
-// //lists
-// import examList from './components/menus/existing-exams-list.vue'
-// Vue.component( 'existing-exams-menu', examList )
-//
-// import itemList from './components/menus/existing-items-list.vue'
-// Vue.component( 'existing-items-menu', itemList )
-
-
-// //Tags
-// import tagDisplay from './components/setup/tag/tag-display.vue';
-// Vue.component( 'tag-display', tagDisplay );
 
 //Universal helpers
 
@@ -100363,41 +100338,10 @@ var Item = function (_IModel) {
 
 
     _createClass(Item, [{
-        key: 'addComment',
+        key: 'promote',
 
-
-        //-----------------  comments
-        value: function addComment(valence, comment) {
-            // this.comments.push( comment );
-            // Vue.set(this.comments, valence, comment );
-            this.comments.set(valence, comment);
-        }
-
-        /**
-         * When loading comments into an item
-         * from ajax or on page load, use this
-         * to do it.
-         *
-         * @param jsonComments
-         */
-
-    }, {
-        key: 'loadCommentsFromJson',
-        value: function loadCommentsFromJson(jsonComments) {
-            if (Object.keys(jsonComments).length > 0) {
-                var me = this;
-                _.forEach(jsonComments, function (row) {
-                    var comment = _Comment2.default.factory(row);
-                    comment.text = row.body;
-                    me.addComment(comment.valence, comment);
-                });
-            }
-        }
 
         //----------------- ordering
-
-    }, {
-        key: 'promote',
         value: function promote() {
             if (this.depth > 0) {
                 this.depth -= 1;
@@ -100408,11 +100352,11 @@ var Item = function (_IModel) {
         value: function demote() {
             this.depth += 1;
         }
-
-        //----------------- Publicity
-
     }, {
         key: 'togglePublic',
+
+
+        /* ------------------------ Publicity   -------------------- */
         value: function togglePublic() {
             // console.log('Item', 'CALLED', 'togglePublic', this._public);
             this.publicity = !this.publicity;
@@ -100439,7 +100383,7 @@ var Item = function (_IModel) {
             this.publicity = false;
         }
 
-        /* ------------------------ Status queries  -------------------- */
+        /* ------------------------ Status and role queries  -------------------- */
         /**
          * Tells whether the item has a valid id and thus can
          * be synced with the server.
@@ -100480,7 +100424,41 @@ var Item = function (_IModel) {
             return this.publicity;
         }
 
-        /* ------------------------ Getters and setters -------------------- */
+        /* ------------------------ Comments -------------------- */
+        /**
+         * Makes the comment the item's comment for the specified valence
+         * @param valence
+         * @param comment
+         */
+
+    }, {
+        key: 'addComment',
+        value: function addComment(valence, comment) {
+            // this.comments.push( comment );
+            // Vue.set(this.comments, valence, comment );
+            this.comments.set(valence, comment);
+        }
+
+        /**
+         * When loading comments into an item
+         * from ajax or on page load, use this
+         * to do it.
+         *
+         * @param jsonComments
+         */
+
+    }, {
+        key: 'loadCommentsFromJson',
+        value: function loadCommentsFromJson(jsonComments) {
+            if (Object.keys(jsonComments).length > 0) {
+                var me = this;
+                _.forEach(jsonComments, function (row) {
+                    var comment = _Comment2.default.factory(row);
+                    comment.text = row.body;
+                    me.addComment(comment.valence, comment);
+                });
+            }
+        }
 
         //----------------- Comments
         /**
@@ -100542,6 +100520,26 @@ var Item = function (_IModel) {
          */
 
     }, {
+        key: 'idx',
+        get: function get() {
+            return this.idxStore.split(separator);
+        } //[ this.index,  this.depth];}
+
+        ,
+        set: function set(index) {
+            this.idxStore = Item.buildKeyFromIdx(index);
+        }
+    }, {
+        key: 'type',
+
+
+        /**
+         * The role played by the item
+         */
+        get: function get() {
+            return this.determineType();
+        }
+    }, {
         key: 'isEveryCommentEmpty',
         get: function get() {
             return _.size(this.getEmptyComments()) === _.size(_Comment2.default.valences);
@@ -100554,30 +100552,6 @@ var Item = function (_IModel) {
          * @returns {[string,string]}
          */
 
-    }, {
-        key: 'idx',
-
-
-        //----------------- Ordering
-        get: function get() {
-            return this.idxStore.split(separator);
-        } //[ this.index,  this.depth];}
-
-        ,
-        set: function set(index) {
-            this.idxStore = Item.buildKeyFromIdx(index);
-        }
-
-        //----------------- Type and role of item
-        /**
-         * The role played by the item
-         */
-
-    }, {
-        key: 'type',
-        get: function get() {
-            return this.determineType();
-        }
     }], [{
         key: 'buildKeyFromIdx',
         value: function buildKeyFromIdx(index) {
@@ -105741,8 +105715,9 @@ var actions = _extends({}, _items2.default.actions, _items4.default.actions, _Js
             parentSN = exam.serialNumber;
         }
 
-        //directly create the item on the server
-        (0, _itemRequests.createItem)().then(function (data) {
+        //create a new item on the server
+        //and get the id
+        (0, _itemRequests.createItemRequest)().then(function (data) {
             //create an item from the data returned
             //this will set the id
             var item = _Item2.default.factory(data);
@@ -106012,7 +105987,7 @@ var actions = {
                     itemObjectJson: objectJson,
                     itemOrderJson: orderJson
                 }).then(function () {
-                    resolve();
+                    return resolve();
                 });
             });
         });
@@ -106338,31 +106313,6 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, aTypes.
 // },
 
 
-// /**
-//  * Consume a json object and populate the Items store
-//  * by pushing Items into it.
-//  * { dispatch, commit, getters, rootGetters }
-//  * @param state
-//  * @param rootState
-//  * @param payload
-//  */
-// [aTypes.loadItems]: ( state, rootState, payload ) => {
-//     //check if payload has correct structure
-//     //todo
-//
-//     //push each record from the payload into the store
-//     for (let i = 0; i < payload.length; i++) {
-//         let record = payload[ i ];
-//         //check if record has correct structure
-//         //todo
-//
-//         //add to Items and add index mapping
-//         [ aTypes.addNewItem ](state, rootState, record);
-//     }
-// },
-//
-
-//
 // export default {
 //     actions}
 
@@ -106807,9 +106757,6 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
     window.console.log('items', 'addMappedItem', 102, key, item);
     _vue2.default.set(state.orderMap, key, item);
 }), _defineProperty(_module$exports, mTypes.addNewItem, function (state, payload) {
-    // console.log( mTypes.addNewItem, state, payload );
-
-    // return new Promise( ( resolve, reject ) => {
 
     if (_Payload2.default.checkIfPayload(payload)) {
         var obj = payload.obj,
@@ -106826,9 +106773,7 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
         state.items.push(obj);
 
         if (!_.isUndefined(callback)) callback(payload);
-        // return resolve();
     }
-    // } );
 }), _defineProperty(_module$exports, 'cleanupEmptyItems', function cleanupEmptyItems(state) {
     for (var i = 0; i < state.items.length; i++) {
         if (typeof state.items[i] === 'undefined') {
@@ -106859,7 +106804,8 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
         resolve();
     });
 }), _defineProperty(_module$exports, mTypes.updateComment, function (state, payload) {
-    // console.log( mTypes.updateComment, payload, state );
+    window.console.log(mTypes.updateComment, payload, state);
+
     //get the item
     var itm = getItemFromPayload(state, payload);
     // window.console.log( 'items', 'updateComment', 145, itm, state.items );
@@ -106875,8 +106821,9 @@ module.exports = (_module$exports = {}, _defineProperty(_module$exports, mTypes.
 
         //Push the altered item back into the array
         //set it in the array with vue
+        //todo This is probably not doing anything since no index is being passed in. Consider removing it.
         _vue2.default.set(state.items, payload.index, itm);
-        // state.items.$set( payload.index, itm );
+
         // window.console.log( 'items', 'updateComment', 145, itm, state.items );
     }
 }), _defineProperty(_module$exports, mTypes.updateItem, function (state, payload) {

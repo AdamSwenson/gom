@@ -23,31 +23,23 @@ module.exports = {
      * @param item
      * @returns {Promise<T> | *}
      */
-    createItem: ( ) => {
-
+    createItemRequest: function(){
         let toSend = {
-
             requestVersion: REQUEST_VERSION,
-             };
+        };
 
         //All IModels have an id of -1 when they are initially created.
         //This is replaced with the real id once one is returned from the server.
         //Thus, this request is to create the item.
         //When the server has done this, it will send back an id
-        return window.axios
-            .post( Routes.createItem(), toSend )
-            .then( ( response ) => {
-                window.console.log( 'itemRequests', 'axios', 44, response );
+        return window.axios.post( Routes.createItem(), toSend ).then( ( response ) => {
+                // window.console.log( 'itemRequests', 'axios', 44, response );
                 return response.data;
             } )
             .catch( function ( error ) {
                 errorHandling( error );
             } );
-
-
     },
-
-
 
 
     getItemsForExam: ( exam ) => {
@@ -59,11 +51,12 @@ module.exports = {
 //             //  'itemObjects'
 //             //  'itemOrder'
 
-            return response.data;
+                return response.data;
 
-        } ).catch( function () {
+            } ).catch( function ( error ) {
+                errorHandling( error );
 
-        } );
+            } );
     },
 
     /**

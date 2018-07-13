@@ -135,30 +135,5 @@ module.exports = {
     // },
 
 
-    // /**
-    //  * Consume a json object and populate the Items store
-    //  * by pushing Items into it.
-    //  * { dispatch, commit, getters, rootGetters }
-    //  * @param state
-    //  * @param rootState
-    //  * @param payload
-    //  */
-    // [aTypes.loadItems]: ( state, rootState, payload ) => {
-    //     //check if payload has correct structure
-    //     //todo
-    //
-    //     //push each record from the payload into the store
-    //     for (let i = 0; i < payload.length; i++) {
-    //         let record = payload[ i ];
-    //         //check if record has correct structure
-    //         //todo
-    //
-    //         //add to Items and add index mapping
-    //         [ aTypes.addNewItem ](state, rootState, record);
-    //     }
-    // },
-//
-
-//
 // export default {
 //     actions}

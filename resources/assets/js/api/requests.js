@@ -94,7 +94,7 @@ module.exports = {
      * @param item
      * @returns {Promise}
      */
-    createItem: ( store, item ) => {
+    createItemRequest: ( store, item ) => {
         //Make sure the item is kosher
         //If not, something might be expecting a promise
         //so we make one and immediately reject it

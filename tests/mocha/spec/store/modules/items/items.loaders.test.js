@@ -27,6 +27,7 @@ describe( compName, () => {
 
     beforeEach( () => {
         moxios.install();
+
         data = JSON.parse( '{"exam":{"id":12,"user_id":2,"term":null,"year":null,"name":"A","public_name":null,"description":null,"family":null,"locked":false,"released":false,"created_at":"2018-07-11 17:25:50","updated_at":"2018-07-11 17:25:57","previously_released":false},"itemObjects":[{"id":42,"name":"a1","text":"","displayText":null,"comment_text":null,"max_score":100,"settings":null,"exam_id":null,"user_id":2,"created_at":"2018-07-11 17:26:04","updated_at":"2018-07-11 17:26:07","deleted_at":null,"is_extra_credit":null,"comments":[],"tags":[]},{"id":43,"name":"a2","text":"","displayText":null,"comment_text":null,"max_score":100,"settings":null,"exam_id":null,"user_id":2,"created_at":"2018-07-11 17:26:14","updated_at":"2018-07-11 17:26:19","deleted_at":null,"is_extra_credit":null,"comments":[],"tags":[]},{"id":41,"name":"a","text":"","displayText":null,"comment_text":null,"max_score":100,"settings":null,"exam_id":null,"user_id":2,"created_at":"2018-07-11 17:25:58","updated_at":"2018-07-11 17:26:04","deleted_at":null,"is_extra_credit":null,"comments":[],"tags":[]}],"itemOrder":[{"examId":12,"itemId":42,"parentId":41,"itemOrder":0},{"examId":12,"itemId":43,"parentId":42,"itemOrder":0},{"examId":12,"itemId":41,"parentId":12,"itemOrder":0}]}' );
 
         itemObjectJson = '{"exam":{"id":12,"user_id":2,"term":null,"year":null,"name":"A","public_name":null,"description":null,"family":null,"locked":false,"released":false,"created_at":"2018-07-11 17:25:50","updated_at":"2018-07-11 17:25:57","previously_released":false},"itemObjects":[{"id":42,"name":"a1","text":"","displayText":null,"comment_text":null,"max_score":100,"settings":null,"exam_id":null,"user_id":2,"created_at":"2018-07-11 17:26:04","updated_at":"2018-07-11 17:26:07","deleted_at":null,"is_extra_credit":null,"comments":[],"tags":[]},{"id":43,"name":"a2","text":"","displayText":null,"comment_text":null,"max_score":100,"settings":null,"exam_id":null,"user_id":2,"created_at":"2018-07-11 17:26:14","updated_at":"2018-07-11 17:26:19","deleted_at":null,"is_extra_credit":null,"comments":[],"tags":[]},{"id":41,"name":"a","text":"","displayText":null,"comment_text":null,"max_score":100,"settings":null,"exam_id":null,"user_id":2,"created_at":"2018-07-11 17:25:58","updated_at":"2018-07-11 17:26:04","deleted_at":null,"is_extra_credit":null,"comments":[],"tags":[]}]"';
@@ -63,9 +64,9 @@ describe( compName, () => {
 
     } );
 
-    afterEach(function(){
+    afterEach( function () {
         moxios.uninstall();
-    })
+    } )
 
 
     describe( " mutations ", () => {
@@ -85,11 +86,18 @@ describe( compName, () => {
     describe( " actions", () => {
 
         describe( 'loadItemsFromServer', () => {
-            it( " dispatches correct action with the received data", (done) => {
+            it( " dispatches correct action with the received data", ( done ) => {
                 let exam = factories.examFactory();
                 let spy = sinon.spy();
 
-                //call
+
+                moxios.wait( function () {
+                    moxios.requests.mostRecent().respondWith( {
+                        status: 200,
+                        response: data
+                    } )
+                } );
+//call
                 let p = actions.loadItemsFromServer( {
                     state: {},
                     commit: {},
@@ -97,30 +105,25 @@ describe( compName, () => {
                     getters
                 }, exam );
 
-
-                moxios.wait( function () {
-                    let request = moxios.requests.mostRecent();
-                    request.respondWith( {
-                            status: 200,
-                            response: data
-                        } )
+                p.then( function () {
+                    // .then( function () {
+                    //made a request to the server
+                    expect( requests.callCount ).toBe( 1 );
+                    //with the correct payload
+                    expect( requests.args[ 0 ][ 0 ] ).toMatchObject( exam );
+                    //some action was dispatched
+                    expect( spy.callCount ).toBe( 1 );
+                    //oh. it was the correct action
+                    expect( spy.args[ 0 ][ 0 ] ).toBe( 'processAndStoreLoadedItems' );
+                    //and it had the right payload
+                    expect( spy.args[ 0 ][ 1 ] ).toMatchObject( payload );
+                    done();
+                    // } );
+                } ).catch( function () {
+                    expect( false ).toBeTruthy();
+                    done();
                 } );
 
-                p.then(function(){
-                // .then( function () {
-                        //made a request to the server
-                        expect( requests.callCount ).toBe( 1 );
-                        //with the correct payload
-                        expect( requests.args[ 0 ][ 0 ] ).toMatchObject( exam );
-                        //some action was dispatched
-                        expect( spy.callCount ).toBe( 1 );
-                        //oh. it was the correct action
-                        expect( spy.args[ 0 ][ 0 ] ).toBe( 'processAndStoreLoadedItems' );
-                        //and it had the right payload
-                        expect( spy.args[ 0 ][ 1 ] ).toMatchObject( payload );
-                        done();
-                    // } );
-                });
 
                 // //
                 // // //prep
