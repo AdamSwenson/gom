@@ -84,38 +84,6 @@ describe( compName, () => {
 
     describe( " actions", () => {
 
-        describe.skip( 'loadItemsFromPageJson', () => {
-            //
-            // /**
-            //  * Loads item object and item order data from json
-            //  * representations in the data attributes of page elements.
-            //  *
-            //  * Then dispatches processAndStoreLoadedItems to do the actual
-            //  * processing and storing of the obtained json objects.
-            //  *
-            //  * The payload is an object with properties items and order. Those
-            //  * hold string names of the elements on the page holding the data.
-            //  *
-            //  */
-            // loadItemsFromPageJson: ( { state, commit, dispatch, getters }, jsonLocations ) => {
-            //     return new Promise( function ( resolve, reject ) {
-            //
-            //         let objectJson = readJsonFromPageString( jsonLocations.items );
-            //         let orderJson = readJsonFromPageString( jsonLocations.order );
-            //
-            //         dispatch( 'processAndStoreLoadedItems', {
-            //             itemObjectJson: objectJson,
-            //             itemOrderJson: orderJson
-            //         } ).then( function () {
-            //             window.console.log( 'items.loaders', 'loadItemsFromPageJson', 58, 'done');
-            //             resolve();
-            //         } );
-            //     } );
-            // },
-            //
-
-        } );
-
         describe( 'loadItemsFromServer', () => {
             it( " dispatches correct action with the received data", (done) => {
                 let exam = factories.examFactory();
@@ -191,6 +159,7 @@ describe( compName, () => {
 
         } );
 
+        //todo Consider creating a test to ensure that items will be correctly ordered at each sub-level
         describe( 'processAndStoreLoadedItems', () => {
             //NB, because there are so many subsidiary tasks, I've
             //broken it up into helper functions.
@@ -278,5 +247,37 @@ describe( compName, () => {
 
         } );
 
+        describe.skip( 'loadItemsFromPageJson', () => {
+            //
+            // /**
+            //  * Loads item object and item order data from json
+            //  * representations in the data attributes of page elements.
+            //  *
+            //  * Then dispatches processAndStoreLoadedItems to do the actual
+            //  * processing and storing of the obtained json objects.
+            //  *
+            //  * The payload is an object with properties items and order. Those
+            //  * hold string names of the elements on the page holding the data.
+            //  *
+            //  */
+            // loadItemsFromPageJson: ( { state, commit, dispatch, getters }, jsonLocations ) => {
+            //     return new Promise( function ( resolve, reject ) {
+            //
+            //         let objectJson = readJsonFromPageString( jsonLocations.items );
+            //         let orderJson = readJsonFromPageString( jsonLocations.order );
+            //
+            //         dispatch( 'processAndStoreLoadedItems', {
+            //             itemObjectJson: objectJson,
+            //             itemOrderJson: orderJson
+            //         } ).then( function () {
+            //             window.console.log( 'items.loaders', 'loadItemsFromPageJson', 58, 'done');
+            //             resolve();
+            //         } );
+            //     } );
+            // },
+            //
+
+        } );
+        
     } );
 } );
