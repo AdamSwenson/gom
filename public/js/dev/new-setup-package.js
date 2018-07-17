@@ -101115,18 +101115,6 @@ var ItemScore = function () {
 
 
     _createClass(ItemScore, [{
-        key: "countsTowardTotalScore",
-
-
-        /**
-         * Returns false if the score is not to influence the overall grade,
-         * todo This will be fleshed out in GOM-347
-         * @returns {boolean}
-         */
-        value: function countsTowardTotalScore() {
-            return true;
-        }
-    }, {
         key: "score",
         get: function get() {
             if (_.isNull(this._score) || _.isUndefined(this._score)) return this._score;
