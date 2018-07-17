@@ -45,14 +45,14 @@ class ExportScores extends Job
     /**
      * Create a new job instance.
      */
-    public function __construct()
+    public function __construct( )
     {
         //        $this->questionsGenerator = app()->make('QuestionsForExamGenerator');
         $this->questionScoreDao = app()->make('App\Repositories\Score\IQuestionScoreRepository');
         $this->elementScoreDao = app()->make('App\Repositories\Score\IElementScoreRepository');
         $this->accessKeyRepository = app()->make('App\Repositories\Feedback\IAccessKeyRepository');
         $this->studentGradeRepository = app()->make('App\Repositories\Grade\IStudentGradeRepository');
-    }
+     }
 
     /**
      * Execute the job.

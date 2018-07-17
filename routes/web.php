@@ -160,6 +160,13 @@ Route::get('dev/test', 'TestController@test');
 //Route::get('dev/newsetup', 'TestController@newSetup');
 
 
+
+
+
+/* *********************************** NEW !!!!!! ******************************** */
+
+
+
 //We never ask for a question or element with the show method/route
 //so we define the show route to use the exam id. This will get hit
 //before the resource show route below. However, if somehow this route
@@ -176,6 +183,13 @@ Route::get('dev/grading/{exam}', 'Grading\NewGradingController@show');
 
 // ====================================== NEW FEEDBACK
 Route::get('dev/feedback/{exam}/{student}', 'Feedback\NewFeedbackController@show');
+
+
+/* =============================
+        Backup
+   ============================= */
+// Exports exam scores in csv
+Route::get('dev/backup/{exam}', 'Export\ExportController@exportExamScores');
 
 
 /* =============================

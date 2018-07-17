@@ -27,7 +27,7 @@ class GradePreferencesControllerTest extends \TestCase
 
     public function testStore()
     {
-        $request = new Request()
+        $request = new Request();
 
     }
 

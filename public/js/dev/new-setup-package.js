@@ -19078,6 +19078,97 @@ exports.default = {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/top-nav/backup-button.vue":
+/*!*******************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/top-nav/backup-button.vue ***!
+  \*******************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _navbarButtonBase = __webpack_require__(/*! ./navbar-button-base */ "./resources/assets/js/development/components/top-nav/navbar-button-base.vue");
+
+var _navbarButtonBase2 = _interopRequireDefault(_navbarButtonBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+    extends: _navbarButtonBase2.default,
+
+    props: ["exam"],
+
+    components: {},
+
+    data: function data() {
+        return {
+            buttonText: '',
+            screenReaderText: 'Export scores to csv file',
+            icon: "fa fa-archive",
+            linkTitle: 'Export scores',
+            linkClass: 'backup-button is-info is-outlined',
+            identifyingClass: 'backup-button',
+
+            defaults: {}
+        };
+    },
+
+    computed: {
+        route: function route() {
+            return window.routeRoot + '/dev/backup/' + this.exam.id;
+        }
+    },
+
+    methods: {
+        handleClick: function handleClick() {
+            window.axios({
+                url: this.route,
+                method: 'GET',
+                responseType: 'blob' // important
+            }).then(function (response) {
+                var url = window.URL.createObjectURL(new Blob([response.data]));
+                var link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'backup.csv');
+                document.body.appendChild(link);
+                link.click();
+            });
+            // window.axios.get( this.route );
+        }
+    },
+
+    directives: {},
+
+    events: {},
+
+    mounted: function mounted() {}
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/top-nav/create-exam-button.vue":
 /*!************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/top-nav/create-exam-button.vue ***!
@@ -19335,20 +19426,15 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
+var _navbarButtonBase = __webpack_require__(/*! ./navbar-button-base */ "./resources/assets/js/development/components/top-nav/navbar-button-base.vue");
+
+var _navbarButtonBase2 = _interopRequireDefault(_navbarButtonBase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
+    extends: _navbarButtonBase2.default,
 
     props: [],
 
@@ -19356,6 +19442,13 @@ exports.default = {
 
     data: function data() {
         return {
+            buttonText: '',
+            screenReaderText: 'Click to logout',
+            icon: "fa fa-power-off",
+            linkTitle: 'Logout',
+            linkClass: 'logout-button is-info is-outlined',
+            identifyingClass: 'logout-button',
+
             defaults: {}
         };
     },
@@ -19378,7 +19471,26 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {}
-};
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 
@@ -19398,34 +19510,13 @@ Object.defineProperty(exports, "__esModule", {
 
 var _apiSettings = __webpack_require__(/*! ../../../api/apiSettings */ "./resources/assets/js/api/apiSettings.js");
 
-exports.default = {
+var _navbarButtonBase = __webpack_require__(/*! ./navbar-button-base */ "./resources/assets/js/development/components/top-nav/navbar-button-base.vue");
 
-    props: ['exam'],
+var _navbarButtonBase2 = _interopRequireDefault(_navbarButtonBase);
 
-    components: {},
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-    data: function data() {
-        return {
-            label: 'Manage exam',
-            defaults: {}
-        };
-    },
-
-    computed: {
-        route: function route() {
-            return window.routeRoot + '/' + _apiSettings.Routes.setupExam(this.exam);
-        }
-    },
-
-    methods: {
-        handleClick: function handleClick() {
-            //handle redirection
-            //                return this.$router.go( route );
-            return window.open(this.route, "_self");
-        }
-    }
-
-}; //
+//
 //
 //
 //
@@ -19447,6 +19538,96 @@ exports.default = {
  * This is the button which takes the user
  * back to the setup / management page
  */
+exports.default = {
+    extends: _navbarButtonBase2.default,
+
+    props: ['exam'],
+
+    components: {},
+
+    data: function data() {
+        return {
+            screenReaderText: 'Click to display modal for selecting a different exam',
+            icon: "fa fa-arrow-left",
+            linkTitle: 'Change exams',
+            linkClass: ' is-success is-outlined',
+            identifyingClass: 'manage-exam-button ',
+            buttonText: 'Manage exam',
+
+            // label: 'Manage exam',
+            defaults: {}
+        };
+    },
+
+    computed: {
+        route: function route() {
+            return window.routeRoot + '/' + _apiSettings.Routes.setupExam(this.exam);
+        }
+    },
+
+    methods: {
+        handleClick: function handleClick() {
+            //handle redirection
+            //                return this.$router.go( route );
+            return window.open(this.route, "_self");
+        }
+    }
+
+};
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/top-nav/navbar-button-base.vue":
+/*!************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/top-nav/navbar-button-base.vue ***!
+  \************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+/**
+ * This defines the parent class for all buttons in the top navbar
+ * Inheritors of this class need to define the following properties:
+ *      buttonText (optional)
+ *      screenReaderText: '',
+ *      icon: "",
+ *      linkTitle: '',
+ *      linkClass: '',
+ *      identifyingClass: '',
+ * and the method:
+ *      handleClick
+ */
+exports.default = {
+    name: "navbar-button-base",
+
+    data: function data() {
+        return {
+            screenReaderText: '',
+            icon: "",
+            linkTitle: '',
+            linkClass: '',
+            identifyingClass: '',
+            buttonText: '',
+            defaults: {}
+        };
+    },
+
+    computed: {
+        iconSize: function iconSize() {
+            if (this.buttonText.length > 0) return 'is-small';
+        }
+    },
+
+    methods: {
+        handleClick: function handleClick() {}
+    }
+};
 
 /***/ }),
 
@@ -19694,9 +19875,91 @@ var _settingsButtonMenu = __webpack_require__(/*! ./settings-button-menu */ "./r
 
 var _settingsButtonMenu2 = _interopRequireDefault(_settingsButtonMenu);
 
+var _backupButton = __webpack_require__(/*! ./backup-button */ "./resources/assets/js/development/components/top-nav/backup-button.vue");
+
+var _backupButton2 = _interopRequireDefault(_backupButton);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 exports.default = {
 
@@ -19704,6 +19967,7 @@ exports.default = {
     props: ['exam', 'pageType'],
 
     components: {
+        BackupButton: _backupButton2.default,
         SettingsButtonMenu: _settingsButtonMenu2.default,
         LogoutButton: _logoutButton2.default,
         ManageExamButton: _manageExamButton2.default,
@@ -19730,77 +19994,7 @@ exports.default = {
     events: {},
 
     mounted: function mounted() {}
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+};
 
 /***/ }),
 
@@ -35627,6 +35821,25 @@ exports.push([module.i, "", ""]);
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-6fc5a93e\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/top-nav/navbar-button-base.vue":
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-6fc5a93e","scoped":true,"hasInlineConfig":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/top-nav/navbar-button-base.vue ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")();
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7140d5d1\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/setup/student/action-buttons/add-student-button.vue":
 /*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-7140d5d1","scoped":false,"hasInlineConfig":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/setup/student/action-buttons/add-student-button.vue ***!
@@ -35711,6 +35924,25 @@ exports.push([module.i, "", ""]);
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")();
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7927590a\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/top-nav/backup-button.vue":
+/*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-7927590a","scoped":false,"hasInlineConfig":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/top-nav/backup-button.vue ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")();
 // imports
 
 
@@ -65467,6 +65699,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "level-item has-text-centered"
   }, [_c('settings-button-menu')], 1), _vm._v(" "), _c('div', {
     staticClass: "level-item has-text-centered"
+  }, [_c('backup-button', {
+    attrs: {
+      "exam": _vm.exam
+    }
+  })], 1), _vm._v(" "), _c('div', {
+    staticClass: "level-item has-text-centered"
   }, [_c('logout-button')], 1)])])])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
@@ -67841,37 +68079,6 @@ if (false) {}
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-4db486b3\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/top-nav/logout-button.vue":
-/*!*****************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-4db486b3","hasScoped":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/top-nav/logout-button.vue ***!
-  \*****************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('p', {
-    staticClass: "logout-button field"
-  }, [_c('a', {
-    staticClass: "button logout-button is-info is-outlined",
-    on: {
-      "click": _vm.handleClick
-    }
-  }, [_vm._m(0)])])
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('span', {
-    staticClass: "icon "
-  }, [_c('i', {
-    staticClass: "fa fa-power-off",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })])
-}]}
-module.exports.render._withStripped = true
-if (false) {}
-
-/***/ }),
-
 /***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-4dba68ff\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/stats/summary-stats-display.vue":
 /*!***********************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-4dba68ff","hasScoped":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/stats/summary-stats-display.vue ***!
@@ -68765,6 +68972,43 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }))]), _vm._v(" "), _c('div', {
     staticClass: "prefs-content"
   }, [_vm._t("prefsContent")], 2)])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-6fc5a93e\",\"hasScoped\":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/top-nav/navbar-button-base.vue":
+/*!*********************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-6fc5a93e","hasScoped":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/top-nav/navbar-button-base.vue ***!
+  \*********************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('p', {
+    staticClass: "field",
+    class: _vm.identifyingClass
+  }, [_c('a', {
+    staticClass: "button ",
+    class: _vm.linkClass,
+    attrs: {
+      "title": _vm.linkTitle
+    },
+    on: {
+      "click": _vm.handleClick
+    }
+  }, [_c('span', {
+    staticClass: "icon ",
+    class: _vm.iconSize
+  }, [_c('i', {
+    class: _vm.icon,
+    attrs: {
+      "aria-hidden": "true"
+    }
+  }, [_c('span', {
+    staticClass: "sr-only"
+  }, [_vm._v(_vm._s(_vm.screenReaderText))])])]), _vm._v(" "), (_vm.buttonText.length > 0) ? _c('span', [_vm._v(_vm._s(_vm.buttonText))]) : _vm._e()])])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {}
@@ -70390,37 +70634,6 @@ if (false) {}
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-d6a25e6c\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/top-nav/manage-exam-button.vue":
-/*!**********************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-d6a25e6c","hasScoped":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/top-nav/manage-exam-button.vue ***!
-  \**********************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('p', {
-    staticClass: "manage-exam-button field"
-  }, [_c('a', {
-    staticClass: "button  is-success is-outlined",
-    on: {
-      "click": _vm.handleClick
-    }
-  }, [_vm._m(0), _vm._v(" "), _c('span', [_vm._v(_vm._s(_vm.label))])])])
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-arrow-left",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })])
-}]}
-module.exports.render._withStripped = true
-if (false) {}
-
-/***/ }),
-
 /***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-dcbb99c8\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/stats/item-summary-stats.vue":
 /*!********************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-dcbb99c8","hasScoped":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/stats/item-summary-stats.vue ***!
@@ -70875,6 +71088,26 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var update = __webpack_require__(/*! ../../../../../../node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("9cbfbec4", content, false, {});
+// Hot Module Replacement
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-6fc5a93e\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/top-nav/navbar-button-base.vue":
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-6fc5a93e","scoped":true,"hasInlineConfig":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/top-nav/navbar-button-base.vue ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader!../../../../../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-6fc5a93e","scoped":true,"hasInlineConfig":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./navbar-button-base.vue */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-6fc5a93e\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/top-nav/navbar-button-base.vue");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(/*! ../../../../../../node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("7bf2114e", content, false, {});
 // Hot Module Replacement
 if(false) {}
 
@@ -75442,6 +75675,26 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var update = __webpack_require__(/*! ../../../../../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")("97e346b6", content, false);
+// Hot Module Replacement
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7927590a\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/top-nav/backup-button.vue":
+/*!**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-7927590a","scoped":false,"hasInlineConfig":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/top-nav/backup-button.vue ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader!../../../../../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-7927590a","scoped":false,"hasInlineConfig":true}!../../../../../../node_modules/sass-loader/lib/loader.js!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./backup-button.vue */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7927590a\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/top-nav/backup-button.vue");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(/*! ../../../../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")("b8be97a4", content, false);
 // Hot Module Replacement
 if(false) {}
 
@@ -96961,6 +97214,41 @@ module.exports = Component.exports
 
 /***/ }),
 
+/***/ "./resources/assets/js/development/components/top-nav/backup-button.vue":
+/*!******************************************************************************!*\
+  !*** ./resources/assets/js/development/components/top-nav/backup-button.vue ***!
+  \******************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(/*! !vue-style-loader!css-loader!../../../../../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-7927590a","scoped":false,"hasInlineConfig":true}!sass-loader!../../../../../../node_modules/vue-loader/lib/selector?type=styles&index=0!./backup-button.vue */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7927590a\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/top-nav/backup-button.vue")
+}
+var Component = __webpack_require__(/*! ../../../../../../node_modules/vue-loader/lib/component-normalizer */ "./node_modules/vue-loader/lib/component-normalizer.js")(
+  /* script */
+  __webpack_require__(/*! !babel-loader?cacheDirectory!../../../../../../node_modules/vue-loader/lib/selector?type=script&index=0!./backup-button.vue */ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/top-nav/backup-button.vue"),
+  /* template */
+  null,
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/top-nav/backup-button.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+
+/* hot reload */
+if (false) {}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
 /***/ "./resources/assets/js/development/components/top-nav/create-exam-button.vue":
 /*!***********************************************************************************!*\
   !*** ./resources/assets/js/development/components/top-nav/create-exam-button.vue ***!
@@ -97085,7 +97373,7 @@ var Component = __webpack_require__(/*! ../../../../../../node_modules/vue-loade
   /* script */
   __webpack_require__(/*! !babel-loader?cacheDirectory!../../../../../../node_modules/vue-loader/lib/selector?type=script&index=0!./logout-button.vue */ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/top-nav/logout-button.vue"),
   /* template */
-  __webpack_require__(/*! !../../../../../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-4db486b3","hasScoped":false}!../../../../../../node_modules/vue-loader/lib/selector?type=template&index=0!./logout-button.vue */ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-4db486b3\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/top-nav/logout-button.vue"),
+  null,
   /* styles */
   injectStyle,
   /* scopeId */
@@ -97095,7 +97383,6 @@ var Component = __webpack_require__(/*! ../../../../../../node_modules/vue-loade
 )
 Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/top-nav/logout-button.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] logout-button.vue: functional components are not supported with templates, they should use render functions.")}
 
 /* hot reload */
 if (false) {}
@@ -97121,7 +97408,7 @@ var Component = __webpack_require__(/*! ../../../../../../node_modules/vue-loade
   /* script */
   __webpack_require__(/*! !babel-loader?cacheDirectory!../../../../../../node_modules/vue-loader/lib/selector?type=script&index=0!./manage-exam-button.vue */ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/top-nav/manage-exam-button.vue"),
   /* template */
-  __webpack_require__(/*! !../../../../../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-d6a25e6c","hasScoped":false}!../../../../../../node_modules/vue-loader/lib/selector?type=template&index=0!./manage-exam-button.vue */ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-d6a25e6c\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/top-nav/manage-exam-button.vue"),
+  null,
   /* styles */
   injectStyle,
   /* scopeId */
@@ -97131,7 +97418,42 @@ var Component = __webpack_require__(/*! ../../../../../../node_modules/vue-loade
 )
 Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/top-nav/manage-exam-button.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] manage-exam-button.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ "./resources/assets/js/development/components/top-nav/navbar-button-base.vue":
+/*!***********************************************************************************!*\
+  !*** ./resources/assets/js/development/components/top-nav/navbar-button-base.vue ***!
+  \***********************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(/*! !vue-loader/node_modules/vue-style-loader!css-loader!../../../../../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-6fc5a93e","scoped":true,"hasInlineConfig":true}!../../../../../../node_modules/vue-loader/lib/selector?type=styles&index=0!./navbar-button-base.vue */ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-6fc5a93e\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/top-nav/navbar-button-base.vue")
+}
+var Component = __webpack_require__(/*! ../../../../../../node_modules/vue-loader/lib/component-normalizer */ "./node_modules/vue-loader/lib/component-normalizer.js")(
+  /* script */
+  __webpack_require__(/*! !babel-loader?cacheDirectory!../../../../../../node_modules/vue-loader/lib/selector?type=script&index=0!./navbar-button-base.vue */ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/top-nav/navbar-button-base.vue"),
+  /* template */
+  __webpack_require__(/*! !../../../../../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-6fc5a93e","hasScoped":true}!../../../../../../node_modules/vue-loader/lib/selector?type=template&index=0!./navbar-button-base.vue */ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-6fc5a93e\",\"hasScoped\":true}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/top-nav/navbar-button-base.vue"),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  "data-v-6fc5a93e",
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/top-nav/navbar-button-base.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] navbar-button-base.vue: functional components are not supported with templates, they should use render functions.")}
 
 /* hot reload */
 if (false) {}

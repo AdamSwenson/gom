@@ -332,7 +332,7 @@ $factory->define(App\GradingTime::class, function ( Faker\Generator $faker ) {
 });
 
 $factory->define(App\Assignment::class, function ( Faker\Generator $faker ) {
-    return ['item_id' => \factory(App\Element::class)->create()->id];
+    return ['item_id' => \factory(App\Item::class)->create()->id];
 });
 
 

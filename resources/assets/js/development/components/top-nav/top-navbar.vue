@@ -37,6 +37,11 @@
                 </div>
 
                 <div class="level-item has-text-centered">
+                    <backup-button :exam="exam"></backup-button>
+                </div>
+
+
+                <div class="level-item has-text-centered">
                     <logout-button></logout-button>
                 </div>
 
@@ -82,12 +87,15 @@
     import LogoutButton from "./logout-button";
     import SettingsButtonMenu from "./settings-button-menu";
 
+    import BackupButton from './backup-button';
+
     export default {
 
         //the currently active exam
         props: [ 'exam', 'pageType' ],
 
         components: {
+            BackupButton,
             SettingsButtonMenu,
             LogoutButton,
             ManageExamButton,

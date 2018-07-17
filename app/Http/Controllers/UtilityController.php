@@ -11,6 +11,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
+use App\Jobs\Export\ExportScores;
+
 /**
  * Controls utility functions which can be activated
  * by hitting a public route.
@@ -41,6 +43,8 @@ class UtilityController extends Controller
         if($user->owns($exam))
         {
             $exporter = app()->make('ExportScores');
+//            dispatch(new ExportScores($exam));
+
             $exporter->handle($exam);
         }
     }

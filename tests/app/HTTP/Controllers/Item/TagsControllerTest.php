@@ -254,10 +254,10 @@ class TagsControllerTest extends TestCase
         //check
         $response->assertStatus(200);
 
-//        $this->assertDatabaseMissing('item_tag', [
-//            'item_id' => $this->item->id,
-//            'tag_id' => $this->tag->id
-//        ]);
+        $this->assertDatabaseMissing('item_tag', [
+            'item_id' => $this->item->id,
+            'tag_id' => $this->tag->id
+        ]);
 
     }
 
@@ -271,10 +271,10 @@ class TagsControllerTest extends TestCase
         //check
         $response->assertStatus(200);
 
-//        $this->assertDatabaseHas('student_tag', [
-//            'student_id' => $this->student->id,
-//            'tag_id' => $this->tag->id
-//        ]);
+        $this->assertDatabaseHas('student_tag', [
+            'student_id' => $this->student->id,
+            'tag_id' => $this->tag->id
+        ]);
 
     }
 

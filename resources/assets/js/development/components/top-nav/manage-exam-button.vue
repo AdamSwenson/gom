@@ -1,15 +1,15 @@
-<template>
-    <p class="manage-exam-button field">
-        <a class="button  is-success is-outlined"
-           v-on:click="handleClick"
-        >
-        <span class="icon is-small">
-            <i class="fa fa-arrow-left" aria-hidden="true"></i>
-        </span>
-            <span>{{ label }}</span>
-        </a>
-    </p>
-</template>
+<!--<template>-->
+    <!--<p class="manage-exam-button field">-->
+        <!--<a class="button  is-success is-outlined"-->
+           <!--v-on:click="handleClick"-->
+        <!--&gt;-->
+        <!--<span class="icon is-small">-->
+            <!--<i class="fa fa-arrow-left" aria-hidden="true"></i>-->
+        <!--</span>-->
+            <!--<span>{{ label }}</span>-->
+        <!--</a>-->
+    <!--</p>-->
+<!--</template>-->
 
 <style lang="scss">
 
@@ -22,7 +22,10 @@
      */
     import { Routes } from '../../../api/apiSettings';
 
+    import NavbarButtonBase from './navbar-button-base';
+
     export default {
+        extends: NavbarButtonBase,
 
         props: [ 'exam' ],
 
@@ -30,7 +33,14 @@
 
         data: function () {
             return {
-                label: 'Manage exam',
+                screenReaderText: 'Click to display modal for selecting a different exam',
+                icon: "fa fa-arrow-left",
+                linkTitle: 'Change exams',
+                linkClass: ' is-success is-outlined',
+                identifyingClass: 'manage-exam-button ',
+                buttonText: 'Manage exam',
+
+                // label: 'Manage exam',
                 defaults: {}
             }
         },
