@@ -65,7 +65,7 @@
                 },
 
                 helpText: {
-                    countsInTotal: "If this is unchecked, you will still be able to capture data and give feedback. ",
+                    countsInTotal: "Uncheck this to capture data and give feedback without the score affecting the overall exam grade. ",
                     maxScore: ''
                 },
 
@@ -112,15 +112,22 @@
 
             countsInTotal: {
                 get: function () {
+                    if ( !_.isUndefined( this.item ) ) return this.item.countsInTotal;
                     return this.defaults.countsInTotal;
                 },
                 set: function ( v ) {
-
-                }
+                    let pl = Payload.factory( {
+                        obj: this.item,
+                        updateProp: 'countsInTotal',
+                        updateVal: v
+                    } );
+                    this.$store.commit( mTypes.updateItem, pl );
             }
-        },
+        }
+    },
 
-        methods: {}
+    methods: {
+    }
     }
 
 

@@ -18,13 +18,20 @@ class ItemScore extends BaseModel
     ];
 
     /**
-     * Returns false if the score is not to influence the overall grade,
-     * todo This will be fleshed out in GOM-347
+     * Returns false if the score is not to influence the overall grade.
+     * This will be true if the item is either ungraded or extra credit
+     * 
+     * Added in GOM-347
      * @returns {boolean}
      */
     public function countsTowardTotalScore()
     {
-        return true;
+        $r = $this->item->countsTowardTotalScore();
+
+        //for compatibility with earlier data
+        if(is_null($r)) return true;
+
+        return $r;
     }
 
 

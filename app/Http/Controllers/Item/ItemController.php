@@ -102,9 +102,9 @@ class ItemController extends Controller
     {
 
         $item = Item::create();
-$item->max_score = self::DEFAULT_MAX_SCORE;
-$item->save();
-return $item;
+        $item->max_score = self::DEFAULT_MAX_SCORE;
+        $item->save();
+        return $item;
 //
 ////todo Separate this so that store only handles creation
 //        if ( $request->has('id') ) {
@@ -150,7 +150,7 @@ return $item;
     {
         $item = $request->has('id') ? Item::find($request->input('id')) : null;
 
-        if(isset($item)) $item->load('tags');
+        if ( isset($item) ) $item->load('tags');
 
         return $item;
     }
@@ -187,6 +187,13 @@ return $item;
                 'name' => $request->input('name'),
                 'max_score' => $request->input('maxScore')
             ]);
+
+        if($request->has('countsInTotal')){
+            $item->update([
+                'counts_in_total' => $request->input('countsInTotal')
+            ]);
+        }
+
         $item->save();
         return $item;
     }

@@ -32,6 +32,14 @@ export default class Item extends IModel {
         this.kind = 'item';
 
         /**
+         * Whether this item counts toward the student's grade.
+         * Thus things like grammar would have this set to false
+         * However, if we ever add in extra credit, this will also be false.
+         * @type {boolean}
+         */
+        this.countsInTotal = true;
+
+        /**
          * Whether the item is currently set to
          * be appear in pages, emails, or anything
          * else that a student could see.
@@ -317,6 +325,7 @@ export default class Item extends IModel {
             'commentText',
             'text',
             'tags',
+            'countsInTotal'
             //for exam
 
         ].concat( super.fillableProps );
@@ -333,7 +342,8 @@ export default class Item extends IModel {
             'name',
             'commentText',
             'text',
-            'tags'
+            'tags',
+            'countsInTotal'
         ];
     };
 
@@ -347,7 +357,8 @@ export default class Item extends IModel {
             // ItemIndex: 'index',
             questionName: 'name',
             questionText: 'text',
-            max_score: 'maxScore'
+            max_score: 'maxScore',
+            counts_in_total: 'countsInTotal'
         };
 
     }

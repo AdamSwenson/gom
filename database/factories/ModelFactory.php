@@ -360,7 +360,14 @@ $factory->define(App\Item::class, function ( Faker\Generator $faker ) {
 $factory->define(App\Models\NewGom\ItemScore::class, function ( Faker\Generator $faker ) {
 //    $userId = 1;
 //    Auth::logInUsingId($userId);
+    $item = \factory(App\Item::class)->create();
+    $exam = \factory(App\Exam::class)->create();
+    $student = \factory(App\Exam::class)->create();
+
     return [
+        'item_id' => $item,
+        'exam_id' => $exam,
+        'student_id' => $student,
         'comment_text' => $faker->words,
         'score' => $faker->randomNumber()
     ];

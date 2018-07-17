@@ -41,7 +41,8 @@ class Item extends BaseModel
         'commentText',
         'settings',
         'text',
-        'max_score'
+        'max_score',
+        'counts_in_total'
     ];
 //
 //    public function __get( $key )
@@ -59,6 +60,18 @@ class Item extends BaseModel
 //        }
 //
 //    }
+
+    /**
+     * Returns false if the score is not to influence the overall grade,
+     * todo This will be fleshed out in GOM-347
+     * @returns {boolean}
+     */
+    public function countsTowardTotalScore()
+    {
+        return $this->attributes['counts_in_total'];
+    }
+
+
 
 
     #------------ foreign keys
