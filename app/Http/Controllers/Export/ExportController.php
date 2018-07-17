@@ -49,12 +49,6 @@ class ExportController extends Controller
 
     public $headers;
 
-    /** @var \App\Repositories\Score\IQuestionScoreRepository */
-    protected $questionScoreDao;
-
-    /** @var \App\Repositories\Score\IElementScoreRepository */
-    protected $elementScoreDao;
-
     /** @var \App\Repositories\Feedback\IAccessKeyRepository */
     protected $accessKeyRepository;
 
@@ -78,6 +72,52 @@ class ExportController extends Controller
         $this->headers = ['Name', 'Id'];
     }
 
+
+
+    /**
+     * THIS IS THE MAIN PUBLICLY CALLABLE METHOD 
+     * 
+     * This returns a csv file containing all the recorded scores for the 
+     * exam. 
+     * 
+     * If a student has not had their exam graded, they will not be
+     * included in the file.
+     * 
+     */
+    public function exportExamScores( Exam $exam )
+    {
+        $user = Auth::user();
+        if ( $user->owns($exam) ) {
+            $this->exam = $exam;
+
+            $this->initializeFilepath();
+
+            $this->loadItems();
+
+            $this->loadScores();
+
+            $this->write_csv_file();
+
+            $headers = [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => "attachment; filename=" . $this->outputFilename,
+                'filename' => $this->outputFilename
+            ];
+
+            return response()
+                ->download($this->outputPath, $this->outputFilename, $headers)
+                ->deleteFileAfterSend(true);
+
+        }
+    }
+
+    /**
+     * HELPER FUNCTION. SHOULD NOT BE CALLED FROM OUTSIDE.
+     * (Keeping public for ease of testing)
+     *
+     * Sets the temporary file which will be created and then
+     * deleted after sending.
+     */
     protected function initializeFilepath()
     {
         $date = date('Y-m-d_H-i-s');
@@ -87,7 +127,11 @@ class ExportController extends Controller
 
     }
 
+
     /**
+     * HELPER FUNCTION. SHOULD NOT BE CALLED FROM OUTSIDE.
+     * (Keeping public for ease of testing)
+     *
      * Populates the items and headers from the assignment tree.
      */
     public function loadItems()
@@ -111,13 +155,18 @@ class ExportController extends Controller
     }
 
     /**
+     * HELPER FUNCTION. SHOULD NOT BE CALLED FROM OUTSIDE.
+     * (Keeping public for ease of testing)
+     *
      * Populates the records array
      * NB, if any students do not yet have grades, they will not be included in the download
      */
     public function loadScores()
     {
         //get all scores for all items and all students
-        $scores = ItemScore::where('exam_id', $this->exam->id)->get()->groupby('student_id');
+        $scores = ItemScore::where('exam_id', $this->exam->id)
+            ->get()
+            ->groupby('student_id');
 
         foreach ( $scores as $studentId => $scoreList ) {
             $record = [];
@@ -140,10 +189,11 @@ class ExportController extends Controller
             array_push($record, $this->loadTotalScore($student));
 
             //add grade
-            $gradeAssignment =  $this->studentGradeRepository->getStudentGrade($this->exam, $student);
-            array_push($record, $gradeAssignment->getDisplayValue());
-            array_push($record, $gradeAssignment->getCalcValue());
-
+            $gradeAssignment = $this->studentGradeRepository->getStudentGrade($this->exam, $student);
+            if ( !is_null($gradeAssignment) ) {
+                array_push($record, $gradeAssignment->getDisplayValue());
+                array_push($record, $gradeAssignment->getCalcValue());
+            }
             //add to the record list
             array_push($this->records, $record);
         }
@@ -151,31 +201,21 @@ class ExportController extends Controller
     }
 
 
-    public function exportExamScores( Exam $exam )
+    /**
+     * HELPER FUNCTION. SHOULD NOT BE CALLED FROM OUTSIDE.
+     * (Keeping public for ease of testing)
+     *
+     * Calculate the student's total score and return it or null
+     * @param Student $student
+     * @return null
+     */
+    protected function loadTotalScore( Student $student )
     {
-        $user = Auth::user();
-        if ( $user->owns($exam) ) {
-            $this->exam = $exam;
-
-            $this->initializeFilepath();
-
-            $this->loadItems();
-
-            $this->loadScores();
-
-            $this->write_csv_file();
-
-            $headers = [
-                'Content-Type' => 'text/csv',
-                'Content-Disposition' => "attachment; filename=$this->outputFilename",
-                'filename' => $this->outputFilename
-            ];
-
-            return response()
-                ->download($this->outputPath, $this->outputFilename, $headers)
-                ->deleteFileAfterSend(true);
-
+        $totalScore = $this->studentGradeRepository->calculateTotalScoreForStudent($this->exam, $student);
+        if ( !empty($totalScore) ) {
+            return $totalScore;
         }
+        return null;
     }
 
 
@@ -212,6 +252,9 @@ class ExportController extends Controller
     }
 
     /**
+     * HELPER FUNCTION. SHOULD NOT BE CALLED FROM OUTSIDE.
+     * (Keeping public for ease of testing)
+     *
      * This creates a csv file in the temp storage folder
      * which contains with each students' scores for each
      * item on the exam.
@@ -220,7 +263,6 @@ class ExportController extends Controller
      */
     public function write_csv_file()
     {
-//        try {
         $file = fopen($this->outputPath, 'w');
 
         // Add header row
@@ -231,101 +273,8 @@ class ExportController extends Controller
             fputcsv($file, $line);
         }
 
-        fclose($file); // or die("Can't close php://output");
-
-        // }
-        // } catch (\Exception $e) {
-        //     Log::error($e);
-        // }
+        fclose($file);
     }
 
-
-    /**
-     * Checks whether a grade has been recorded in the feedback for the
-     * student. If so, it returns the letter grade. If not, it returns null.
-     * @param Student $student
-     * @return null|string
-     */
-    protected function loadStudentGrade( Student $student )
-    {
-        //First, check if feedback has been created for the student.
-        $accessKey = $this->accessKeyRepository->getAccessKeyForStudent($this->exam->getId(), $student->getId());
-
-        if ( !empty($accessKey) ) {
-            $feedback = Feedback::where('access_key', $accessKey)->first();
-            return $feedback->grade();
-        }
-
-        return null;
-    }
-
-    /**
-     * Calculate the student's total score and return it or null
-     * @param Student $student
-     * @return null
-     */
-    protected function loadTotalScore( Student $student )
-    {
-        $totalScore = $this->studentGradeRepository->calculateTotalScoreForStudent($this->exam, $student);
-        if ( !empty($totalScore) ) {
-            return $totalScore;
-        }
-        return null;
-    }
 
 }
-
-//
-//    /**
-//     * Create a new job instance.
-//     */
-//    public function __construct( )
-//    {
-//        //        $this->questionsGenerator = app()->make('QuestionsForExamGenerator');
-//        $this->questionScoreDao = app()->make('App\Repositories\Score\IQuestionScoreRepository');
-//        $this->elementScoreDao = app()->make('App\Repositories\Score\IElementScoreRepository');
-//        $this->accessKeyRepository = app()->make('App\Repositories\Feedback\IAccessKeyRepository');
-//        $this->studentGradeRepository = app()->make('App\Repositories\Grade\IStudentGradeRepository');
-//    }
-//
-//    /**
-//     * Creates the records for the backup
-//     */
-//    public function loadRecords()
-//    {
-//        //Dunno why loading this from the service provider makes phpstorm mark as error; still works
-//        $studentsGenerator = new StudentsForExamGenerator();
-////        $studentsGenerator = app()->make('StudentsForExamGenerator');
-//
-//        foreach ( $studentsGenerator($this->exam) as $student ) {
-//            $record = [
-//                'Student name' => $student->getFullName(),
-//                'Id' => $student->getStudentId()
-//            ];
-//
-//            //Load the question scores and add to the array
-//            $questionScores = $this->questionScoreDao->load_for_student_on_exam($this->exam->getId(), $student->getId());
-//
-//            foreach ( $questionScores as $qs ) {
-//                $questionName = 'Q' . $qs->questionNumber . ' ' . $qs->questionName;
-//                $record[$questionName] = $qs->questionScore;
-//
-//                $elementScores = $this->elementScoreDao->load_all_for_student_by_question_id($this->exam->getId(), $qs->questionId, $student->getId());
-//                foreach ( $elementScores as $es ) {
-//                    $elementName = 'Q' . $qs->questionNumber . 'E' . $es->subtask . ' ' . $es->elementName;
-//                    $record[$elementName] = $es->elementScore;
-//                }
-//            }
-//
-//            //Add the total score
-//            $record['totalQuestionScore'] = $this->loadTotalScore($student);
-//
-//            //If a grade has been assigned, we'll download that too
-//            //If not, the value will be null
-//            $record['letterGrade'] = $this->loadStudentGrade($student);
-//
-//            //Add it to the records array
-//            array_push($this->records, $record);
-//        }
-//    }
-//

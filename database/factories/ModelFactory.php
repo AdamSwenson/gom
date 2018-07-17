@@ -331,16 +331,14 @@ $factory->define(App\GradingTime::class, function ( Faker\Generator $faker ) {
     ];
 });
 
+
+ // ------------------------------- NEWER -------------------
 $factory->define(App\Assignment::class, function ( Faker\Generator $faker ) {
     return ['item_id' => \factory(App\Item::class)->create()->id];
 });
 
 
-$factory->define(/**
- * @param \Faker\Generator $faker
- * @return array
- */
-    App\Item::class, function ( Faker\Generator $faker ) {
+$factory->define(App\Item::class, function ( Faker\Generator $faker ) {
 
     ///Create the maximum score based on the values in
     ///  database seeder
@@ -360,9 +358,8 @@ $factory->define(/**
 
 
 $factory->define(App\Models\NewGom\ItemScore::class, function ( Faker\Generator $faker ) {
-    $userId = 1;
-    Auth::logInUsingId($userId);
-
+//    $userId = 1;
+//    Auth::logInUsingId($userId);
     return [
         'comment_text' => $faker->words,
         'score' => $faker->randomNumber()
