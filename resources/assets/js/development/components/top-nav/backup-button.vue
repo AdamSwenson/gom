@@ -48,18 +48,24 @@
         },
 
         methods: {
+
             handleClick: function () {
                 window.axios({
                     url: this.route,
                     method: 'GET',
                     responseType: 'blob', // important
                 }).then((response) => {
+                    //the server should've sent a reasonable filename as a header
+                    let filename = !_.isUndefined(response.headers.filename) ? response.headers.filename : 'score-backup.csv';
                     const url = window.URL.createObjectURL(new Blob([response.data]));
                     const link = document.createElement('a');
                     link.href = url;
-                    link.setAttribute('download', 'backup.csv');
-                    document.body.appendChild(link);
+                    link.setAttribute('download', filename);
+                    // document.body.appendChild(link);
                     link.click();
+                    window.URL.revokeObjectURL(url);
+
+                    window.console.log( 'backup-button', 'headers', 66, response.headers);
                 });
                 // window.axios.get( this.route );
               }

@@ -19125,18 +19125,24 @@ exports.default = {
     },
 
     methods: {
+
         handleClick: function handleClick() {
             window.axios({
                 url: this.route,
                 method: 'GET',
                 responseType: 'blob' // important
             }).then(function (response) {
+                //the server should've sent a reasonable filename as a header
+                var filename = !_.isUndefined(response.headers.filename) ? response.headers.filename : 'score-backup.csv';
                 var url = window.URL.createObjectURL(new Blob([response.data]));
                 var link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', 'backup.csv');
-                document.body.appendChild(link);
+                link.setAttribute('download', filename);
+                // document.body.appendChild(link);
                 link.click();
+                window.URL.revokeObjectURL(url);
+
+                window.console.log('backup-button', 'headers', 66, response.headers);
             });
             // window.axios.get( this.route );
         }
@@ -101109,6 +101115,18 @@ var ItemScore = function () {
 
 
     _createClass(ItemScore, [{
+        key: "countsTowardTotalScore",
+
+
+        /**
+         * Returns false if the score is not to influence the overall grade,
+         * todo This will be fleshed out in GOM-347
+         * @returns {boolean}
+         */
+        value: function countsTowardTotalScore() {
+            return true;
+        }
+    }, {
         key: "score",
         get: function get() {
             if (_.isNull(this._score) || _.isUndefined(this._score)) return this._score;

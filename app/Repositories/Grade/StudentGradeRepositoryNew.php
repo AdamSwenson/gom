@@ -9,23 +9,23 @@
 namespace App\Repositories\Grade;
 
 use App\Exam;
+use App\Models\NewGom\ItemScore;
 use App\Repositories\Grade\GradeFactory;
 use App\Student;
 use App\Repositories\Score\IQuestionScoreRepository;
 
 /**
+ * FOR VERSION 0.2.0 AND ABOVE!
+ *
  * This handles retrieving and storing the grades given to each individual
  * student on the basis of the values stored in grade assignments
  *
  * @package Repositories\Grade
  */
-class StudentGradeRepository implements IStudentGradeRepository
+class StudentGradeRepositoryNew implements IStudentGradeRepository
 {
 
-    /** @var \App\Repositories\Score\IQuestionScoreRepository */
-    protected $questionScoreDao;
-
-    /** @var \App\Repositories\Grade\IGradeAssignmentRepository  */
+    /** @var \App\Repositories\Grade\IGradeAssignmentRepository */
     protected $assignmentDao;
 
     /** @var  \App\Exam */
@@ -39,7 +39,6 @@ class StudentGradeRepository implements IStudentGradeRepository
     public function __construct()
     {
         $this->assignmentDao = app()->make(IGradeAssignmentRepository::class);
-        $this->questionScoreDao = app()->make(IQuestionScoreRepository::class);
     }
 
     /**
@@ -50,7 +49,7 @@ class StudentGradeRepository implements IStudentGradeRepository
      * @param Student $student
      * @return \App\Grade
      */
-    public function getStudentGrade(Exam $exam, Student $student)
+    public function getStudentGrade( Exam $exam, Student $student )
     {
         //Make sure everything is loaded and ready
         $this->loadGradeAssignments($exam);
@@ -67,20 +66,15 @@ class StudentGradeRepository implements IStudentGradeRepository
      * @param Student $student
      * @return float
      */
-    public function calculateTotalScoreForStudent(Exam $exam, Student $student)
+    public function calculateTotalScoreForStudent( Exam $exam, Student $student )
     {
-        $questionScores = $this->questionScoreDao->load_for_student_on_exam($exam->getId(), $student->id);
-
-        $examScore = 0;
-        foreach ($questionScores as $score)
-        {
-            if (isset($score->questionScore))
-            {
-                $examScore += $score->questionScore;
-            }
-        }
-
-        return $examScore;
+        return ItemScore::where('exam_id', $exam->id)
+            ->where('student_id', $student->id)
+            ->get()
+            ->filter(function ( $score ) {
+                return $score->countsTowardTotalScore();
+            })
+            ->sum('score');
     }
 
 
@@ -89,13 +83,12 @@ class StudentGradeRepository implements IStudentGradeRepository
      * @param $totalScore
      * @return \App\Grade|null
      */
-    public function determineGrade($totalScore)
+    public function determineGrade( $totalScore )
     {
         //Find the correct grade assignment
         $assignment = $this->searchForGrade($totalScore);
 
-        if( !empty($assignment) )
-        {
+        if ( !empty($assignment) ) {
             //Load the corresponding grade
             return GradeFactory::loadByGradeId($assignment->grade_id);
         }
@@ -110,16 +103,14 @@ class StudentGradeRepository implements IStudentGradeRepository
      * @param $totalScore
      * @return GradeAssignment
      */
-    protected function searchForGrade($totalScore)
+    protected function searchForGrade( $totalScore )
     {
 
-        for($i=0; $i<count($this->gradeAssignments); $i++)
-        {
+        for ( $i = 0; $i < count($this->gradeAssignments); $i++ ) {
             //current grade object (to keep things neat)
             $g = $this->gradeAssignments[$i];
 
-            if( $totalScore >= $g->getMinScore() )
-            {
+            if ( $totalScore >= $g->getMinScore() ) {
                 return $g;
             }
         }
@@ -132,10 +123,9 @@ class StudentGradeRepository implements IStudentGradeRepository
      * That way we don't have to do a query for every student.
      * @param Exam $exam
      */
-    protected function loadGradeAssignments(Exam $exam)
+    protected function loadGradeAssignments( Exam $exam )
     {
-        if ( empty($this->exam) || $this->exam->getId() != $exam->getId() )
-        {
+        if ( empty($this->exam) || $this->exam->getId() != $exam->getId() ) {
             //Set the exam property
             $this->exam = $exam;
             //Load grade assignments

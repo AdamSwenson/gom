@@ -7,6 +7,7 @@ use App\Exam;
 use App\Item;
 use App\Jobs\AsyncStorage\UpdateAllStoredExamStats;
 use App\Models\NewGom\ItemScore;
+use App\Repositories\Grade\StudentGradeRepositoryNew;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -45,6 +46,7 @@ class ExportController extends Controller
     /** @var \App\Repositories\Question\QuestionsForExamGenerator */
     public $questionsGenerator;
     public $items = [];
+
     public $headers;
 
     /** @var \App\Repositories\Score\IQuestionScoreRepository */
@@ -67,23 +69,20 @@ class ExportController extends Controller
     {
         $this->middleware('auth');
 
-        $this->items = [];
-        $this->records = [];
+        $this->studentGradeRepository = new StudentGradeRepositoryNew();
 
-        //make headers
+
+        //start making headers list
+        //The item names will be added later during loadItems
+        //and the score and grade will be added after that.
         $this->headers = ['Name', 'Id'];
-
-
     }
 
     protected function initializeFilepath()
     {
-
         $date = date('Y-m-d_H-i-s');
         $eid = $this->exam->getId();
-
-        $this->outputFilename = "Student_scores_exam_{$eid}_{$date}.csv";
-
+        $this->outputFilename = "Student-scores_{$date}.csv";
         $this->outputPath = storage_path() . "/temp/" . $this->outputFilename;
 
     }
@@ -105,25 +104,29 @@ class ExportController extends Controller
             }
         }
 
+        //finish making headers
+        array_push($this->headers, 'Total Score');
+        array_push($this->headers, 'Grade (letter)');
+        array_push($this->headers, 'Grade (numeric)');
     }
 
     /**
      * Populates the records array
+     * NB, if any students do not yet have grades, they will not be included in the download
      */
     public function loadScores()
     {
-
         //get all scores for all items and all students
         $scores = ItemScore::where('exam_id', $this->exam->id)->get()->groupby('student_id');
-//dd($scores);
+
         foreach ( $scores as $studentId => $scoreList ) {
             $record = [];
             $student = Student::where('id', $studentId)->first();
-//            dd($studentId, $scoreList);
+
             array_push($record, "$student->last_name, $student->first_name");
             array_push($record, $student->student_identifier);
 
-//            dd($this->items);
+
             foreach ( $this->items as $item ) {
                 $score = $scoreList->where('item_id', $item->id)->first();
                 if ( !is_null($score) ) {
@@ -131,12 +134,15 @@ class ExportController extends Controller
                 } else {
                     array_push($record, '');
                 }
-
             }
 
             //add total score
+            array_push($record, $this->loadTotalScore($student));
 
             //add grade
+            $gradeAssignment =  $this->studentGradeRepository->getStudentGrade($this->exam, $student);
+            array_push($record, $gradeAssignment->getDisplayValue());
+            array_push($record, $gradeAssignment->getCalcValue());
 
             //add to the record list
             array_push($this->records, $record);
@@ -149,54 +155,85 @@ class ExportController extends Controller
     {
         $user = Auth::user();
         if ( $user->owns($exam) ) {
-
             $this->exam = $exam;
-                            $this->initializeFilepath();
 
+            $this->initializeFilepath();
 
             $this->loadItems();
-
-            //finish making headers
-            array_push($this->headers, 'Total Score');
-            array_push($this->headers, 'Grade');
-            array_push($this->records, $this->headers);
 
             $this->loadScores();
 
             $this->write_csv_file();
 
-            $headers = ['Content-Type' => 'text/csv',
-                'Content-Disposition' => "attachment; filename=$this->outputFilename"
+            $headers = [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => "attachment; filename=$this->outputFilename",
+                'filename' => $this->outputFilename
             ];
 
             return response()
-                ->download($this->outputPath, $this->outputFilename, $headers)->deleteFileAfterSend(true);
+                ->download($this->outputPath, $this->outputFilename, $headers)
+                ->deleteFileAfterSend(true);
 
         }
+    }
+
+
+    /**
+     * POSSIBLE ALTERNATIVE. NOT WORKING.
+     *
+     * Based on https://blog.pitchero.com/tech/send-a-csv-response-in-laravel
+     * @return StreamedResponse
+     */
+    public function stream_csv_response()
+    {
+
+        $csv_data = array_push($this->headers, $this->records);
+
+        return new StreamedResponse(
+            function () use ( $csv_data ) {
+                // A resource pointer to the output stream for writing the CSV to
+                $handle = fopen('php://output', 'w');
+
+                foreach ( $csv_data as $row ) {
+                    // Loop through the data and write each entry as a new row in the csv
+                    fputcsv($handle, $row);
+                }
+
+                fclose($handle);
+            },
+            200,
+            [
+                'Content-type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename=members.csv'
+            ]
+        );
+
     }
 
     /**
      * This creates a csv file in the temp storage folder
      * which contains with each students' scores for each
-     * item on the exam
+     * item on the exam.
+     *
+     * Note we might consider streaming the response instead
      */
     public function write_csv_file()
     {
 //        try {
-                $file = fopen($this->outputPath, 'w');
-//                $output = fopen('php://output', 'w') or die("Can't open php://output");
+        $file = fopen($this->outputPath, 'w');
 
-                // Add header row
-                fputcsv($file, $this->headers);
+        // Add header row
+        fputcsv($file, $this->headers);
 
-                // Add each data row
-                foreach ( $this->records as $line ) {
-                    fputcsv($file, $line);
-                }
+        // Add each data row
+        foreach ( $this->records as $line ) {
+            fputcsv($file, $line);
+        }
 
-                fclose($file); // or die("Can't close php://output");
+        fclose($file); // or die("Can't close php://output");
 
-            // }
+        // }
         // } catch (\Exception $e) {
         //     Log::error($e);
         // }

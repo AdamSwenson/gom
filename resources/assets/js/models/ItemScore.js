@@ -26,6 +26,7 @@ export default class ItemScore  {
     }
 
 
+
     static get fillableProps() {
         return [
             'examId',

@@ -17,6 +17,16 @@ class ItemScore extends BaseModel
         'score' => 'float'
     ];
 
+    /**
+     * Returns false if the score is not to influence the overall grade,
+     * todo This will be fleshed out in GOM-347
+     * @returns {boolean}
+     */
+    public function countsTowardTotalScore()
+    {
+        return true;
+    }
+
 
 #---- foreign keys
     public function exam()
