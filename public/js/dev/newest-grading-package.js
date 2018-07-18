@@ -87542,8 +87542,8 @@ module.exports = {
         });
     },
 
-    getItemsForExam: function getItemsForExam(exam) {
-        var to = _apiSettings.Routes.loadAllItemsForExam(exam.id);
+    getItemsForExam: function getItemsForExam(examId) {
+        var to = _apiSettings.Routes.loadAllItemsForExam(examId);
         // let to = 'items/exam/' + exam.id;
 
         return window.axios.get(to).then(function (response) {

@@ -38,22 +38,22 @@ Vue.directive('focus', {
 /* ~~~~~~~~~~~~~~~~~~~~~~~~ Globally register components ~~~~~~~~~~~~~~~~~~~~~~ */
 
 
-import toolsDashboard from './components/dashboard.tools.component.vue'
-Vue.component( 'tools-dashboard', toolsDashboard );
+// import toolsDashboard from './components/dashboard.tools.component.vue'
+// Vue.component( 'tools-dashboard', toolsDashboard );
 
-import itemNumber from './components/field.item-number.component.vue'
-Vue.component( 'item-number', itemNumber );
+// import itemNumber from './components/field.item-number.component.vue'
+// Vue.component( 'item-number', itemNumber );
 
-import deleteButton from './components/items/item-delete-button.vue'
-Vue.component( 'delete-item-button', deleteButton );
+// import deleteButton from './components/items/item-delete-button.vue'
+// Vue.component( 'delete-item-button', deleteButton );
 
-import removeButton from './components/items/item-remove-button.vue'
-Vue.component( 'remove-item-button', removeButton );
+// import removeButton from './components/items/item-remove-button.vue'
+// Vue.component( 'remove-item-button', removeButton );
 
 
 //Cards
-import itemCard from './components/cards/item-card.vue'
-Vue.component( 'item-card', itemCard );
+// import itemCard from './components/cards/item-card.vue'
+// Vue.component( 'item-card', itemCard );
 
 //Universal helpers
 import infoButton from './components/helpers/info-button.vue';

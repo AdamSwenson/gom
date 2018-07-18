@@ -1933,6 +1933,10 @@ var _getterTypes = __webpack_require__(/*! ../../../store/getter-types */ "./res
 
 var gTypes = _interopRequireWildcard(_getterTypes);
 
+var _itemCard = __webpack_require__(/*! ./item-card */ "./resources/assets/js/development/components/cards/item-card.vue");
+
+var _itemCard2 = _interopRequireDefault(_itemCard);
+
 var _itemMain = __webpack_require__(/*! ../items/item-main.vue */ "./resources/assets/js/development/components/items/item-main.vue");
 
 var _itemMain2 = _interopRequireDefault(_itemMain);
@@ -1944,6 +1948,10 @@ var _examCardNavigationTabs2 = _interopRequireDefault(_examCardNavigationTabs);
 var _examPanelCloseControl = __webpack_require__(/*! ../navigation/exam-panel-close-control */ "./resources/assets/js/development/components/navigation/exam-panel-close-control.vue");
 
 var _examPanelCloseControl2 = _interopRequireDefault(_examPanelCloseControl);
+
+var _itemDeleteButton = __webpack_require__(/*! ../items/item-delete-button */ "./resources/assets/js/development/components/items/item-delete-button.vue");
+
+var _itemDeleteButton2 = _interopRequireDefault(_itemDeleteButton);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -1958,6 +1966,8 @@ exports.default = {
     props: ['exam'], //, 'serialNumber' ],
 
     components: {
+        deleteItemButton: _itemDeleteButton2.default,
+        itemCard: _itemCard2.default,
         AddChildButton: _addChildButton2.default,
         PublicIndicator: _visibilityControl2.default,
         examNavTabs: _examCardNavigationTabs2.default,
@@ -2751,258 +2761,6 @@ exports.default = {
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/dashboard.tools.component.vue":
-/*!***********************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/dashboard.tools.component.vue ***!
-  \***********************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _mutationTypes = __webpack_require__(/*! ../../store/mutation-types */ "./resources/assets/js/store/mutation-types.js");
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-exports.default = {
-    props: [],
-
-    data: function data() {
-        return {
-            /**
-             * Whether to highlight missing or badly ordered items
-             */
-            isHolesShown: false
-        };
-    },
-
-    computed: {},
-
-    methods: {
-        /**
-         * Displays or hides the buttons for removing items
-         */
-        toggleDeleteMode: function toggleDeleteMode() {
-            console.log('toggleDeleteMode', 'pressed');
-            this.$store.commit(mTypes.toggleDeleteButtonVisibility);
-        },
-
-        toggleReorderMode: function toggleReorderMode() {
-            console.log('toggleReorderMode', 'pressed');
-            this.$store.commit(mTypes.toggleReorderMode);
-        },
-
-        /**
-         * Opens a pop up window for viewing what a student
-         * would see, given current settings
-         */
-        showSampleFeedback: function showSampleFeedback() {
-            console.log('showSampleFeedback', 'pressed');
-            this.$store.commit(mTypes.toggleSampleFeedback);
-        },
-
-        /**
-         * Toggle value of isHolesShown
-         */
-        toggleHolesShown: function toggleHolesShown() {
-            this.isHolesShown = !this.isHolesShown;
-        }
-
-    },
-
-    directives: {},
-
-    events: {},
-
-    mounted: function mounted() {
-        //            console.log( 'tools-dashboard ready' );
-    }
-}; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/**
- * Created by adam on 2/15/17.
- */
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/field.item-number.component.vue":
-/*!*************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/field.item-number.component.vue ***!
-  \*************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _actionTypes = __webpack_require__(/*! ../../store/action-types */ "./resources/assets/js/store/action-types.js");
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-var _mutationTypes = __webpack_require__(/*! ../../store/mutation-types */ "./resources/assets/js/store/mutation-types.js");
-
-var mTypes = _interopRequireWildcard(_mutationTypes);
-
-var _Payload = __webpack_require__(/*! ../../models/Payload */ "./resources/assets/js/models/Payload.js");
-
-var _Payload2 = _interopRequireDefault(_Payload);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-exports.default = {
-    props: ['index', 'serialNumber'],
-    data: function data() {
-        return {
-            placeholders: {}
-        };
-    },
-
-    computed: {
-
-        questionNumberId: function questionNumberId() {
-            return 'question-number-' + this.index;
-        },
-        displayType: {
-            get: function get() {
-                //if question, return q number
-                return '#';
-                //if element, return order
-            },
-            set: function set(v) {}
-        },
-
-        questionNumber: {
-            get: function get() {
-                return this.index;
-                //                    return this.getter( 'number' );
-            },
-
-            set: function set(v) {
-                //                    this.setter( 'number', v );
-                var pl = _Payload2.default.factory({ index: this.index, updateProp: name, updateVal: value });
-                this.$store.commit(mTypes.updateItem, pl);
-                // let pl = Payload.factory( {index: this.index, updateProp: 'number', updateVal: v} );
-                // this.$store.commit( mTypes.updateItem, pl );
-            }
-
-        }
-
-    },
-
-    methods: {}
-}; //
 //
 //
 //
@@ -5829,82 +5587,6 @@ exports.default = {
 //
 //
 //
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/items/item-remove-button.vue":
-/*!**********************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/items/item-remove-button.vue ***!
-  \**********************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _actionTypes = __webpack_require__(/*! ../../../store/action-types */ "./resources/assets/js/store/action-types.js");
-
-var aTypes = _interopRequireWildcard(_actionTypes);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-var bootbox = __webpack_require__(/*! bootbox */ "./node_modules/bootbox/bootbox.js"); //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-exports.default = {
-    props: ['index', 'id', 'serialNumber'],
-
-    computed: {
-        buttonId: function buttonId() {
-            return 'remove-item-button-' + this.serialNumber;
-        },
-        visible: function visible() {},
-
-        label: function label() {
-            return "Remove";
-        }
-    },
-
-    methods: {
-        isVisible: function isVisible() {},
-
-        /**
-         * Called when the button is clicked. Handles
-         * the request to remove the item from the exam.
-         * This does not request that the item be deleted from
-         * the database.
-         */
-        remove: function remove() {
-            console.log('remove  pressed');
-        },
-
-        /**
-         * This sends the actual request(s) for deletion
-         */
-        sendRequest: function sendRequest() {
-            this.$store.dispatch(aTypes.removeItem, { index: this.index, id: this.id });
-        }
-    },
-
-    mounted: function mounted() {}
-};
 
 /***/ }),
 
@@ -20105,37 +19787,23 @@ exports.default = {
     data: function data() {
         return {
             examId: window.examId,
-            //                isSyncable: this.$store.getters.canSync,
-            defaults: {}
 
-            // options: {
-            //     group: 'items', //name must be common to drag between menus
-            //     filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
-            //     animation: 150,
-            //     handle: '.handle',  // Drag handle selector within list items
-            //     ghostClass: "sortable-ghost", // Class name for the drop placeholder
-            //     dataIdAttr: 'data-id',
-            //     onUpdate: function ( event ) {
-            //         this.$store.dispatch( 'onUpdate', event );
-            //     },
-            // }
+            defaults: {}
         };
     },
 
-    watch: {
-        // canSync: function ( newVal, oldVal ) {
-        //     window.console.log( 'new-setup', 'canSync', 118, newVal, oldVal );
-        //     //if the can Sync is newly true, call update
-        //     if ( newVal ) updateItemsOrder( this.$store );
-        // }
-    },
+    watch: {},
 
     asyncComputed: {
         /**
-         * The exam object being set up
+         * The exam object being set up. Loads async upon creation
          */
         exam: function exam() {
-            return this.$store.getters[gTypes.getActiveExam];
+            var me = this;
+            var p = this.$store.dispatch('loadExamFromServer', this.examId);
+            return p.then(function () {
+                return me.$store.getters[gTypes.getActiveExam];
+            });
         }
 
     },
@@ -20155,37 +19823,7 @@ exports.default = {
     events: {},
 
     created: function created() {
-        var me = this;
-        var p = this.$store.dispatch('loadExamFromServer', this.examId);
-        p.then(function () {
-            var p = me.$store.dispatch('loadItemsFromServer', me.exam);
-        });
-
-        // and any existing scores
-        //                         //as well as comments
-        //
-        //
-        //                    let p2 = me.$store.dispatch( 'loadScoresFromServer', exam );
-        //                         p2.then( function () {
-        //                             //finally we get grading times
-        //                             let p3 = me.$store.dispatch( ngaTypes.loadTimesFromServer, exam );
-        //                             p3.then( function () {
-        //
-        //                                 //Tags for the items loaded
-        //                                 //Does not load tags that aren't yet used on the
-        //                                 //exam. That is done on the tags-panel creation
-        //
-        //                                 me.$store.dispatch( 'processTagsOutOfLoadedItems' );
-        //                                 //and are done.
-        //                             } );
-        //
-        //                         } );
-        //                     } );
-        //             } );
-        //         } );
-        //     } );
-
-        // } );
+        this.$store.dispatch('loadItemsFromServer', this.examId);
     }
 
 };
@@ -35684,25 +35322,6 @@ exports.push([module.i, "", ""]);
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-62e9f460\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/field.item-number.component.vue":
-/*!***************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-62e9f460","scoped":false,"hasInlineConfig":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/field.item-number.component.vue ***!
-  \***************************************************************************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")();
-// imports
-
-
-// module
-exports.push([module.i, "\n.item-type {\n    font-weight: bold;\n}\ninput {\n    width: 4em;\n    outline: none;\n}\n\n", ""]);
-
-// exports
-
-
-/***/ }),
-
 /***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-635504aa\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/kumi/kumi-selector.vue":
 /*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-635504aa","scoped":false,"hasInlineConfig":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/kumi/kumi-selector.vue ***!
@@ -36096,25 +35715,6 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../../node_mod
 
 // module
 exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-85feaddc\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/dashboard.tools.component.vue":
-/*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-85feaddc","scoped":false,"hasInlineConfig":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/dashboard.tools.component.vue ***!
-  \******************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")();
-// imports
-
-
-// module
-exports.push([module.i, "\n#setupToolDashboard {\n  padding-bottom: 1em;\n}\n", ""]);
 
 // exports
 
@@ -36590,25 +36190,6 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../../node_mod
 
 // module
 exports.push([module.i, "", ""]);
-
-// exports
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-f34dfb84\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/items/item-remove-button.vue":
-/*!************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-f34dfb84","scoped":false,"hasInlineConfig":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/items/item-remove-button.vue ***!
-  \************************************************************************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(/*! ../../../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")();
-// imports
-
-
-// module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -68688,44 +68269,6 @@ if (false) {}
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-62e9f460\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/field.item-number.component.vue":
-/*!***********************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-62e9f460","hasScoped":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/field.item-number.component.vue ***!
-  \***********************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.questionNumber),
-      expression: "questionNumber"
-    }],
-    staticClass: "input",
-    attrs: {
-      "type": "number",
-      "min": "0",
-      "title": "order of the item on the assignment",
-      "id": _vm.questionNumberId
-    },
-    domProps: {
-      "value": (_vm.questionNumber)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.questionNumber = $event.target.value
-      }
-    }
-  })
-},staticRenderFns: []}
-module.exports.render._withStripped = true
-if (false) {}
-
-/***/ }),
-
 /***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-635504aa\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/kumi/kumi-selector.vue":
 /*!**************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-635504aa","hasScoped":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/kumi/kumi-selector.vue ***!
@@ -69441,49 +68984,6 @@ if (false) {}
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-85feaddc\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/dashboard.tools.component.vue":
-/*!*********************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-85feaddc","hasScoped":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/dashboard.tools.component.vue ***!
-  \*********************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "dashboard",
-    attrs: {
-      "id": "setupToolDashboard"
-    }
-  }, [_c('div', {
-    staticClass: "btn-toolbar"
-  }, [_c('div', {
-    staticClass: "btn-group",
-    attrs: {
-      "role": "group",
-      "aria-label": "Setup tool buttons"
-    }
-  }, [_c('button', {
-    staticClass: "btn btn-warning",
-    on: {
-      "click": _vm.toggleDeleteMode
-    }
-  }, [_vm._v("Remove\n            ")]), _vm._v(" "), _c('button', {
-    staticClass: "btn btn-primary",
-    on: {
-      "click": _vm.showSampleFeedback
-    }
-  }, [_vm._v("Sample feedback\n            ")]), _vm._v(" "), _c('button', {
-    staticClass: "btn btn-primary",
-    on: {
-      "click": _vm.toggleHolesShown
-    }
-  }, [_vm._v("Highlight holes\n            ")])])])])
-},staticRenderFns: []}
-module.exports.render._withStripped = true
-if (false) {}
-
-/***/ }),
-
 /***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-863456aa\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/kumi/kumi-selector-visibility-button.vue":
 /*!********************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-863456aa","hasScoped":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/kumi/kumi-selector-visibility-button.vue ***!
@@ -69782,7 +69282,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.examId = $event.target.value
       }
     }
-  })], 1), _vm._v(" "), _c('bottom-navbar')], 1)
+  }), _vm._v(" "), _c('bottom-navbar')], 1)])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {}
@@ -70803,38 +70303,6 @@ if (false) {}
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-f34dfb84\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/items/item-remove-button.vue":
-/*!********************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-f34dfb84","hasScoped":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/items/item-remove-button.vue ***!
-  \********************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('a', {
-    staticClass: "item-remove-button button is-danger is-outlined ",
-    attrs: {
-      "id": _vm.buttonId
-    },
-    on: {
-      "click": _vm.remove
-    }
-  }, [_vm._m(0), _vm._v(" "), _c('span', [_vm._v(_vm._s(_vm.label))])])
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('span', {
-    staticClass: "icon is-small"
-  }, [_c('i', {
-    staticClass: "fa fa-times",
-    attrs: {
-      "aria-hidden": "true"
-    }
-  })])
-}]}
-module.exports.render._withStripped = true
-if (false) {}
-
-/***/ }),
-
 /***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-f81d88b6\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/setup/grade/frequency-chart.vue":
 /*!***********************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-f81d88b6","hasScoped":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/setup/grade/frequency-chart.vue ***!
@@ -71068,26 +70536,6 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-62e9f460\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/field.item-number.component.vue":
-/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-62e9f460","scoped":false,"hasInlineConfig":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/field.item-number.component.vue ***!
-  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(/*! !../../../../../node_modules/css-loader!../../../../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-62e9f460","scoped":false,"hasInlineConfig":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./field.item-number.component.vue */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-62e9f460\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/field.item-number.component.vue");
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(/*! ../../../../../node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("cd1ff0a8", content, false, {});
-// Hot Module Replacement
-if(false) {}
-
-/***/ }),
-
 /***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-65240686\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/setup/stats-panel.vue":
 /*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-65240686","scoped":false,"hasInlineConfig":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/setup/stats-panel.vue ***!
@@ -71283,26 +70731,6 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var update = __webpack_require__(/*! ../../../../../../../node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("1a817f5c", content, false, {});
-// Hot Module Replacement
-if(false) {}
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-f34dfb84\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/items/item-remove-button.vue":
-/*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-f34dfb84","scoped":false,"hasInlineConfig":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/items/item-remove-button.vue ***!
-  \********************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader!../../../../../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-f34dfb84","scoped":false,"hasInlineConfig":true}!../../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./item-remove-button.vue */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-f34dfb84\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/items/item-remove-button.vue");
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(/*! ../../../../../../node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("933ead42", content, false, {});
 // Hot Module Replacement
 if(false) {}
 
@@ -75810,26 +75238,6 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var update = __webpack_require__(/*! ../../../../../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")("322b0fca", content, false);
-// Hot Module Replacement
-if(false) {}
-
-/***/ }),
-
-/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-85feaddc\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/dashboard.tools.component.vue":
-/*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-85feaddc","scoped":false,"hasInlineConfig":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/dashboard.tools.component.vue ***!
-  \**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(/*! !../../../../../node_modules/css-loader!../../../../../node_modules/vue-loader/lib/style-compiler?{"vue":true,"id":"data-v-85feaddc","scoped":false,"hasInlineConfig":true}!../../../../../node_modules/sass-loader/lib/loader.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./dashboard.tools.component.vue */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-85feaddc\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/dashboard.tools.component.vue");
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(/*! ../../../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js")("1acc8f76", content, false);
 // Hot Module Replacement
 if(false) {}
 
@@ -90230,8 +89638,8 @@ module.exports = {
         });
     },
 
-    getItemsForExam: function getItemsForExam(exam) {
-        var to = _apiSettings.Routes.loadAllItemsForExam(exam.id);
+    getItemsForExam: function getItemsForExam(examId) {
+        var to = _apiSettings.Routes.loadAllItemsForExam(examId);
         // let to = 'items/exam/' + exam.id;
 
         return window.axios.get(to).then(function (response) {
@@ -92557,78 +91965,6 @@ module.exports = Component.exports
 
 /***/ }),
 
-/***/ "./resources/assets/js/development/components/dashboard.tools.component.vue":
-/*!**********************************************************************************!*\
-  !*** ./resources/assets/js/development/components/dashboard.tools.component.vue ***!
-  \**********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(/*! !vue-style-loader!css-loader!../../../../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-85feaddc","scoped":false,"hasInlineConfig":true}!sass-loader!../../../../../node_modules/vue-loader/lib/selector?type=styles&index=0!./dashboard.tools.component.vue */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-85feaddc\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/sass-loader/lib/loader.js!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/dashboard.tools.component.vue")
-}
-var Component = __webpack_require__(/*! ../../../../../node_modules/vue-loader/lib/component-normalizer */ "./node_modules/vue-loader/lib/component-normalizer.js")(
-  /* script */
-  __webpack_require__(/*! !babel-loader?cacheDirectory!../../../../../node_modules/vue-loader/lib/selector?type=script&index=0!./dashboard.tools.component.vue */ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/dashboard.tools.component.vue"),
-  /* template */
-  __webpack_require__(/*! !../../../../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-85feaddc","hasScoped":false}!../../../../../node_modules/vue-loader/lib/selector?type=template&index=0!./dashboard.tools.component.vue */ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-85feaddc\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/dashboard.tools.component.vue"),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/dashboard.tools.component.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] dashboard.tools.component.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {}
-
-module.exports = Component.exports
-
-
-/***/ }),
-
-/***/ "./resources/assets/js/development/components/field.item-number.component.vue":
-/*!************************************************************************************!*\
-  !*** ./resources/assets/js/development/components/field.item-number.component.vue ***!
-  \************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(/*! !vue-loader/node_modules/vue-style-loader!css-loader!../../../../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-62e9f460","scoped":false,"hasInlineConfig":true}!../../../../../node_modules/vue-loader/lib/selector?type=styles&index=0!./field.item-number.component.vue */ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-62e9f460\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/field.item-number.component.vue")
-}
-var Component = __webpack_require__(/*! ../../../../../node_modules/vue-loader/lib/component-normalizer */ "./node_modules/vue-loader/lib/component-normalizer.js")(
-  /* script */
-  __webpack_require__(/*! !babel-loader?cacheDirectory!../../../../../node_modules/vue-loader/lib/selector?type=script&index=0!./field.item-number.component.vue */ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/field.item-number.component.vue"),
-  /* template */
-  __webpack_require__(/*! !../../../../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-62e9f460","hasScoped":false}!../../../../../node_modules/vue-loader/lib/selector?type=template&index=0!./field.item-number.component.vue */ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-62e9f460\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/field.item-number.component.vue"),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/field.item-number.component.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] field.item-number.component.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {}
-
-module.exports = Component.exports
-
-
-/***/ }),
-
 /***/ "./resources/assets/js/development/components/grading/inputs/clear-score-button.vue":
 /*!******************************************************************************************!*\
   !*** ./resources/assets/js/development/components/grading/inputs/clear-score-button.vue ***!
@@ -93503,42 +92839,6 @@ var Component = __webpack_require__(/*! ../../../../../../node_modules/vue-loade
 Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/items/item-name-input.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] item-name-input.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {}
-
-module.exports = Component.exports
-
-
-/***/ }),
-
-/***/ "./resources/assets/js/development/components/items/item-remove-button.vue":
-/*!*********************************************************************************!*\
-  !*** ./resources/assets/js/development/components/items/item-remove-button.vue ***!
-  \*********************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(/*! !vue-loader/node_modules/vue-style-loader!css-loader!../../../../../../node_modules/vue-loader/lib/style-compiler/index?{"vue":true,"id":"data-v-f34dfb84","scoped":false,"hasInlineConfig":true}!../../../../../../node_modules/vue-loader/lib/selector?type=styles&index=0!./item-remove-button.vue */ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-f34dfb84\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/js/development/components/items/item-remove-button.vue")
-}
-var Component = __webpack_require__(/*! ../../../../../../node_modules/vue-loader/lib/component-normalizer */ "./node_modules/vue-loader/lib/component-normalizer.js")(
-  /* script */
-  __webpack_require__(/*! !babel-loader?cacheDirectory!../../../../../../node_modules/vue-loader/lib/selector?type=script&index=0!./item-remove-button.vue */ "./node_modules/babel-loader/lib/index.js?cacheDirectory!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/js/development/components/items/item-remove-button.vue"),
-  /* template */
-  __webpack_require__(/*! !../../../../../../node_modules/vue-loader/lib/template-compiler/index?{"id":"data-v-f34dfb84","hasScoped":false}!../../../../../../node_modules/vue-loader/lib/selector?type=template&index=0!./item-remove-button.vue */ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-f34dfb84\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/js/development/components/items/item-remove-button.vue"),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/Users/adam/Dropbox/gom3/resources/assets/js/development/components/items/item-remove-button.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] item-remove-button.vue: functional components are not supported with templates, they should use render functions.")}
 
 /* hot reload */
 if (false) {}
@@ -97654,26 +96954,6 @@ var _newSetup = __webpack_require__(/*! ./new-setup.vue */ "./resources/assets/j
 
 var _newSetup2 = _interopRequireDefault(_newSetup);
 
-var _dashboardToolsComponent = __webpack_require__(/*! ./components/dashboard.tools.component.vue */ "./resources/assets/js/development/components/dashboard.tools.component.vue");
-
-var _dashboardToolsComponent2 = _interopRequireDefault(_dashboardToolsComponent);
-
-var _fieldItemNumberComponent = __webpack_require__(/*! ./components/field.item-number.component.vue */ "./resources/assets/js/development/components/field.item-number.component.vue");
-
-var _fieldItemNumberComponent2 = _interopRequireDefault(_fieldItemNumberComponent);
-
-var _itemDeleteButton = __webpack_require__(/*! ./components/items/item-delete-button.vue */ "./resources/assets/js/development/components/items/item-delete-button.vue");
-
-var _itemDeleteButton2 = _interopRequireDefault(_itemDeleteButton);
-
-var _itemRemoveButton = __webpack_require__(/*! ./components/items/item-remove-button.vue */ "./resources/assets/js/development/components/items/item-remove-button.vue");
-
-var _itemRemoveButton2 = _interopRequireDefault(_itemRemoveButton);
-
-var _itemCard = __webpack_require__(/*! ./components/cards/item-card.vue */ "./resources/assets/js/development/components/cards/item-card.vue");
-
-var _itemCard2 = _interopRequireDefault(_itemCard);
-
 var _infoButton = __webpack_require__(/*! ./components/helpers/info-button.vue */ "./resources/assets/js/development/components/helpers/info-button.vue");
 
 var _infoButton2 = _interopRequireDefault(_infoButton);
@@ -97728,17 +97008,22 @@ _vue2.default.directive('focus', {
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~ Globally register components ~~~~~~~~~~~~~~~~~~~~~~ */
 
-_vue2.default.component('tools-dashboard', _dashboardToolsComponent2.default);
+// import toolsDashboard from './components/dashboard.tools.component.vue'
+// Vue.component( 'tools-dashboard', toolsDashboard );
 
-_vue2.default.component('item-number', _fieldItemNumberComponent2.default);
+// import itemNumber from './components/field.item-number.component.vue'
+// Vue.component( 'item-number', itemNumber );
 
-_vue2.default.component('delete-item-button', _itemDeleteButton2.default);
+// import deleteButton from './components/items/item-delete-button.vue'
+// Vue.component( 'delete-item-button', deleteButton );
 
-_vue2.default.component('remove-item-button', _itemRemoveButton2.default);
+// import removeButton from './components/items/item-remove-button.vue'
+// Vue.component( 'remove-item-button', removeButton );
+
 
 //Cards
-
-_vue2.default.component('item-card', _itemCard2.default);
+// import itemCard from './components/cards/item-card.vue'
+// Vue.component( 'item-card', itemCard );
 
 //Universal helpers
 

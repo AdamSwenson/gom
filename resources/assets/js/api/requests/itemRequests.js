@@ -42,8 +42,8 @@ module.exports = {
     },
 
 
-    getItemsForExam: ( exam ) => {
-        let to = Routes.loadAllItemsForExam( exam.id );
+    getItemsForExam: ( examId ) => {
+        let to = Routes.loadAllItemsForExam( examId );
         // let to = 'items/exam/' + exam.id;
 
         return window.axios.get( to )

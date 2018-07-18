@@ -39,10 +39,10 @@
 
 
             <input type="hidden" id="examId" v-model="examId"/>
+
+
+            <bottom-navbar></bottom-navbar>
         </div>
-
-        <bottom-navbar></bottom-navbar>
-
     </div>
 </template>
 
@@ -134,37 +134,23 @@
         data: function () {
             return {
                 examId: window.examId,
-//                isSyncable: this.$store.getters.canSync,
-                defaults: {},
 
-                // options: {
-                //     group: 'items', //name must be common to drag between menus
-                //     filter: '.js-remove', // Selectors that do not lead to dragging (String or Function)
-                //     animation: 150,
-                //     handle: '.handle',  // Drag handle selector within list items
-                //     ghostClass: "sortable-ghost", // Class name for the drop placeholder
-                //     dataIdAttr: 'data-id',
-                //     onUpdate: function ( event ) {
-                //         this.$store.dispatch( 'onUpdate', event );
-                //     },
-                // }
+                defaults: {},
             };
         },
 
-        watch: {
-            // canSync: function ( newVal, oldVal ) {
-            //     window.console.log( 'new-setup', 'canSync', 118, newVal, oldVal );
-            //     //if the can Sync is newly true, call update
-            //     if ( newVal ) updateItemsOrder( this.$store );
-            // }
-        },
+        watch: {},
 
         asyncComputed: {
             /**
-             * The exam object being set up
+             * The exam object being set up. Loads async upon creation
              */
             exam: function () {
-                    return this.$store.getters[ gTypes.getActiveExam ];
+                let me = this;
+                let p = this.$store.dispatch( 'loadExamFromServer', this.examId );
+                return p.then(function(){
+                    return me.$store.getters[ gTypes.getActiveExam ];
+                });
             },
 
 
@@ -185,39 +171,8 @@
         events: {},
 
         created: function () {
-            let me = this;
-            let p = this.$store.dispatch( 'loadExamFromServer', this.examId );
-            p.then( function () {
-                let p = me.$store.dispatch( 'loadItemsFromServer', me.exam );
-            } );
-
-
-            // and any existing scores
-            //                         //as well as comments
-            //
-            //
-            //                    let p2 = me.$store.dispatch( 'loadScoresFromServer', exam );
-            //                         p2.then( function () {
-            //                             //finally we get grading times
-            //                             let p3 = me.$store.dispatch( ngaTypes.loadTimesFromServer, exam );
-            //                             p3.then( function () {
-            //
-            //                                 //Tags for the items loaded
-            //                                 //Does not load tags that aren't yet used on the
-            //                                 //exam. That is done on the tags-panel creation
-            //
-            //                                 me.$store.dispatch( 'processTagsOutOfLoadedItems' );
-            //                                 //and are done.
-            //                             } );
-            //
-            //                         } );
-            //                     } );
-            //             } );
-            //         } );
-            //     } );
-
-            // } );
-  },
+            this.$store.dispatch( 'loadItemsFromServer', this.examId );
+        },
 
 
     }
