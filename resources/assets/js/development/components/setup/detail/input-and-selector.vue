@@ -83,7 +83,8 @@
     import inputSelectorMixin from './input-and-selector.mixin';
 
     export default {
-mixins: [inputSelectorMixin],
+
+        mixins: [ inputSelectorMixin ],
         props: [
             'item',
             'itemProp',
