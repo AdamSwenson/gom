@@ -139,10 +139,13 @@
     import * as mTypes from '../../../store/mutation-types'
     import * as gTypes from '../../../store/getter-types'
 
+    import itemCard from './item-card';
     import itemMain from '../items/item-main.vue';
     import examNavTabs from '../navigation/exam-card-navigation-tabs';
     import examPanelCloseControl from '../navigation/exam-panel-close-control';
 
+    import deleteItemButton from '../items/item-delete-button';
+    
     export default {
 
         //NB, the decisive consideration in favor of making this
@@ -152,6 +155,8 @@
         props: [ 'exam' ], //, 'serialNumber' ],
 
         components: {
+            deleteItemButton,
+            itemCard,
             AddChildButton,
             PublicIndicator,
             examNavTabs,

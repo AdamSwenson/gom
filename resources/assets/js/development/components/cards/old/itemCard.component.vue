@@ -99,8 +99,12 @@
     import * as mTypes from '../../../store/mutation-types'
     import * as gTypes from '../../../store/getter-types'
 
-    export default{
+    import DeleteItemButton from '../../items/item-delete-button';
 
+    export default{
+components : {
+    DeleteItemButton
+},
         props: [ 'index', 'parent-index', 'serialNumber' ],
 
         data: function () {
