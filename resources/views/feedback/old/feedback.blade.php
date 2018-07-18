@@ -12,8 +12,8 @@ $w = '800px';
 
 @section('pageTitle', 'Comments on your exam1')
 @section('otherCss')
-    {!! \HTML::style(asset('/inc/jqplot/jquery.jqplot.min.css')) !!}
-    {!! \HTML::style(asset('/css/output.css')) !!}
+    <link rel="stylesheet" href="{{!! asset('/inc/jqplot/jquery.jqplot.min.css')!!}}">
+    <link rel="stylesheet" href="{{!!asset('/css/output.css') !!}}">
 @endsection
 
 @section('body')
@@ -47,33 +47,37 @@ $w = '800px';
         var data = {!! ($data ? json_encode($data, JSON_FORCE_OBJECT) : '') !!};
     </script>
 
-    <script language="javascript" type="text/javascript" src="{{ asset('inc/js/jqplot/jquery.jqplot.min.js') }}"></script>
+    <script language="javascript" type="text/javascript"
+            src="{{ asset('inc/js/jqplot/jquery.jqplot.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.json2.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.barRenderer.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js') }}"></script>
+    <script type="text/javascript"
+            src="{{ asset('inc/js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.pointLabels.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js') }}"></script>
+    <script type="text/javascript"
+            src="{{ asset('inc/js/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.canvasTextRenderer.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('inc/js/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js') }}"></script>
+    <script type="text/javascript"
+            src="{{ asset('inc/js/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js') }}"></script>
 
     <script type="text/javascript" src="{{ asset('inc/js/outputScripts.js') }}"></script>
     <script type="text/javascript" src="{{ asset('inc/js/chartScripts.js') }}"></script>
 
     <script type="text/javascript">
-        $(document).ready(function () {
+        $( document ).ready( function () {
             var questionHolder = new QuestionHolder();
-            questionHolder.loadScores(data);
-            questionHolder.loadAverages(data);
+            questionHolder.loadScores( data );
+            questionHolder.loadAverages( data );
             questionHolder.setAnsweredQuestions();
             var elementHolder = new ElementHolder();
-            var elScores = consolidateElementScores(data);
-            elementHolder.loadScores(data);
+            var elScores = consolidateElementScores( data );
+            elementHolder.loadScores( data );
             //elementHolder.loadAverages(data);
             //divMaker(questionHolder);
             //Make charts
-            makeOverallChart(questionHolder);
-            makeElementCharts(elementHolder, questionHolder);
+            makeOverallChart( questionHolder );
+            makeElementCharts( elementHolder, questionHolder );
 
-        });
+        } );
     </script>
 @endsection

@@ -156,7 +156,7 @@ return [
         /*
          * Laravel tools imported
          */
-        Collective\Html\HtmlServiceProvider::class,
+//        Collective\Html\HtmlServiceProvider::class,
         Laravel\Tinker\TinkerServiceProvider::class,
 
         /*
@@ -235,8 +235,8 @@ return [
 
         //added
 
-        'Form' => Collective\Html\FormFacade::class,
-        'Html' => Collective\Html\HtmlFacade::class,
+//        'Form' => Collective\Html\FormFacade::class,
+//        'Html' => Collective\Html\HtmlFacade::class,
         'Flash' => Laracasts\Flash\Flash::class,
 
     ],

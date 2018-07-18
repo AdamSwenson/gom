@@ -4,8 +4,10 @@
 @section('description', "Review student feedback")
 
 @section('otherCss')
-    {!! HTML::style(asset('/inc/jqplot/jquery.jqplot.min.css')) !!}
-    {!! HTML::style(asset('/css/output.css')) !!}
+
+    <link rel="stylesheet" href="{{!!asset('/inc/jqplot/jquery.jqplot.min.css') !!}}">
+    <link rel="stylesheet" href="{{!!asset('/css/output.css')!!}}">
+
 @endsection
 
 @section('body')

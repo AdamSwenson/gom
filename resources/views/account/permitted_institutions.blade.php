@@ -32,7 +32,8 @@
             <div id="notificationSignUp">
                 <p>If you would like to be notified when access is expanded, please provide your name and email
                     address</p>
-                {!! Form::open(['url' => '/registrationRestrictions', 'method' => 'post']) !!}
+                <form role="form" id="regrestrict" method="POST" action="{{url('registrationRestrictions')}}" accept-charset="UTF-8" >
+
 
                 {{ csrf_field() }}
 
@@ -72,8 +73,8 @@
                 </div>
 
                 <input class="btn btn-primary" value="Notify me when access is expanded" type="submit">
+                </form>
 
-                {!! Form::close() !!}
             </div>
         </div>
         <div class="col-sm-2"></div>
