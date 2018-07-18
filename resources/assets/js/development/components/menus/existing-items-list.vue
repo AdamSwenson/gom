@@ -17,9 +17,9 @@
 
         <p class="panel-tabs">
             <a class="is-active">All</a>
-            <a>Ungraded</a>
-            <a>Graded</a>
-            <a>Tags</a>
+            <!--<a >Ungraded</a>-->
+            <!--<a>Graded</a>-->
+            <!--<a>Tags</a>-->
         </p>
 
 

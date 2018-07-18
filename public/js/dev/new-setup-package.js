@@ -65074,7 +65074,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "panel-tabs"
   }, [_c('a', {
     staticClass: "is-active"
-  }, [_vm._v("All")]), _vm._v(" "), _c('a', [_vm._v("Ungraded")]), _vm._v(" "), _c('a', [_vm._v("Graded")]), _vm._v(" "), _c('a', [_vm._v("Tags")])])
+  }, [_vm._v("All")])])
 },function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('span', {
     staticClass: "panel-icon"
