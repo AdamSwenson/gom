@@ -12144,6 +12144,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 //
 
 exports.default = {
+
     mixins: [_inputAndSelector2.default],
     props: ['item', 'itemProp', 'options', 'isTextArea', //whether to display a text area rather than normal text
     'type' //for determining things like aria-text
@@ -95364,6 +95365,10 @@ module.exports = Component.exports
 "use strict";
 
 
+var _mutationTypes = __webpack_require__(/*! ../../../../store/mutation-types */ "./resources/assets/js/store/mutation-types.js");
+
+var mTypes = _interopRequireWildcard(_mutationTypes);
+
 var _newGradingGetterTypes = __webpack_require__(/*! ../../../../store/new-grading-getter-types */ "./resources/assets/js/store/new-grading-getter-types.js");
 
 var nggTypes = _interopRequireWildcard(_newGradingGetterTypes);
@@ -95376,8 +95381,15 @@ var _newGradingActionTypes = __webpack_require__(/*! ../../../../store/new-gradi
 
 var ngaTypes = _interopRequireWildcard(_newGradingActionTypes);
 
+var _Payload = __webpack_require__(/*! ../../../../models/Payload */ "./resources/assets/js/models/Payload.js");
+
+var _Payload2 = _interopRequireDefault(_Payload);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+// import gTypes from '../../../../store/getter-types';
 module.exports = {
     watch: {
         //I have no idea why this had to be handled like this
@@ -95443,7 +95455,7 @@ module.exports = {
         handleValueChange: function handleValueChange(v) {
             // window.console.log( 'input-and-selector', 'handleValueChange', 153, v );
 
-            this.$store.commit(mTypes.updateItem, Payload.factory({
+            this.$store.commit(mTypes.updateItem, _Payload2.default.factory({
                 obj: this.item,
                 updateProp: this.itemProp,
                 updateVal: v
@@ -95463,7 +95475,6 @@ module.exports = {
 
     mounted: function mounted() {}
 };
-// import gTypes from '../../../../store/getter-types';
 
 /***/ }),
 

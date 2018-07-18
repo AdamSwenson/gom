@@ -1,9 +1,12 @@
 
+import * as mTypes from '../../../../store/mutation-types';
 // import gTypes from '../../../../store/getter-types';
 import * as nggTypes from '../../../../store/new-grading-getter-types';
 import * as ngmTypes from '../../../../store/new-grading-mutation-types';
 import * as ngaTypes from '../../../../store/new-grading-action-types';
 
+
+import Payload from '../../../../models/Payload'
 
 module.exports = {
     watch: {
