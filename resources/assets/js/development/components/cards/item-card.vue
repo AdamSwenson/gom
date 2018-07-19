@@ -122,6 +122,7 @@
 
 
     export default {
+        name: 'item-card',
 
         props: [ 'item', ], //'serialNumber' ],
 
