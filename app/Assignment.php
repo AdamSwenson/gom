@@ -18,7 +18,7 @@ class Assignment extends Entity implements AssignmentInterface
      *
      * @var assignmentClosure
      */
-    protected $closure = 'App\assignmentClosure';
+    protected $closure = 'App\AssignmentClosure';
 
     protected $fillable = ['item_id', 'parent_id', 'exam_id' ,'position',  'depth'];
 
