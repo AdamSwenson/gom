@@ -80,11 +80,11 @@ const actions = {
      * @param exam Exam
      * @returns {Promise<any>}
      */
-    loadItemsFromServer: ( { state, commit, dispatch, getters }, exam ) => {
+    loadItemsFromServer: ( { state, commit, dispatch, getters }, examId ) => {
         return new Promise( function ( resolve, reject ) {
             //Make the request to the server and return the data
             //in the promise.
-            let p = itemRequests.getItemsForExam( exam );
+            let p = itemRequests.getItemsForExam( examId );
             p.then( function ( data ) {
                 //The returned object  will have the keys
                 //  'itemObjects'
