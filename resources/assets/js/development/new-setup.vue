@@ -173,8 +173,6 @@
         events: {},
 
         created: function () {
-            window.console.log( 'new-setup', 'created', 176, this.examId);
-            this.$store.dispatch( 'loadItemsFromServer', this.examId );
         },
 
 

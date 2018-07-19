@@ -140,7 +140,7 @@
     import examPanelCloseControl from '../navigation/exam-panel-close-control';
 
     import deleteItemButton from '../items/item-delete-button';
-    
+
     export default {
 
         //NB, the decisive consideration in favor of making this
@@ -178,9 +178,12 @@
              */
             items: function () {
                 if ( _.isUndefined( this.exam ) ) return [];
-
-                let c = this.$store.getters.getItemChildren( this.exam );
-                return !_.isUndefined( c ) ? c : [];
+                let me = this;
+                let p = this.$store.dispatch( 'loadItemsFromServer', this.exam.id );
+                return p.then( function () {
+                    let c = me.$store.getters.getItemChildren( me.exam );
+                    return !_.isUndefined( c ) ? c : [];
+                } );
             },
         },
 
