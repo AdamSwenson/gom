@@ -279,7 +279,7 @@
             this.$store.dispatch( ngaTypes.loadGradePreferencesFromServer );
 
             this.$store.dispatch( 'loadExamFromServer', this.examId ).then( function () {
-                me.$store.dispatch( 'loadItemsFromServer', me.exam ).then( function () {
+                me.$store.dispatch( 'loadItemsFromServer', me.examId ).then( function () {
                     //get any groups associated with the exam
                     //this will include the central group which
                     //constitutes the roster
