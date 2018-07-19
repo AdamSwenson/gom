@@ -2,24 +2,14 @@
  * This runs the new setup app
  * Created by adam on 2/15/17.
  */
-// require( './bootstrap' );
-
-// import Vue from  'vue/dist/vue.js'
 import Vue from 'vue'
 
-// ES build is more efficient by reducing unneeded components with tree-shaking.
-// (Needs Webpack 2 or Rollup)
-// import BootstrapVue from 'bootstrap-vue/dist/bootstrap-vue.esm';
-// Use commonjs version if es build is not working
-// import BootstrapVue from 'bootstrap-vue';
-// Vue.use( BootstrapVue );
-// Vue.use( Sortable );
 
 import AsyncComputed from 'vue-async-computed'
 Vue.use( AsyncComputed )
 
-import App from './new-setup.vue'
 
+/* ~~~~~~~~~~~~~~~~~~~~~~~~ Global directives  ~~~~~~~~~~~~~~~~~~~~~~ */
 
 // Register a global custom directive called `v-focus`
 // which auto-focuses an element when the page loads.
@@ -34,31 +24,11 @@ Vue.directive('focus', {
 
 
 
-
-/* ~~~~~~~~~~~~~~~~~~~~~~~~ Globally register components ~~~~~~~~~~~~~~~~~~~~~~ */
-
-
-// import toolsDashboard from './components/dashboard.tools.component.vue'
-// Vue.component( 'tools-dashboard', toolsDashboard );
-
-// import itemNumber from './components/field.item-number.component.vue'
-// Vue.component( 'item-number', itemNumber );
-
-// import deleteButton from './components/items/item-delete-button.vue'
-// Vue.component( 'delete-item-button', deleteButton );
-
-// import removeButton from './components/items/item-remove-button.vue'
-// Vue.component( 'remove-item-button', removeButton );
-
-
-//Cards
-// import itemCard from './components/cards/item-card.vue'
-// Vue.component( 'item-card', itemCard );
+/* ~~~~~~~~~~~~~~~~~~~~~~~~ Globally registered components ~~~~~~~~~~~~~~~~~~~~~~ */
 
 //Universal helpers
 import infoButton from './components/helpers/info-button.vue';
 Vue.component( 'info-button', infoButton );
-
 
 
 
@@ -74,9 +44,7 @@ Vue.use( VueAxios, window.axios );
 
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ROUTER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-// 0. If using a module system (e.g. via vue-cli), import Vue and VueRouter and then call Vue.use(VueRouter).
 import VueRouter from 'vue-router'
-
 Vue.use( VueRouter );
 
 // Define some routes
@@ -91,13 +59,18 @@ const router = new VueRouter( {
     base: window.routeRoot
 } );
 
+
+
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ STORE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 import Vuex from 'vuex'
 Vue.use( Vuex );
 import store from '../store';
 
 
+
 /* ~~~~~~~~~~~~~~~~~~~~~~~ Create and mount the root instance ~~~~~~~~~~~~~~~~~~ */
+import App from './new-setup.vue'
+
 // Make sure to inject the router with the router option to make the
 // whole app router-aware.
 const app = new Vue( {

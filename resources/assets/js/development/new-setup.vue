@@ -40,9 +40,11 @@
 
             <input type="hidden" id="examId" v-model="examId"/>
 
-
-            <bottom-navbar></bottom-navbar>
         </div>
+
+        <!--This is outside the container since it needs to stretch across whole page-->
+        <bottom-navbar></bottom-navbar>
+
     </div>
 </template>
 
@@ -148,9 +150,9 @@
             exam: function () {
                 let me = this;
                 let p = this.$store.dispatch( 'loadExamFromServer', this.examId );
-                return p.then(function(){
+                return p.then( function () {
                     return me.$store.getters[ gTypes.getActiveExam ];
-                });
+                } );
             },
 
 
@@ -171,6 +173,7 @@
         events: {},
 
         created: function () {
+            window.console.log( 'new-setup', 'created', 176, this.examId);
             this.$store.dispatch( 'loadItemsFromServer', this.examId );
         },
 

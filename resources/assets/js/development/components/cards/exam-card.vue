@@ -75,12 +75,7 @@
                                 :serial-number="serialNumber">
                         </delete-item-button>
                     </div>
-                    <!--</div>-->
 
-                    <!--</div>-->
-                    <!--<div class="card-footer-item">-->
-                    <!--<div class="field is-grouped">-->
-                    <!--<p class="control">-->
                     <div class="column is-narrow">
 
 
