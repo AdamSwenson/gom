@@ -1,0 +1,7 @@
+
+
+# We need to ignore the compiled js files because the server
+# first fetches from git and then builds the new public files.
+# If these are tracked, between the fetch and the completion of the build
+# the user will be served the files from the developer's computer.
+js/dev
