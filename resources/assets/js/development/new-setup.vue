@@ -38,11 +38,11 @@
             </div>
 
 
+
             <input type="hidden" id="examId" v-model="examId"/>
 
         </div>
 
-        <!--This is outside the container since it needs to stretch across whole page-->
         <bottom-navbar></bottom-navbar>
 
     </div>

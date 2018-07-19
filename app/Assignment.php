@@ -3,7 +3,8 @@ namespace App;
 
 use Franzose\ClosureTable\Models\Entity;
 
-class Assignment extends Entity implements assignmentInterface
+
+class Assignment extends Entity implements AssignmentInterface
 {
     /**
      * The table associated with the model.
