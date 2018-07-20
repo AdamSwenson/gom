@@ -27,7 +27,6 @@ module.exports.mode = 'development';
 
 
 
-
 /*
  |--------------------------------------------------------------------------
  | Mix Initialization
@@ -327,7 +326,7 @@ module.exports.performance = { hints: false };
  |
  */
 
-module.exports.devtool = Mix.options.sourcemaps;
+module.exports.devtool = 'cheap-source-map'; //Mix.options.sourcemaps;
 
 
 

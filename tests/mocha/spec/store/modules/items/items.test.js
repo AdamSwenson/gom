@@ -168,23 +168,25 @@ describe( compName, () => {
             } );
 
             it( " calls addNewItem mutation after getting new id from the server", ( done ) => {
-                let p = actions[ aTypes.cloneItem ]( { state, commit, dispatch, getters }, payload );
-                p.then( function () {
-                    //a mutation was called
-                    expect( commit.callCount ).toBe( 1 );
-                    //it was the correct one
-                    expect( commit.args[ 0 ][ 0 ] ).toBe( mTypes.addNewItem );
-                    //it had the correct payload
-                    // we have to do this piecemeal rather than
-                    // just comparing the payloads because a new item
-                    // thus it will have different properties than the factory created item
-                    let receivedPayload = commit.args[ 0 ][ 1 ];
-                    //the thing we care most about is that the id from the server was added
-                    expect( receivedPayload.obj.id ).toBe( expectedPayload.obj.id );
-                    expect( receivedPayload.mutateSilently ).toBe( expectedPayload.mutateSilently );
-                    expect( receivedPayload.parent ).toBe( expectedPayload.parent );
-                    done();
-                } );
+                moxios.wait(function () {
+                    let p = actions[ aTypes.cloneItem ]( { state, commit, dispatch, getters }, payload );
+                    p.then( function () {
+                        //a mutation was called
+                        expect( commit.callCount ).toBe( 1 );
+                        //it was the correct one
+                        expect( commit.args[ 0 ][ 0 ] ).toBe( mTypes.addNewItem );
+                        //it had the correct payload
+                        // we have to do this piecemeal rather than
+                        // just comparing the payloads because a new item
+                        // thus it will have different properties than the factory created item
+                        let receivedPayload = commit.args[ 0 ][ 1 ];
+                        //the thing we care most about is that the id from the server was added
+                        expect( receivedPayload.obj.id ).toBe( expectedPayload.obj.id );
+                        expect( receivedPayload.mutateSilently ).toBe( expectedPayload.mutateSilently );
+                        expect( receivedPayload.parent ).toBe( expectedPayload.parent );
+                        done();
+                    } );
+                });
 
             } );
 
