@@ -15,7 +15,7 @@ import { traverseDF, traverseBF, getNode } from '../../../models/NodeTools'
 
 import JsonReaders from '../../utlities/JsonReaders'
 import { initializeItemsWithExam } from '../../utlities/itemHelpers';
-import { createItemRequest } from '../../../api/requests/itemRequests';
+import { createItemRequest, updateItemRequest } from '../../../api/requests/itemRequests';
 
 const Vue = require( 'vue' );
 const _ = window._ = require( 'lodash' );
@@ -236,26 +236,52 @@ const actions = {
      * @param commit
      */
     [ aTypes.cloneItem ]: ( { state, commit, dispatch, getters }, payload ) => {
-        return (function ( state, commit, dispatch, getters, payload ) {
+        return new Promise( function ( resolve, reject ) {
             //NB, parent is the parent item's serial number
             //toClone is an object
             let { parent, toClone } = payload;
+            // window.console.log( 'items', 'payload', 243, payload );
 
-            //If we were passed an item to serve as the parent
-            //we will use s serial number
-            let item = Item.factory( { parent: parent } );
+            //create a new item on the server
+            //and get the id
+            createItemRequest()
+                .then( function ( data ) {
+                    //create an item from the data returned
+                    //this will set the id
+                    let item = Item.factory( data );
 
-            _.forEach( Item.clonableProps, function ( p ) {
-                item[ p ] = toClone[ p ];
-            } );
+                    //set the parent's serial number
+                    item.parent = parent;
 
-            let pl = Payload.factory( { parent: parent, obj: item } );
-            window.console.log( 'items', 'cloneItem payload', 234, pl);
-            commit( mTypes.addNewItem, pl );
+                    //now populate the new item with properties from the original
+                    _.forEach( Item.clonableProps, function ( p ) {
+                        // window.console.log( 'items', p, 257, item, toClone);
+                        item[ p ] = toClone[ p ];
+                    } );
 
-            dispatch( aTypes.addItemToOrder, pl );
+                    //and update the properties of the item on the server
+                    //(but not the store, because it isn't yet in the store)
+                    updateItemRequest( item ).then( function () {
+                        // silently store the newly created
+                        // item in the items list
+                        let payload = Payload.factory( {
+                            obj: item,
+                            parent: parent, //this way we can reuse the payload
+                            mutateSilently: true
+                        } );
+                        commit( mTypes.addNewItem, payload );
 
-        })( state, commit, dispatch, getters, payload );
+                        //Trigger the actions to put the item in the
+                        //proper place in the order, which will save it to the server
+                        dispatch( aTypes.addItemToOrder, payload )
+                            .then( function () {
+                                //and we're done
+                                resolve();
+                            } );
+                    } );
+
+                } );
+        } );
 
     },
 

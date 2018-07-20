@@ -18,6 +18,7 @@ import { createLocalVue, mount } from 'vue-test-utils';
 window.axios = require( 'axios' );
 
 import * as DummyComponent  from "../../../../helpers/dummy-component";
+import { factories } from "../../../../../spec/helpers/vuex.spec.helpers";
 
 const localVue = createLocalVue();
 localVue.use( Vuex )
@@ -33,6 +34,7 @@ describe( compName, () => {
 
     describe( description( "actions (defined in items.js, not imported" ), function () {
         let dispatch, commit, expectedItem, expectedPayload;
+
         describe( description( aTypes.createItem ), function () {
             beforeEach( function () {
                 moxios.install();
@@ -46,7 +48,6 @@ describe( compName, () => {
                 parent = state.itemMap.children[ 1 ]; //has to be a parent
                 payload = parent.data; //has to be a parent
                 expectedItem = Item.factory( { parent: parent.data, id: expectedId } );
-
                 moxios.stubRequest( Routes.createItem(), {
                     status: 200,
                     response: { id: expectedId }
@@ -64,12 +65,6 @@ describe( compName, () => {
 
                 commit = sinon.spy();
 
-
-                // let p = actions[ aTypes.createItem ]( { state, commit, dispatch, getters }, )
-
-
-                // helpers.testActionAsync( actions[ aTypes.createItem ], payload, state, expectedMutations, done, { getters: getters, dispatch  } );
-                //
             } );
             afterEach( () => {
                 moxios.uninstall();
@@ -115,6 +110,104 @@ describe( compName, () => {
 
             } );
         } );
+
+        describe( description( aTypes.cloneItem ), function () {
+            let clonedItem;
+
+            beforeEach( function () {
+                moxios.install();
+                // let s = { itemMap: new Node( 0, 0 ) };
+                // filledState = makeFilledState( s, numItems );
+
+                let state = { itemMap: new Node( 0, 0 ) };
+                makeFilledState( state, 5 );
+
+                //the id that will be returned from the server
+                expectedId = helpers.randomInteger();
+
+                //prep
+                //doesn't have to be an existing item for testing purposes,
+                //just needs correct parent
+                clonedItem = factories.itemFactory();
+                // window.console.log( 'items.test', 'ci', 130, state);
+                // window.console.log( 'items.test', 'ccc', 131, clonedItem);
+                payload = Payload.factory({
+                    parent: clonedItem.parent,
+                    toClone: clonedItem
+                });
+
+                //make new item
+                expectedItem = Item.factory( { parent: clonedItem.data, id: expectedId } );
+                _.forEach( Item.clonableProps, function ( p ) {
+                    expectedItem[ p ] = clonedItem[ p ];
+                } );
+
+                moxios.stubRequest( Routes.createItem(), {
+                    status: 200,
+                    response: { id: expectedId }
+                } );
+
+                moxios.stubRequest(Routes.updateItem(expectedItem), {
+                   status: 200
+                });
+
+                //since it will need to dispatch the add item to order action
+                dispatch = sinon.stub();
+                dispatch.resolves( true );
+
+                expectedPayload = Payload.factory( {
+                    obj: expectedItem,
+                    parent: parent.data,
+                    mutateSilently: true
+                } );
+
+                commit = sinon.spy();
+            } );
+            afterEach( () => {
+                moxios.uninstall();
+            } );
+
+            it( " calls addNewItem mutation after getting new id from the server", ( done ) => {
+                let p = actions[ aTypes.cloneItem ]( { state, commit, dispatch, getters }, payload );
+                p.then( function () {
+                    //a mutation was called
+                    expect( commit.callCount ).toBe( 1 );
+                    //it was the correct one
+                    expect( commit.args[ 0 ][ 0 ] ).toBe( mTypes.addNewItem );
+                    //it had the correct payload
+                    // we have to do this piecemeal rather than
+                    // just comparing the payloads because a new item
+                    // thus it will have different properties than the factory created item
+                    let receivedPayload = commit.args[ 0 ][ 1 ];
+                    //the thing we care most about is that the id from the server was added
+                    expect( receivedPayload.obj.id ).toBe( expectedPayload.obj.id );
+                    expect( receivedPayload.mutateSilently ).toBe( expectedPayload.mutateSilently );
+                    expect( receivedPayload.parent ).toBe( expectedPayload.parent );
+                    done();
+                } );
+
+            } );
+
+            it( " dispatches the addItemToOrder action", ( done ) => {
+                let p = actions[ aTypes.cloneItem ]( { state, commit, dispatch, getters }, payload );
+                p.then( function () {
+                    expect( dispatch.callCount ).toBe( 1 );
+                    //it was the correct action
+                    expect( dispatch.args[ 0 ][ 0 ] ).toBe( aTypes.addItemToOrder );
+                    //it had the correct payload
+                    //Again we have to do this piecemeal rather than
+                    // just comparing the payloads because a new item
+                    // thus it will have different properties than the factory created item
+                    let receivedPayload = dispatch.args[ 0 ][ 1 ];
+                    expect( receivedPayload.obj.id ).toBe( expectedPayload.obj.id );
+                    expect( receivedPayload.mutateSilently ).toBe( expectedPayload.mutateSilently );
+                    expect( receivedPayload.parent ).toBe( expectedPayload.parent );
+                    done();
+                } );
+
+            } );
+        } );
+
     } );
 
     describe( 'getters (defined in items.js, not imported)', () => {

@@ -1,6 +1,7 @@
 import { REQUEST_VERSION, POLL_TIMEOUT, ID_WAIT_TIMEOUT, Routes } from '../apiSettings';
 
 import { errorHandling, handleResponse } from '../responseHandlers';
+import { holdForIdLoading } from "../apiHelpers";
 
 /**
  * This is the new module to use for item requests
@@ -63,7 +64,7 @@ module.exports = {
      * @param store
      * @returns {Promise}
      */
-    updateItemsOrderRequest: function( exam, ordering ){
+    updateItemsOrderRequest: function ( exam, ordering ) {
 
         let payload = {
             examId: exam.id,
@@ -84,5 +85,30 @@ module.exports = {
             .catch( function ( error ) {
                 errorHandling( error );
             } );
-    }
+    },
+
+    /**
+     * Handles the call to the server to update
+     * properties of an item which already has an id.
+     *
+     * Uses PUT
+     *
+     * This is the newer version
+     *
+     * @param item
+     * @returns {Promise}
+     */
+    updateItemRequest: ( item ) => {
+        return window.axios
+            .put( Routes.updateItem( item ), item )
+            .then( ( response ) => {
+
+            } )
+            .catch( function ( error ) {
+                errorHandling( error );
+            } );
+
+    },
+
+
 };
