@@ -53,10 +53,10 @@
                         <item-clone-button :item="exam"></item-clone-button>
                         <!--<p class="control">-->
                         <!--<button class="button is-primary is-outlined">-->
-                                <!--<span class="icon is-small">-->
-                                    <!--<i class="fa fa-clone" aria-hidden="true"></i>-->
-                                <!--</span>-->
-                            <!--<span>Clone</span>-->
+                        <!--<span class="icon is-small">-->
+                        <!--<i class="fa fa-clone" aria-hidden="true"></i>-->
+                        <!--</span>-->
+                        <!--<span>Clone</span>-->
                         <!--</button>-->
                     </div>
                     <div class="column is-narrow">
@@ -182,15 +182,15 @@
                 get() {
                     // if ( _.isUndefined( this.exam ) ) return [];
                     let me = this;
-                    let p = this.$store.dispatch( 'loadItemsFromServer', this.exam.id );
-                    return p.then( function () {
-                        let c = me.$store.getters.getItemChildren( me.exam );
-                        return !_.isUndefined( c ) ? c : [];
-                    } );
+                    // let p = this.$store.dispatch( 'loadItemsFromServer', this.exam.id );
+                    // return p.then( function () {
+                    let c = me.$store.getters.getItemChildren( me.exam );
+                    return !_.isUndefined( c ) ? c : [];
+                    // } );
                 },
-                default(){
-                    return [];
-                }
+                // default() {
+                //     return [];
+                // }
             },
         },
 
@@ -254,7 +254,9 @@
 
         },
 
-        mounted: function () {
+        created: function () {
+            this.$store.dispatch( 'loadItemsFromServer', this.exam.id );
+
         },
 
         directives: {

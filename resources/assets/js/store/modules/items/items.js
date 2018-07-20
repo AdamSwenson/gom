@@ -172,6 +172,34 @@ const actions = {
     ...JsonReaders.actions,
     ...Loaders.actions,
 
+    // /**
+    //  * HELPER FUNCTION ONLY
+    //  * This is a helper function for other actions which need to create
+    //  * a new item instance with an id from the server.
+    //  * It does not create an item in the store.
+    //  * @param state
+    //  * @param commit
+    //  * @param dispatch
+    //  * @param getters
+    //  */
+    // createNewItemOnServer: ( { state, commit, dispatch, getters } ) => {
+    //     return new Promise( ( resolve, reject ) => {
+    //         //create a new item on the server
+    //         //and get the id
+    //         createItemRequest()
+    //             .then( function ( data ) {
+    //                 //create an item from the data returned
+    //                 //this will set the id
+    //                 let item = Item.factory( data );
+    //                 window.console.log( 'items', 'item', 193, item);
+    //                 resolve( item );
+    //             } )
+    //             .catch(function(){
+    //                 reject();
+    //             });
+    //     } );
+    // },
+
     /**
      * This is the master handler of the process of adding an item
      *
@@ -195,7 +223,6 @@ const actions = {
             }
 
             //create a new item on the server
-            //and get the id
             createItemRequest()
                 .then( function ( data ) {
                     //create an item from the data returned
@@ -287,7 +314,7 @@ const actions = {
     },
 
     importItem: ( { state, commit, dispatch, getters }, payload ) => {
-        return (function ( state, commit, dispatch, getters, payload ) {
+        return new Promise( function ( resolve, reject ) {
             //NB, parent is the parent item's serial number
             //obj is an object
             let { parent, obj } = payload;
@@ -295,15 +322,16 @@ const actions = {
             let pl = Payload.factory( { parent: parent, obj: obj } );
             // window.console.log( 'items', 'cloneItem payload', 234, pl);
 
-            dispatch( aTypes.addItemToOrder, pl );
-            //the item will not have been stored in the regular items array
-            //instead it is loaded asynchronously.
-            //So we need to push it into the main array
-            pl.mutateSilently = true;
-            commit( mTypes.addNewItem, pl );
+            dispatch( aTypes.addItemToOrder, pl ).then( function () {
+                //the item will not have been stored in the regular items array
+                //instead it is loaded asynchronously.
+                //So we need to push it into the main array
+                pl.mutateSilently = true;
+                commit( mTypes.addNewItem, pl );
+            } );
 
-        })( state, commit, dispatch, getters, payload );
 
+        } );
     },
 
 
@@ -315,9 +343,10 @@ const actions = {
      *
      * The item and all associated score data remain intact.
      */
-    [ aTypes.removeItem ]: ( { state, commit, dispatch, getters }, payload ) => {
-        dispatch( aTypes.removeItemFromOrder, payload );
-    },
+    [ aTypes.removeItem ]:
+        ( { state, commit, dispatch, getters }, payload ) => {
+            dispatch( aTypes.removeItemFromOrder, payload );
+        },
 
     /**
      * Permanently remove the item and any associated
@@ -325,9 +354,10 @@ const actions = {
      * This should not be called to remove the item from
      * the exam. That is done by removeItem
      */
-    [ aTypes.deleteItem ]: () => {
+    [ aTypes.deleteItem ]:
+        () => {
 
-    },
+        },
 
 
 };

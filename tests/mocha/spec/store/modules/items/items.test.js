@@ -17,7 +17,7 @@ import { createLocalVue, mount } from 'vue-test-utils';
 
 window.axios = require( 'axios' );
 
-import * as DummyComponent  from "../../../../helpers/dummy-component";
+import * as DummyComponent from "../../../../helpers/dummy-component";
 import { factories } from "../../../../../spec/helpers/vuex.spec.helpers";
 
 const localVue = createLocalVue();
@@ -112,7 +112,7 @@ describe( compName, () => {
         } );
 
         describe( description( aTypes.cloneItem ), function () {
-            let clonedItem;
+            let clonedItem, actionSpy1, actionSpy2;
 
             beforeEach( function () {
                 moxios.install();
@@ -125,19 +125,28 @@ describe( compName, () => {
                 //the id that will be returned from the server
                 expectedId = helpers.randomInteger();
 
+
                 //prep
                 //doesn't have to be an existing item for testing purposes,
                 //just needs correct parent
                 clonedItem = factories.itemFactory();
                 // window.console.log( 'items.test', 'ci', 130, state);
                 // window.console.log( 'items.test', 'ccc', 131, clonedItem);
-                payload = Payload.factory({
+                payload = Payload.factory( {
                     parent: clonedItem.parent,
                     toClone: clonedItem
-                });
+                } );
 
                 //make new item
-                expectedItem = Item.factory( { parent: clonedItem.data, id: expectedId } );
+                // expectedItem =  Item.factory( { parent: clonedItem.data, id: expectedId } );
+                expectedItem = factories.itemFactory();
+
+                //stub the action which handles the call to the server
+                dispatch = {
+                    createNewItemOnServer: sinon.stub()
+                }
+                dispatch.createNewItemOnServer.returns( expectedItem );
+
                 _.forEach( Item.clonableProps, function ( p ) {
                     expectedItem[ p ] = clonedItem[ p ];
                 } );
@@ -147,9 +156,9 @@ describe( compName, () => {
                     response: { id: expectedId }
                 } );
 
-                moxios.stubRequest(Routes.updateItem(expectedItem), {
-                   status: 200
-                });
+                moxios.stubRequest( Routes.updateItem( expectedItem ), {
+                    status: 200
+                } );
 
                 //since it will need to dispatch the add item to order action
                 dispatch = sinon.stub();
@@ -168,7 +177,7 @@ describe( compName, () => {
             } );
 
             it( " calls addNewItem mutation after getting new id from the server", ( done ) => {
-                moxios.wait(function () {
+                moxios.wait( function () {
                     let p = actions[ aTypes.cloneItem ]( { state, commit, dispatch, getters }, payload );
                     p.then( function () {
                         //a mutation was called
@@ -186,7 +195,7 @@ describe( compName, () => {
                         expect( receivedPayload.parent ).toBe( expectedPayload.parent );
                         done();
                     } );
-                });
+                } );
 
             } );
 
@@ -234,16 +243,16 @@ describe( compName, () => {
             // root.children.push( parent );
 
             getters[ gTypes.getActiveExam ] = sinon.stub();
-            getters[ gTypes.getActiveExam ].returns(exam);
+            getters[ gTypes.getActiveExam ].returns( exam );
             // getters[gTypes.getItemBySerialNumber] = (  ) => (  ) => item;
             //
             store = new Vuex.Store( {
                 state: filledState, getters
             } );
 
-            let wrapper = mount(DummyComponent, {
+            let wrapper = mount( DummyComponent, {
                 store
-            })
+            } )
 
         } );
 
@@ -253,12 +262,11 @@ describe( compName, () => {
             //todo this really needs to be fixed, but it still suffers from the problem of testing getters --the item which gets returned at step4 of the method is the uncalled getter function.
             it( "happy path", function () {
                 //call
-                let result = getters.getOrderForSync(filledState, getters);
+                let result = getters.getOrderForSync( filledState, getters );
 
                 expect( result ).toBeTruthy();
             } );
         } );
-
 
 
         describe( description( "canSync" ), function () {
