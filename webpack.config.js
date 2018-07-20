@@ -411,6 +411,8 @@ if ( Mix.options.versioning ) {
     );
 }
 
+
+// if ( Mix.inProduction ) {
 if ( Mix.options.purifyCss ) {
     let PurifyCSSPlugin = require( 'purifycss-webpack' );
 
@@ -428,7 +430,9 @@ if ( Mix.options.purifyCss ) {
 
 if ( Mix.inProduction && Mix.options.uglify ) {
     const UglifyJsPlugin = require( 'uglifyjs-webpack-plugin' );
+
     plugins.push(
+
         new UglifyJsPlugin( {
             sourceMap: true,
             uglifyOptions: {
