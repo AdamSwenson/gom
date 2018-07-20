@@ -28,15 +28,15 @@
 
             </div>
 
-            <div class="columns">
-                <div class="column">
-                    <progress-dashboard></progress-dashboard>
-                </div>
-                <div class="column is-1">
-                    <sync-indicator></sync-indicator>
-                </div>
-            </div>
-            
+            <!--<div class="columns">-->
+                <!--<div class="column">-->
+                    <!--<progress-dashboard></progress-dashboard>-->
+                <!--</div>-->
+                <!--<div class="column is-1">-->
+                    <!--<sync-indicator></sync-indicator>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!---->
         </div>
 
         <bottom-navbar></bottom-navbar>
