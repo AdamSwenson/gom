@@ -90,24 +90,8 @@
 </style>
 <script>
 
-    import Exam from '../models/Exam'
-    import Item from '../models/Item'
-    import Payload from '../models/Payload'
-
-    import * as aTypes from '../store/action-types';
-    import * as mTypes from '../store/mutation-types';
     import * as gTypes from '../store/getter-types';
-    import * as ngmTypes from '../store/new-grading-mutation-types';
-    import * as ngaTypes from '../store/new-grading-action-types';
-
-
-    import { updateItemsOrder } from '../api/requests'
-    import { loadKumiForExam } from '../api/requests/kumiRequests';
-    import { loadAllStudents } from '../api/requests/studentRequests';
-    import { loadExam } from '../api/requests/examRequests';
-    // import { getItemsForExam, getItemOrderForExam } from '../api/requests/itemRequests';
-
-    import ProgressDashboard from './components/dashboard.progress.component.vue'
+    // import ProgressDashboard from './components/dashboard.progress.component.vue'
 
     import ExamCard from './components/cards/exam-card.vue'
 
@@ -115,18 +99,16 @@
     import BottomNavbar from '../development/components/bottom-nav/bottom-navbar.vue';
     import TopNavbar from '../development/components/top-nav/top-navbar.vue';
 
-    import SyncIndicator from './components/helpers/server-sync-indicator.vue';
+    // import SyncIndicator from './components/helpers/server-sync-indicator.vue';
 
-
-    // var Sortable = require( 'sortablejs' );
 
     export default {
 
         components: {
             BottomNavbar,
             ExamCard,
-            ProgressDashboard,
-            SyncIndicator,
+            // ProgressDashboard,
+            // SyncIndicator,
             TopNavbar
         },
         data: function () {
