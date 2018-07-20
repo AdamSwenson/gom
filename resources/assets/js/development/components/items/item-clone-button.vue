@@ -50,7 +50,7 @@
         methods: {
             handleClick: function () {
                 if ( !this.isExam ) {
-                    window.console.log( 'item-clone-button', 'handleClick', 53, 'clone item requested');
+                    window.console.log( 'item-clone-button', 'handleClick', 53, 'clone item requested', this.item);
                     let payload = { parent: this.parentSerialNumber, toClone: this.item };
                     this.$store.dispatch( aTypes.cloneItem, payload );
                 }

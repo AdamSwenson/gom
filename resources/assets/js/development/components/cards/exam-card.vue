@@ -91,7 +91,8 @@
             <div v-for="item in items">
                 <!--Now we make cards recursively-->
                 <item-card :item="item"
-                           :key="item.serialNumber"></item-card>
+                           :key="item.serialNumber"
+                ></item-card>
             </div>
         </div>
 

@@ -250,7 +250,7 @@ const actions = {
             } );
 
             let pl = Payload.factory( { parent: parent, obj: item } );
-            // window.console.log( 'items', 'cloneItem payload', 234, pl);
+            window.console.log( 'items', 'cloneItem payload', 234, pl);
             commit( mTypes.addNewItem, pl );
 
             dispatch( aTypes.addItemToOrder, pl );
