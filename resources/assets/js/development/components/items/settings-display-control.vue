@@ -1,11 +1,16 @@
 <template>
 
     <button class="settings-display-control button is-info is-outlined is-large"
-            v-on:click="toggleVis"
+            v-bind:title="linkTitle"
+            v-on:click="handleClick"
             v-bind:id="serialNumber">
 
        <span class="icon is-large">
-           <i class="fa fa-cogs" aria-hidden="true"></i>
+           <i class="fa fa-cogs"
+              aria-hidden="true"
+           >
+               <span class="sr-only">{{ screenReaderText }}</span>
+           </i>
        </span>
         <span></span>
     </button>
@@ -31,15 +36,23 @@
      * Created by adam on 2/18/17.
      */
     export default {
+        name: 'settings-display-control',
 
         props: [ 'serialNumber' ],
 
         data: function () {
             return {
+                linkTitle: "Toggle the display of this item's children",
+
                 identifiers: {
                     exam: 'exam-settings-button',
                     item: 'item-settings-button'
-                }
+                },
+                styles: {
+                    unselected: "is-info is-outlined",
+                    selected: "is-info"
+                },
+
             };
         },
 
@@ -51,24 +64,6 @@
             isExam: function () {
                 return this.item ? this.item.isExam() : false;
             },
-            //
-            // node: function () {
-            //     return this.$store.getters.getItemNodeFromOrder( this.serialNumber );
-            // },
-            //
-            // depth: function () {
-            //     return this.$store.getters[ gTypes.getDepthOfNode ]( this.serialNumber );
-            // },
-            //
-            //
-            // height: function () {
-            //     return this.$store.getters[ gTypes.getHeightOfNode ]( this.serialNumber );
-            // },
-
-
-            // parentSerialNumber: function () {
-            //     return this.node.parent;
-            // },
 
             /**
              * Gets the appropriate base string for the input
@@ -78,24 +73,31 @@
             identifier: function () {
                 return this.isExam ? this.identifiers.exam : this.identifiers.item;
             },
-            //
-            // /**
-            //  * The input's css id
-            //  */
-            // id: function () {
-            //     if ( this.isExam ) return this.identifier;
-            //     return this.identifier + "-" + this.height + '-' + this.depth;
-            // },
 
             /**
              * Injected into the classes of the input
              * */
             styling: function () {
                 return this.identifier; // + '-' + this.serialNumber;
-            }
+            },
+
+            screenReaderText: function () {
+                if ( this.isVisible ) return 'Click to hide settings panels';
+                return 'Click to show settings panels';
+            },
+
+            // linkClass: function () {
+            //     //unselected state
+            //     if ( this.isVisible ) return this.styles.unselected;
+            //     //selected (hidden) state
+            //     return this.styles.selected;
+            // }
         },
 
         methods: {
+            handleClick: function () {
+                this.toggleVis();
+            },
 
             toggleExamVisibility: function () {
                 this.$store.commit( mTypes.toggleExamSettings, Payload.factory( { mutateSilently: true } ) );

@@ -5,6 +5,8 @@
     <meta name=viewport content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
 
+    <title>Grade exams</title>
+
     <link href="{{ asset('css/grade-package.css') }}" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="{{ asset("css/common-package.css")}}">
     <link rel="stylesheet" href="{{ asset("css/new-setup-package.css")}}">

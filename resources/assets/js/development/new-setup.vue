@@ -36,11 +36,7 @@
                     <sync-indicator></sync-indicator>
                 </div>
             </div>
-
-
-
-            <input type="hidden" id="examId" v-model="examId"/>
-
+            
         </div>
 
         <bottom-navbar></bottom-navbar>

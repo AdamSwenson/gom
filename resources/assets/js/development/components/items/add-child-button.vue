@@ -1,17 +1,3 @@
-<template>
-
-    <a v-bind:id="id"
-            class="button is-primary is-outlined"
-            v-bind:class="stylz"
-            v-on:click="add"
-    >
-       <span class="icon is-small">
-           <i class="fa fa-list-alt" aria-hidden="true"></i>
-       </span>
-        <span>Add Child</span>
-    </a>
-
-</template>
 <style>
 
 </style>
@@ -19,41 +5,53 @@
     import * as aTypes from '../../../store/action-types';
     import * as mTypes from '../../../store/mutation-types';
 
+    import buttonBase from '../input/button-base';
     import mixin from './item-buttons.mixin';
-    export default {
-        mixins: [mixin],
 
-        props: ['item' ],
+    export default {
+        name: 'add-child-button',
+
+        extends: buttonBase,
+
+        mixins: [ mixin ],
+
+        props: [ 'item' ],
 
         data: function () {
             return {
+                //define the properties of the button
 
-                //Base for the class and id strings
-                identifiers: {
-                    item: 'add-child-button',
-                    exam: 'add-child-to-exam-button'
-                }
             };
         },
 
         computed: {
+            local: function () {
+                return {
+                    buttonText: this.localButtonText,
+                    icon: "fa fa-list-alt",
+                    identifyingClass: 'add-child-button',
+                    linkClass: 'is-primary is-outlined',
+                    linkTitle: this.localLinkTitle,
+                    screenReaderText: this.localScreenReaderText,
+                }
+            },
 
-            /**
-             * Gets the appropriate base string for the input
-             * depending on whether it is attached to an exam or
-             * regular item
-             */
-            identifier : function(){
-              return this.isExam ? this.identifiers.exam : this.identifiers.item;
+            localLinkTitle: function () {
+                if ( this.isExam ) return 'Add an item to this exam';
+                return 'Add a new item as a child of this item';
             },
 
 
-            /**
-             * Injected into the classes of the input
-             * */
-            stylz: function(){
-                return this.identifier; // + '-' + this.serialNumber;
-            }
+            localButtonText: function () {
+                if ( this.isExam ) return 'Add Item';
+                return 'Add Child';
+            },
+
+            localScreenReaderText: function () {
+                if ( this.isVisible ) return 'Click to add an item to this exam';
+                return 'Click to add a child to this item';
+            },
+
         },
 
         methods: {
@@ -61,8 +59,8 @@
              * Called on click.
              * It in turn calls a handler
              */
-            add: function () {
-                console.log( 'CALLED', 'add', this.serialNumber );
+            handleClick: function () {
+                // console.log( 'CALLED', 'add', this.serialNumber );
                 this.sendRequest();
             },
 

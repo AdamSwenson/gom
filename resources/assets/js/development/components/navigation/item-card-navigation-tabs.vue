@@ -1,7 +1,7 @@
 <template>
 
     <nav class="item-card-navigation-tabs tabs is-centered is-boxed">
-        <ul v-bind:id="identifier">
+        <ul>
 
             <router-link
                     v-for="r in routes"

@@ -1,8 +1,9 @@
 <template>
+    <!--Do not use model.lazy! Too easy to drop a value-->
     <input type="text"
            class="item-name-input input is-large"
            v-bind:placeholder="placeholder"
-           v-model.lazy="name"
+           v-model="name"
            v-bind:class="styling"
     >
 

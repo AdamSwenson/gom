@@ -45,20 +45,19 @@
                 <div class="columns  is-mobile is-multiline ">
 
                     <div class="column is-narrow">
-
-                        <add-child-button :item="exam"
-                        ></add-child-button>
+                        <add-child-button :item="exam"></add-child-button>
                     </div>
 
                     <div class="column is-narrow">
 
+                        <item-clone-button :item="exam"></item-clone-button>
                         <!--<p class="control">-->
-                        <button class="button is-primary is-outlined">
-                                <span class="icon is-small">
-                                    <i class="fa fa-clone" aria-hidden="true"></i>
-                                </span>
-                            <span>Clone</span>
-                        </button>
+                        <!--<button class="button is-primary is-outlined">-->
+                                <!--<span class="icon is-small">-->
+                                    <!--<i class="fa fa-clone" aria-hidden="true"></i>-->
+                                <!--</span>-->
+                            <!--<span>Clone</span>-->
+                        <!--</button>-->
                     </div>
                     <div class="column is-narrow">
 
@@ -126,6 +125,7 @@
     //    import itemMain from './item-main.vue'
 
     import AddChildButton from '../items/add-child-button.vue';
+    import itemCloneButton from '../items/item-clone-button';
     import PublicIndicator from '../items/visibility-control.vue';
 
 
@@ -151,12 +151,13 @@
 
         components: {
             deleteItemButton,
-            itemCard,
             AddChildButton,
-            PublicIndicator,
             examNavTabs,
             examPanelCloseControl,
-            'item-main': itemMain
+            itemCard,
+            itemCloneButton,
+            itemMain,
+            PublicIndicator
         },
 
         data: function () {
@@ -176,14 +177,19 @@
             /**
              * The children of the item
              */
-            items: function () {
-                if ( _.isUndefined( this.exam ) ) return [];
-                let me = this;
-                let p = this.$store.dispatch( 'loadItemsFromServer', this.exam.id );
-                return p.then( function () {
-                    let c = me.$store.getters.getItemChildren( me.exam );
-                    return !_.isUndefined( c ) ? c : [];
-                } );
+            items: {
+                get() {
+                    // if ( _.isUndefined( this.exam ) ) return [];
+                    let me = this;
+                    let p = this.$store.dispatch( 'loadItemsFromServer', this.exam.id );
+                    return p.then( function () {
+                        let c = me.$store.getters.getItemChildren( me.exam );
+                        return !_.isUndefined( c ) ? c : [];
+                    } );
+                },
+                default(){
+                    return [];
+                }
             },
         },
 

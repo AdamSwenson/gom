@@ -1,4 +1,3 @@
-µ
 <template>
 
     <div class="item-main field has-addons">
@@ -27,8 +26,8 @@
         <p class="control">
             <children-display-control
                     :serial-number="serialNumber"
-                    :is-exam="isExam">
-            </children-display-control>
+                    :is-exam="isExam"
+            ></children-display-control>
         </p>
     </div>
 </template>

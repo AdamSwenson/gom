@@ -1,13 +1,10 @@
 <template>
     <div class="item-import-button">
-        <a class="button is-primary is-outlined item-import-button"
-           v-on:click="handleClick"
-        >
-        <span class="icon is-small">
-            <i class="fa fa-mail-forward" aria-hidden="true"></i>
-        </span>
-            <span>Import</span>
-        </a>
+        <item-button-fillable
+                :property-object="properties"
+                v-on:button-clicked="handleClick"
+        ></item-button-fillable>
+
         <item-select-modal
                 :is-visible="showModal"
                 select-action="remove"
@@ -25,20 +22,34 @@
 <script>
     import itemSelectModal from './item-selection-modal.vue';
 
+    import itemButtonFillable from './item-button-fillable';
     import mixin from './item-buttons.mixin';
-    export default {
-        mixins: [mixin],
 
-        props: ['item'],
+    export default {
+
+        mixins: [ mixin ],
+
+        props: [ 'item' ],
 
         components: {
-            'item-select-modal': itemSelectModal
+            itemButtonFillable,
+            itemSelectModal
         },
 
         data: function () {
             return {
+                properties : {
+                    buttonText:'Import',
+                    icon: 'fa fa-mail-forward',
+                    identifyingClass:'item-import-button',
+                    linkClass:'is-primary is-outlined',
+                    linkTitle:'Import an existing item ',
+                    screenReaderText:'Click to import an item from another exam'
+                },
+
                 showModal: false,
-                defaults: {}
+
+
             }
         },
 
@@ -62,11 +73,5 @@
 
         },
 
-        directives: {},
-
-        events: {},
-
-        mounted: function () {
-        }
     }
 </script>

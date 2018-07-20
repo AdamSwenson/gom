@@ -44,6 +44,14 @@
 
         data: function () {
             return {
+                // buttonText: '',
+                // icon: "",
+                // identifyingClass: '',
+                // linkClass: '',
+                // linkTitle: '',
+                // screenReaderText: '',
+
+
                 styles: {
                     public: 'is-warning',
                     private: 'is-primary'

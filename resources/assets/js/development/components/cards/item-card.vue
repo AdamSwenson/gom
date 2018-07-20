@@ -1,6 +1,5 @@
 <template xmlns="http://www.w3.org/1999/html">
     <div class="item-card card"
-         v-bind:id="id"
          v-bind:class="styling"
     >
 
@@ -11,7 +10,6 @@
         </div>
 
         <div class="card-content"
-             v-bind:id="contentId"
              v-show="isPaneVisible"
         >
             <nav-tabs
@@ -27,8 +25,7 @@
             <div class="columns is-mobile is-multiline is-centered">
 
                 <div class="column is-narrow">
-                    <add-sibling-button :item="item">
-                    </add-sibling-button>
+                    <add-sibling-button :item="item"></add-sibling-button>
                 </div>
 
                 <div class="column is-narrow">
@@ -173,10 +170,24 @@
 
         computed: {
 
+            /**
+             * DEPRECATED
+             * This was bound to the id of the element.
+             * However, not using because does not create unique id tags
+             * (e.g., the children of the second element of two siblings will
+             * end up with the same id, which accessibility tests don't like)
+             */
             id: function () {
                 return this.identifier + "-" + this.height + '-' + this.depth; // + this.serialNumber;
             },
 
+            /**
+             * DEPRECATED
+             * This was bound to the id of the element.
+             * However, not using because does not create unique id tags
+             * (e.g., the children of the second element of two siblings will
+             * end up with the same id, which accessibility tests don't like)
+             */
             contentId: function () {
                 return "card-content-" + this.height + '-' + this.depth;
             },
@@ -208,7 +219,7 @@
              */
             isChildrenVisible: function(){
                 //no need to display the box area if nothing is going in it
-                if(this.numberChildren === 0) return true;
+                if(this.numberChildren === 0) return false;
 
                 return this.$store.getters.isItemChildrenVisible(this.serialNumber);
 

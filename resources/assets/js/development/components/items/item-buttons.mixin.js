@@ -4,7 +4,7 @@ module.exports = {
     computed: {
 
         isExam: function () {
-            return this.item ? this.item.isExam() : false;
+            return ! _.isUndefined(this.item) ? this.item.isExam() : false;
         },
 
         isItem: function () {
