@@ -229,7 +229,8 @@ const actions = {
 
     /**
      * This handles the request to create an exact copy of
-     * an existing item. By default, we will make it a sibling of the
+     * an existing item.
+     * By default, we will make it a sibling of the
      * cloned item.
      *
      * @param state
