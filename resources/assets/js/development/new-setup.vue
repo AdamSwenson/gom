@@ -2,11 +2,12 @@
     <div id="setup-main-page"
          class=" mainBodyLocator"
     >
+        <top-navbar
+                page-type="setup"
+                :exam="exam"
+        ></top-navbar>
+
         <div class="container">
-            <top-navbar
-                    page-type="setup"
-                    :exam="exam"
-            ></top-navbar>
 
             <div id="setup-main-body"
                  class="columns is-centered"
@@ -37,6 +38,7 @@
                 <!--</div>-->
             <!--</div>-->
             <!---->
+
         </div>
 
         <bottom-navbar></bottom-navbar>
