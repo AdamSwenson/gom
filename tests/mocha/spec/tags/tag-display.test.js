@@ -36,7 +36,7 @@ describe( compName, () => {
 
         mutations = {
             [ mTypes.associateTag ]: sinon.spy(),
-                [ mTypes.disassociateTag ]: sinon.spy()
+            [ mTypes.disassociateTag ]: sinon.spy()
         };
 
         store = new Vuex.Store( {
@@ -59,6 +59,18 @@ describe( compName, () => {
         } );
     } );
 
+    describe( "computed properties -- edit button text", () => {
+        it( "Displays correct text when not editing", () => {
+            wrapper.setData( { isEditable: false } );
+            assertions.assertThatSeeText( wrapper, wrapper.vm.buttonText.notEditing, '.edit-tag-button' );
+        } );
+        it( "Displays correct text when editing", () => {
+            wrapper.setData( { isEditable: false } );
+            assertions.assertThatSeeText( wrapper, wrapper.vm.buttonText.editing, '.edit-tag-button' );
+        } );
+
+    } )
+
     describe( "computed properties -- tags", () => {
         let elementSelector = '.object-tag-list';
         it( "displays the tags stored on the object", ( done ) => {
@@ -79,7 +91,9 @@ describe( compName, () => {
             item.tags = [];
             expect( wrapper.find( 'tag-object' ).exists() ).toBe( false );
 
-        } )
+        } );
+
+
     } )
 
     describe( "methods", () => {
@@ -89,13 +103,13 @@ describe( compName, () => {
 
         describe( 'handleEditClick', () => {
             it( 'shows the tag menu when clicked', () => {
-                wrapper.setData({showTagMenu: false});
+                wrapper.setData( { showTagMenu: false } );
                 //check that starting with menu invisible
                 // expect( wrapper.contains('.tag-menu')).toBe(false); //.not.toContain( 'tag-menu' );
 
                 // wrapper.setData({isNewTagInputVisible: true});
                 wrapper.find( '.edit-tag-button' ).trigger( 'click' );
-                expect(wrapper.vm.showTagMenu).toBe(true);
+                expect( wrapper.vm.showTagMenu ).toBe( true );
                 // expect( wrapper.contains('div.tag-menu')).toBe(true);
                 // expect( wrapper.classes()).toContain( 'tag-menu' );
 
@@ -116,14 +130,14 @@ describe( compName, () => {
         describe( 'handleTagToggle', function () {
             it( 'commits mutation to associate if not already associated', () => {
                 tag = factories.tagFactory();
-                wrapper.vm.handleTagToggle(tag);
-                expect(mutations[mTypes.associateTag].callCount).toBe(1);
+                wrapper.vm.handleTagToggle( tag );
+                expect( mutations[ mTypes.associateTag ].callCount ).toBe( 1 );
             } );
 
             it( 'commits mutation to disassociate if already associated', () => {
-                tag = tags[1];
-                wrapper.vm.handleTagToggle(tag);
-                expect(mutations[mTypes.disassociateTag].callCount).toBe(1);
+                tag = tags[ 1 ];
+                wrapper.vm.handleTagToggle( tag );
+                expect( mutations[ mTypes.disassociateTag ].callCount ).toBe( 1 );
             } );
         } );
 

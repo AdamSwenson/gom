@@ -25,7 +25,7 @@
                 <div v-on:click="handleEditClick" class="control">
                     <div class="tags has-addons">
                         <span class="tag is-info is-small edit-tag-button"
-                        >Edit Tags</span>
+                        >{{ buttonText }}</span>
                     </div>
                 </div>
             </div>
@@ -83,11 +83,23 @@
                 clickCounter: 0,
                 useCentralStore: true,
                 defaults: {},
-                isEditable: false
+                isEditable: false,
+                buttonText: {
+                    editing: 'Done',
+                    notEditing: 'Edit Tags'
+                }
             }
         },
 
         computed: {
+            /**
+             * The text displayed on the edit button
+             */
+            buttonText: function(){
+              if(this.isEditable) return this.buttonText.editing;
+              return this.buttonText.notEditing;
+            },
+
             tags: {
                 get() {
                     if ( _.isUndefined( this.object ) ) return [];
