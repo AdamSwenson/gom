@@ -40,11 +40,6 @@
 
                 <add-student-control></add-student-control>
 
-                <button id="import-students-button"
-                        class="button is-primary is-outlined "
-                        v-on:click="toggleFileButtonVisibility"
-                >Import students
-                </button>
 
                 <new-kumi-control type="button"></new-kumi-control>
 
@@ -55,6 +50,24 @@
 
             <!--This goes with the edit kumi control-->
             <kumi-editing-modal></kumi-editing-modal>
+        </div>
+
+        <div class="panel-block">
+            <button id="import-students-button"
+                    class="button is-primary is-outlined "
+                    v-on:click="toggleFileButtonVisibility"
+            >Import students from .csv file
+            </button>
+
+            <a class="button is-primary is-outlined" v-on:click="toggleCanvasImportVisibility">Import from Canvas</a>
+
+        </div>
+
+        <div class="panel-block"
+             id="canvas-imports"
+             v-if="isCanvasImportsVisible"
+        >
+            <canvas-import-area v-on:close-area="toggleCanvasImportVisibility"></canvas-import-area>
         </div>
 
         <div class="panel-block"
@@ -129,12 +142,14 @@
     import KumiEditingModal from "../kumi/kumi-editing-modal";
     import StudentActionButtonParent from "./student/action-buttons/student-action-button-parent";
 
+    import CanvasImportArea from "./student/canvas-import-area";
 
     export default {
 
         props: [],
 
         components: {
+            CanvasImportArea,
             StudentActionButtonParent,
             KumiEditingModal,
             EditKumiControl,
@@ -150,6 +165,7 @@
 
         data: function () {
             return {
+                isCanvasImportsVisible: false,
 
                 fileButtonVisible: false,
 
@@ -211,6 +227,10 @@
         watch: {},
 
         methods: {
+            toggleCanvasImportVisibility: function()
+            {
+                this.isCanvasImportsVisible = ! this.isCanvasImportsVisible;
+            },
 
             updateSelectLabel: function ( evt ) {
                 this.kumiSelectorLabel = evt;
@@ -221,6 +241,10 @@
             //     // window.console.log( 'students-panel', 'handleAddStudentComplete', 223, );
             // },
             //
+            handleCloseCanvas: function(){
+              this.toggleCanvasImportVisibility();
+            },
+
             /**
              * Handler for the event emitted by the import button
              */

@@ -306,6 +306,8 @@ Route::post('dev/roster/{student}/diss/{kumi}', 'Roster\RosterController@disasso
 Route::post('dev/roster/anon/{exam}', 'Roster\RosterController@anonymizeStudents');
 Route::get('dev/roster/exam/{exam}', 'Roster\RosterController@getStudentsForExam');
 
+// Import from canvas
+Route::post('dev/import/canvas', 'Roster\CanvasImportController@importStudents');
 
 /* =============================
         Tags
