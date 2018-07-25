@@ -26,7 +26,7 @@ class LoginController extends Controller
      * @var string
      */
     protected $redirectTo = 'dev/setup';
-    
+
     //old version
     //    protected $redirectTo = '/exam';
 
