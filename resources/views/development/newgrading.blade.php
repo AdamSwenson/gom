@@ -7,7 +7,7 @@
 
     <title>Grade exams</title>
 
-{{--    <link href="{{ asset('css/grade-package.css') }}" rel="stylesheet" type="text/css">--}}
+    <link href="{{ asset('css/grade-package.css') }}" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="{{ asset("css/common-package.css")}}">
     <link rel="stylesheet" href="{{ asset("css/new-setup-package.css")}}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
