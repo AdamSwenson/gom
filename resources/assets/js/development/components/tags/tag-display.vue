@@ -8,8 +8,7 @@
             <span>Tags</span>
         </h5>
 
-        <div class="object-tag-list field is-grouped is-grouped-multiline"
-        >
+        <div class="object-tag-list field is-grouped is-grouped-multiline">
             <tag-object
                     v-if="isReady"
                     v-for="tag in tags"
