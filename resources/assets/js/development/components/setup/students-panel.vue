@@ -53,21 +53,28 @@
         </div>
 
         <div class="panel-block">
-            <button id="import-students-button"
-                    class="button is-primary is-outlined "
-                    v-on:click="toggleFileButtonVisibility"
-            >Import students from .csv file
-            </button>
-
-            <a class="button is-primary is-outlined" v-on:click="toggleCanvasImportVisibility">Import from Canvas</a>
-
+            <div class="field is-grouped">
+                <div class="control">
+                    <button id="import-students-button"
+                            class="button is-primary is-outlined "
+                            v-on:click="toggleFileButtonVisibility"
+                    >Import students from .csv file
+                    </button>
+                </div>
+                <div class="control">
+                    <a class="button is-primary is-outlined" v-on:click="toggleCanvasImportVisibility">Import from
+                        Canvas</a>
+                </div>
+            </div>
         </div>
 
         <div class="panel-block"
              id="canvas-imports"
              v-if="isCanvasImportsVisible"
         >
-            <canvas-import-area v-on:close-area="toggleCanvasImportVisibility"></canvas-import-area>
+            <canvas-import-area
+                    v-on:close-area="toggleCanvasImportVisibility"
+            ></canvas-import-area>
         </div>
 
         <div class="panel-block"
@@ -227,9 +234,8 @@
         watch: {},
 
         methods: {
-            toggleCanvasImportVisibility: function()
-            {
-                this.isCanvasImportsVisible = ! this.isCanvasImportsVisible;
+            toggleCanvasImportVisibility: function () {
+                this.isCanvasImportsVisible = !this.isCanvasImportsVisible;
             },
 
             updateSelectLabel: function ( evt ) {
@@ -241,8 +247,8 @@
             //     // window.console.log( 'students-panel', 'handleAddStudentComplete', 223, );
             // },
             //
-            handleCloseCanvas: function(){
-              this.toggleCanvasImportVisibility();
+            handleCloseCanvas: function () {
+                this.toggleCanvasImportVisibility();
             },
 
             /**
