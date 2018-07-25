@@ -24,7 +24,7 @@
                 <div v-on:click="handleEditClick" class="control">
                     <div class="tags has-addons">
                         <span class="tag is-info is-small edit-tag-button"
-                        >{{ buttonText }}</span>
+                        >{{ buttonDisplayText }}</span>
                     </div>
                 </div>
             </div>
@@ -94,7 +94,7 @@
             /**
              * The text displayed on the edit button
              */
-            buttonText: function(){
+            buttonDisplayText: function(){
               if(this.isEditable) return this.buttonText.editing;
               return this.buttonText.notEditing;
             },
