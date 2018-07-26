@@ -3,7 +3,7 @@
 
     <p id="letterGradeArea" class="control">
 
-            <span class="select">
+            <span class="select" title="The grade for this item">
                 <select class="letterGradeList"
                         v-model="selectedGradeAssignment"
                 >

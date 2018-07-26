@@ -1,5 +1,6 @@
 <template>
     <a class="clear-score-button button is-primary is-small"
+       title="Set the item score to be blank, rather than 0"
        v-on:click="handleClick"
     >Reset score</a>
 </template>

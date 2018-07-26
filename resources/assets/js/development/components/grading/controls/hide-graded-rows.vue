@@ -1,23 +1,3 @@
-<template>
-
-    <a class="hide-graded-rows button "
-       v-bind:id="buttonId"
-       v-bind:title="title"
-       v-bind:class="styling"
-       v-on:click="toggle"
-    >
-        <span class="sr-only">{{ srTextDisplay }}</span>
-
-        <span class="icon is-small">
-              <i v-bind:class="icon" aria-hidden="true"></i>
-        </span> <span class="button-text"> {{ buttonText }}</span>
-    </a>
-
-</template>
-
-<style lang="scss">
-
-</style>
 
 <script>
 
@@ -26,10 +6,12 @@
     import * as nggTypes from '../../../../store/new-grading-getter-types';
 
     import gradingControlMixin from './gradingControl.mixin';
+    import toggleButtonBase from '../../input/toggle-button-base';
 
     export default {
-        mixins: [ gradingControlMixin ],
+        extends: toggleButtonBase,
 
+        mixins: [ gradingControlMixin ],
 
         data: function () {
             return {
@@ -40,7 +22,7 @@
                 toggleMutationName: ngmTypes.toggleGradedStudentRowVisibility,
                 toggleStateGetterName: nggTypes.areGradedStudentRowsVisible,
 
-                styling: ' is-primary is-outlined ',
+                styling: 'hide-graded-rows is-primary is-outlined ',
 
                 icons: {
                     off: 'fa fa-eye',
