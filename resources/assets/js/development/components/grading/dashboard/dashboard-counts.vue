@@ -1,16 +1,19 @@
 <template>
     <!-- graded / remaining counters -->
-    <p id="dashboardCounts" class="dashboard-counts">
-        <span class="progress-label">Graded:</span> <span id="graded">{{ gradedExams }}</span> | <span class="progress-label">Remaining:</span> <span id="remaining">{{ remainingExams }}</span>
+    <p id="dashboardCounts"
+       class="dashboard-counts"
+    >
+        <span class="progress-label">Graded:</span> <span id="graded">{{ gradedExams }}</span> | <span class="progress-label">Remaining:</span>
+        <span id="remaining">{{ remainingExams }}</span>
     </p>
 </template>
 
 <style lang="scss">
-#dashboardCounts{
-    .progress-label{
-        font-weight: bold;
+    #dashboardCounts {
+        .progress-label {
+            font-weight: bold;
+        }
     }
-}
 </style>
 
 <script>
