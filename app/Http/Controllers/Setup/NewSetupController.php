@@ -41,38 +41,8 @@ class NewSetupController extends Controller
 
     public $type;
     public $exam;
-
-//    /**@var IExamRepository */
-//    protected $examDao;
-//    /**@var IQuestionRepository */
-//    protected $questionDao;
-//    /** @var IQuestionAssignmentRepository */
-//    protected $questionAssignmentDao;
-//    protected $questions;
-//    protected $requestIds;
-//    /** @var IStudentRepository */
-//    protected $studentDao;
-//    /** @var IElementRepository */
-//    protected $elementDao;
-//    /** @var IElementAssignmentRepository */
-//    protected $elementAssignmentDao;
-//    /** @var IItemRepository */
-//    protected $itemRepository;
-//    /**
-//     * @var IAssignmentRepository
-//     */
-//    protected $assignmentRepository;
-//    /**
-//     * @var IItemCommentRepository
-//     */
-//    private $commentRepository;
-
     /**
      * NewSetupController constructor.
-     * @param IExamRepository $examDao
-     * @param IItemRepository $itemRepository
-     * @param IAssignmentRepository $assignmentRepository
-     * @param IItemCommentRepository $commentRepository
      */
     public function __construct()
  {
