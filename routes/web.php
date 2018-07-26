@@ -175,8 +175,8 @@ Route::get('dev/test', 'TestController@test');
 
 
 //====================================== New setup page
-Route::get('dev/setup/{exam}', 'Item\SetupController@show')->name('show-exam');
-Route::get('dev/setup', 'Item\SetupController@index');
+Route::get('dev/setup/{exam}', 'Setup\NewSetupController@show')->name('show-exam');
+Route::get('dev/setup', 'Setup\NewSetupController@index');
 
 // ====================================== NEW GRADING
 Route::get('dev/grading/{exam}', 'Grading\NewGradingController@show');

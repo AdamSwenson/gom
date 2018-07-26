@@ -1,0 +1,10 @@
+{
+  "short_name": "Gradeomatic",
+  "name": "Gradeomatic",
+  "icons": [
+  ],
+  "start_url": "/dev/setup/?source=pwa",
+  "background_color": "#3367D6",
+  "display": "standalone",
+  "theme_color": "#3367D6"
+}

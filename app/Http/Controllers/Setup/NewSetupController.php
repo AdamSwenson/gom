@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Item;
+namespace App\Http\Controllers\Setup;
 
 use App\Assignment;
 use App\Element;
@@ -31,7 +31,7 @@ use Illuminate\Http\Request;
  * the Item and Assignment controllers
  * @package App\Http\Controllers
  */
-class SetupController extends Controller
+class NewSetupController extends Controller
 {
     const DEFAULT_KUMI_NAME = 'Group 1';
     const EXAM_JSON_NAME = 'loadedExam';
@@ -68,7 +68,7 @@ class SetupController extends Controller
 //    private $commentRepository;
 
     /**
-     * SetupController constructor.
+     * NewSetupController constructor.
      * @param IExamRepository $examDao
      * @param IItemRepository $itemRepository
      * @param IAssignmentRepository $assignmentRepository
@@ -127,7 +127,7 @@ class SetupController extends Controller
     public function show( Exam $exam )
     {
 
-        return view('development.newsetup', ['exam' => $exam]);
+        return view('new.newsetup', ['exam' => $exam]);
 
 /*
  * WE'VE MOVED TO THE SETUP PAGE LOADING THE DATA
@@ -183,7 +183,7 @@ class SetupController extends Controller
             'exam' => $exam,
         ];
 
-        return view('development.newsetup', $out);
+        return view('new.newsetup', $out);
 
     }
 

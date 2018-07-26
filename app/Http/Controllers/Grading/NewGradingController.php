@@ -58,7 +58,7 @@ class NewGradingController extends Controller
      */
     public function show( Exam $exam )
     {
-        return view('development.newgrading', ['exam' => $exam]);
+        return view('new.newgrading', ['exam' => $exam]);
     }
 
     public function getItems( Exam $exam )
