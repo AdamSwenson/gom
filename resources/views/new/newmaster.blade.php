@@ -14,8 +14,7 @@
 
     <title>@yield('pageTitle')</title>
 
-    {{--    <link rel="stylesheet" href="{{ asset("css/common-package.css")}}">--}}
-    {{--<link rel="stylesheet" href="{{ asset("css/new-setup-package.css")}}">--}}
+    {{--All page specific stylesheets should go here--}}
     @yield('pageCss')
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -27,30 +26,28 @@
 
 <body>
 
-<div class="main-area">
+    <div class="main-area">
 
-    <div id="app"></div>
+        <div id="app"></div>
 
-    {{ method_field('PUT') }}
+        {{ method_field('PUT') }}
 
-    {{ method_field('PATCH') }}
+        {{ method_field('PATCH') }}
 
-    {{ method_field('DELETE') }}
+        {{ method_field('DELETE') }}
 
-    <input type="hidden" id="routeRoot" data="{{ url('') }}"/>
-    <input type="hidden" id="examId" data="{{ $exam->id }}"/>
+        <input type="hidden" id="routeRoot" data="{{ url('') }}"/>
+        <input type="hidden" id="examId" data="{{ $exam->id }}"/>
 
+    </div>
 
-</div>
+    <script type="text/javascript">
+        window.routeRoot = document.getElementById( 'routeRoot' ).getAttribute( 'data' );
+        window.examId = document.getElementById( 'examId' ).getAttribute( 'data' );
+    </script>
 
-<script type="text/javascript">
-    window.routeRoot = document.getElementById( 'routeRoot' ).getAttribute( 'data' );
-    window.examId = document.getElementById( 'examId' ).getAttribute( 'data' );
-</script>
-
-@yield('pageJs')
-{{--<script src="{{ asset('/js/dev/new-setup-package.js') }}"></script>--}}
-{{--<script src="http://localhost:35729/livereload.js"></script>--}}
+    {{--All page specific javascript should go here--}}
+    @yield('pageJs')
 
 </body>
 </html>
