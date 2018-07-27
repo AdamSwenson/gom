@@ -93,13 +93,10 @@
     //Font override variables are defined in this file, so it
     //needs to be loaded before bootswatch or anything else brings in bootstrap
     @import '../../../../sass/common/remote_font_includes';
-
     //Load bulma as customized
     @import '../../../../sass/development/custom-bulma';
-
     /*//Customize certain stuff in bootstrap*/
     @import '../../../../sass/common/bootstrap_overrides';
-
     /* Super common styling for every page */
     @import '../../../../sass/common/universal-styles';
 
@@ -125,7 +122,7 @@
         }
 
         /*.startHidden {*/
-            /*display: none;*/
+        /*display: none;*/
         /*}*/
 
         .input-group.full-width .input-group-btn:last-child > .btn {
@@ -141,18 +138,10 @@
             border-bottom-right-radius: 4px;
             border-top-right-radius: 4px;
         }
-}
+    }
 </style>
 
 <script>
-
-
-//    import { loadExam } from '../../../api/requests/examRequests';
-//    import { loadKumiForExam } from '../../../api/requests/kumiRequests';
-//    import { loadAllStudents } from '../../../api/requests/studentRequests';
-//    // import { getItemsForExam, getItemOrderForExam } from '../../../api/requests/itemRequests';
-//    import Payload from '../../../models/Payload';
-//    import Exam from '../../../models/Exam';
 
     import * as ngmTypes from '../../../store/new-grading-mutation-types';
     import * as ngaTypes from '../../../store/new-grading-action-types';
@@ -170,7 +159,6 @@
     import BottomNavbar from "../bottom-nav/bottom-navbar";
     //buttons
     import FeedbackPreviewButton from "../feedback/feedback-preview-button";
-
     import StudentNameVisibility from "./controls/student-name-visibility";
     import HideGradedRows from "./controls/hide-graded-rows";
     import FinishButton from "./inputs/finish-button";
@@ -234,7 +222,7 @@
                 get: function () {
                     return this.$store.getters[ nggTypes.getActiveStudent ];
                 },
-                watch: function(){
+                watch: function () {
                     this.setQuestionTabToDefault();
                 }
             },
@@ -296,8 +284,8 @@
              * Makes the default question active
              */
             setQuestionTabToDefault: function () {
-                if(this.defaultQuestionTabRoute !== ''){
-                    this.$router.push(this.defaultQuestionTabRoute);
+                if ( this.defaultQuestionTabRoute !== '' ) {
+                    this.$router.push( this.defaultQuestionTabRoute );
                 }
 
             },
