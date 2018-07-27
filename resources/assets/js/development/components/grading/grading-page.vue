@@ -12,6 +12,7 @@
                 </p>
 
             </top-navbar>
+
             <div class="tile is-ancestor">
                 <div class="tile is-parent">
 
@@ -88,44 +89,33 @@
 </template>
 
 <style lang="scss">
-
     //Custom font imports
     //Font override variables are defined in this file, so it
-    //needs to be loaded before bootswatch brings in bootstrap
+    //needs to be loaded before bootswatch or anything else brings in bootstrap
     @import '../../../../sass/common/remote_font_includes';
 
-    @import '../../../../sass/development/newVariables';
-
-    /*@import '../../../../sass/common/common.sass';*/
-
-
-    //Load the bootstrap theme
-    //this also brings in bootstrap styles
-    /*@import '../../../../sass/libraries/bootswatch-spacelab.scss';*/
+    //Load bulma as customized
+    @import '../../../../sass/development/custom-bulma';
 
     /*//Customize certain stuff in bootstrap*/
     @import '../../../../sass/common/bootstrap_overrides';
 
-
-    @import '../../../../sass/grade/mainGrading.scss';
-    /*//Styling for every page*/
-    /*@import universal-styles*/
-
-    /*//Styling for components present on every page*/
-    /*@import "../navigation/topNavbar"*/
-    /*@import errorMessages*/
-
-    /*@import "newSetup";*/
-
-    // Import the rest of Bulma
-    /*@import "~bulma";*/
-
-
-    /*@import '../../../../sass/development/newGrade';*/
+    /* Super common styling for every page */
+    @import '../../../../sass/common/universal-styles';
 
     #grade-main-page {
+
         background-color: $main-background-color-gradient-limit;
         box-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 3px 9px rgba(0, 0, 0, .2);
+
+        #questionAndSliderColumn {
+            width-max: 700px;
+        }
+
+        #rosterAndDashboardColumn {
+            max-width: 550px;
+            min-width: 340px;
+        }
 
         #grade-main-body {
             /*<!--background-image: linear-gradient(bottom left, $main-background-color, $main-background-color-gradient-limit);-->*/
@@ -133,7 +123,25 @@
             /*padding-right: 1em;*/
 
         }
-    }
+
+        /*.startHidden {*/
+            /*display: none;*/
+        /*}*/
+
+        .input-group.full-width .input-group-btn:last-child > .btn {
+            margin-left: 5px;
+        }
+
+        .input-group.full-width .input-group-btn:last-child > .btn {
+            border-bottom-left-radius: 4px;
+            border-top-left-radius: 4px;
+        }
+
+        .input-group.full-width .form-control:first-child {
+            border-bottom-right-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+}
 </style>
 
 <script>

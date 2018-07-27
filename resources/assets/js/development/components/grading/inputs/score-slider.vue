@@ -9,7 +9,11 @@
 </template>
 
 <style lang="scss">
+    @import "../../../../../sass/libraries/bootstrap-slider";
 
+    .slider-horizontal {
+        margin-right: 35px;
+    }
 </style>
 
 

@@ -57,7 +57,7 @@
 </template>
 
 <style lang="scss">
-    @import '../../../../sass/development/newVariables';
+    @import '../../../../sass/development/custom-bulma';
 
     .exam-selection-bar {
         padding-top: 1em;

@@ -1,72 +1,72 @@
-@import "../libraries/bootstrap-slider";
-@import "components/questionPanel";
-@import "components/elementArea";
-@import "components/studentTable";
-@import "components/dashboard";
-@import "components/questionScore.component";
-@import "components/letterGradeButton.component";
-@import "components/currentStudentArea.component";
-@import "../common/bootstrap_overrides";
-
-//typeahead library added in gulpfile
-
-.startHidden {
-  display: none;
-}
-
-.input-group.full-width .input-group-btn:last-child > .btn {
-  margin-left: 5px;
-}
-
-.input-group.full-width .input-group-btn:last-child > .btn {
-  border-bottom-left-radius: 4px;
-  border-top-left-radius: 4px;
-}
-
-.input-group.full-width .form-control:first-child {
-  border-bottom-right-radius: 4px;
-  border-top-right-radius: 4px;
-}
-
-.slider-horizontal {
-  margin-right: 35px;
-}
-
-#questionAndSliderColumn {
-  width-max: 700px;
-}
-
-#rosterAndDashboardColumn {
-  max-width: 550px;
-  min-width: 340px;
-}
-
-
-//.activeStudentInput {
-//  font-size: 1.25em;
+//@import "../libraries/bootstrap-slider";
+//@import "components/questionPanel";
+//@import "components/elementArea";
+//@import "components/studentTable";
+//@import "components/dashboard";
+//@import "components/questionScore.component";
+//@import "components/letterGradeButton.component";
+//@import "components/currentStudentArea.component";
+//@import "../common/bootstrap_overrides";
 //
-//  .typeahead {
-//    border: 0px;
-//  }
+////typeahead library added in gulpfile
 //
-//  #activeStudentNameArea {
-//    padding-right: 0px;
-//
-//    #nameVisibilityControl {
-//      cursor: pointer;
-//    }
-//
-//    #activeStudentName {
-//      //width: 160px;
-//    }
-//  }
-//
-//  #activeStudentIdentifierArea {
-//    padding-right: 0px;
-//
-//    #activeStudentIdentifier {
-//      width: 90px;
-//    }
-//  }
-//
+//.startHidden {
+//  display: none;
 //}
+//
+//.input-group.full-width .input-group-btn:last-child > .btn {
+//  margin-left: 5px;
+//}
+//
+//.input-group.full-width .input-group-btn:last-child > .btn {
+//  border-bottom-left-radius: 4px;
+//  border-top-left-radius: 4px;
+//}
+//
+//.input-group.full-width .form-control:first-child {
+//  border-bottom-right-radius: 4px;
+//  border-top-right-radius: 4px;
+//}
+//
+//.slider-horizontal {
+//  margin-right: 35px;
+//}
+////
+////#questionAndSliderColumn {
+////  width-max: 700px;
+////}
+////
+////#rosterAndDashboardColumn {
+////  max-width: 550px;
+////  min-width: 340px;
+////}
+//
+//
+////.activeStudentInput {
+////  font-size: 1.25em;
+////
+////  .typeahead {
+////    border: 0px;
+////  }
+////
+////  #activeStudentNameArea {
+////    padding-right: 0px;
+////
+////    #nameVisibilityControl {
+////      cursor: pointer;
+////    }
+////
+////    #activeStudentName {
+////      //width: 160px;
+////    }
+////  }
+////
+////  #activeStudentIdentifierArea {
+////    padding-right: 0px;
+////
+////    #activeStudentIdentifier {
+////      width: 90px;
+////    }
+////  }
+////
+////}
