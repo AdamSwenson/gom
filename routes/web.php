@@ -253,8 +253,8 @@ Route::resource('dev/notes', 'Notes\NotesController');
         Preferences and settings
    ============================= */
 Route::resource('dev/preferences/user', 'Preferences\UserPreferencesController' );
-Route::resource('dev/preferences/setup', 'Preferences\setupPreferencesController' );
-Route::resource('dev/preferences/grade', 'Preferences\gradePreferencesController' );
+Route::resource('dev/preferences/setup', 'Preferences\SetupPreferencesController' );
+Route::resource('dev/preferences/grade', 'Preferences\GradePreferencesController' );
 
 
 /* =============================
