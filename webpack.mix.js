@@ -2,9 +2,17 @@
  * Created by adam on 3/21/17.
  */
 const { mix } = require('laravel-mix');
-// require('laravel-elixir-webpack-official')
-// require('laravel-elixir-vue-2');
 
+
+// mix.options({
+//     extractVueStyles: false,
+//     processCssUrls: true,
+//     uglify: {},
+//     purifyCss: false,
+//     //purifyCss: {},
+//     postCss: [require('autoprefixer')],
+//     clearConsole: false
+// });
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -30,7 +38,7 @@ mix
     .browserSync('http://localhost:8000/');
 
 // mix.sass('resources/assets/sass/development/newSetup.scss', 'public/css/new-setup-package.css');
-mix.sass(['resources/assets/sass/development/newGom.scss'], 'public/css/new-setup-package.css');
+// mix.sass(['resources/assets/sass/development/newGom.scss'], 'public/css/new-setup-package.css');
 //
 // mix.sass(['node_modules/bulma/bulma.sass','resources/assets/sass/development/newGom.scss'], 'public/css/new-setup-package.css');
 
