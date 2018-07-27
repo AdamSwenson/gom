@@ -31,8 +31,10 @@ class ResetPasswordController extends Controller
 
     use ResetsPasswords;
 
+    protected $redirectTo = 'dev/setup';
 
-    protected $redirectTo = '/exam';
+    //old version
+//    protected $redirectTo = '/exam';
 
     /**
      * Create a new controller instance.
