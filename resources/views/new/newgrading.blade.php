@@ -5,7 +5,7 @@
 
 @section('pageCss')
 {{--    <link rel="stylesheet" href="{{ asset("css/new-setup-package.css")}}">--}}
-    {{--<link href="{{ asset('css/grade-package.css') }}" rel="stylesheet" type="text/css">--}}
+    <link href="{{ asset('css/grade-package.css') }}" rel="stylesheet" type="text/css">
 @endsection
 
 @section('pageJs')
