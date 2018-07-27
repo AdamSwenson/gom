@@ -4,7 +4,7 @@
 @section('description', 'Setup page for the Gradeomatic')
 
 @section('pageCss')
-<link rel="stylesheet" href="{{ asset("css/new-setup-package.css")}}">
+{{--<link rel="stylesheet" href="{{ asset("css/new-setup-package.css")}}">--}}
 @endsection
 
 @section('pageJs')

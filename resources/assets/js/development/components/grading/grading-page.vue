@@ -88,7 +88,40 @@
 </template>
 
 <style lang="scss">
-    @import '../../../../sass/development/newGom';
+
+    //Custom font imports
+    //Font override variables are defined in this file, so it
+    //needs to be loaded before bootswatch brings in bootstrap
+    @import '../../../../sass/common/remote_font_includes';
+
+    @import '../../../../sass/development/newVariables';
+
+    /*@import '../../../../sass/common/common.sass';*/
+
+
+    //Load the bootstrap theme
+    //this also brings in bootstrap styles
+    /*@import '../../../../sass/libraries/bootswatch-spacelab.scss';*/
+
+    /*//Customize certain stuff in bootstrap*/
+    @import '../../../../sass/common/bootstrap_overrides';
+
+
+    @import '../../../../sass/grade/mainGrading.scss';
+    /*//Styling for every page*/
+    /*@import universal-styles*/
+
+    /*//Styling for components present on every page*/
+    /*@import "../navigation/topNavbar"*/
+    /*@import errorMessages*/
+
+    /*@import "newSetup";*/
+
+    // Import the rest of Bulma
+    /*@import "~bulma";*/
+
+
+    /*@import '../../../../sass/development/newGrade';*/
 
     #grade-main-page {
         background-color: $main-background-color-gradient-limit;
@@ -106,12 +139,12 @@
 <script>
 
 
-    import { loadExam } from '../../../api/requests/examRequests';
-    import { loadKumiForExam } from '../../../api/requests/kumiRequests';
-    import { loadAllStudents } from '../../../api/requests/studentRequests';
-    // import { getItemsForExam, getItemOrderForExam } from '../../../api/requests/itemRequests';
-    import Payload from '../../../models/Payload';
-    import Exam from '../../../models/Exam';
+//    import { loadExam } from '../../../api/requests/examRequests';
+//    import { loadKumiForExam } from '../../../api/requests/kumiRequests';
+//    import { loadAllStudents } from '../../../api/requests/studentRequests';
+//    // import { getItemsForExam, getItemOrderForExam } from '../../../api/requests/itemRequests';
+//    import Payload from '../../../models/Payload';
+//    import Exam from '../../../models/Exam';
 
     import * as ngmTypes from '../../../store/new-grading-mutation-types';
     import * as ngaTypes from '../../../store/new-grading-action-types';

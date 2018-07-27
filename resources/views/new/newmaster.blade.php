@@ -14,10 +14,10 @@
 
     <title>@yield('pageTitle')</title>
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     {{--All page specific stylesheets should go here--}}
     @yield('pageCss')
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
     @if(env('APP_ENV') == 'production')
         @include('other.google_analytics_include')

@@ -43,7 +43,7 @@
 </template>
 
 <style lang="scss">
-    @import '../../../../sass/development/newGom';
+    /*@import '../../../../sass/development/newGom';*/
 
     #bottom-navbar {
         a {
