@@ -89,16 +89,17 @@
 </template>
 
 <style lang="scss">
-    /*//Custom font imports*/
-    /*//Font override variables are defined in this file, so it*/
-    /*//needs to be loaded before bootswatch or anything else brings in bootstrap*/
-    /*@import '../../../../sass/common/remote_font_includes';*/
-    /*//Load bulma as customized*/
-    /*@import '../../../../sass/development/custom-bulma';*/
-    //Customize certain stuff in bootstrap*!*/
-    /*@import '../../../../sass/common/bootstrap_overrides';*/
-    /*!* Super common styling for every page *!*/
-    /*@import '../../../../sass/common/universal-styles';*/
+    /*Custom font imports
+    Font override variables are defined in this file, so it
+    needs to be loaded before bootswatch or anything else brings in bootstrap
+    */
+    @import '../../../../sass/common/remote_font_includes';
+    /*Load bulma as customized*/
+    @import '../../../../sass/development/custom-bulma';
+    /*Customize certain stuff in bootstrap*/
+    @import '../../../../sass/common/bootstrap_overrides';
+    /*Super common styling for every page*/
+    @import '../../../../sass/common/universal-styles';
 
     #grade-main-page {
 

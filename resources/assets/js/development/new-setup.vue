@@ -49,13 +49,12 @@
 
     #setup-main-page {
         background-color: $main-background-color-gradient-limit;
-
         #setup-main-body {
 
-            /*<!-- background-image:linear-gradient(bottom left, $main-background-color, $main-background-color-gradient-limit);-->*/
+            background-image:linear-gradient(bottom left, $main-background-color, $main-background-color-gradient-limit);
 
             #examCardArea {
-                /*<!--background-color: $color-primary-2;-->*/
+                background-color: $color-primary-2;
                 padding-left: 2px;
                 padding-right: 2px;
                 background-color: $main-background-color-gradient-limit;
@@ -73,7 +72,7 @@
                 border-right-color: $border-outline-color;
                 border-right-width: thin;
                 border-right-style: solid;
-                /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/
+                /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/-->
                 /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/
                 /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/
                 /*border-width: 10px;*/

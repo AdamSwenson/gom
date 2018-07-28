@@ -27,7 +27,8 @@ Vue.use( VueAxios, window.axios );
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ROUTER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 // 0. If using a module system (e.g. via vue-cli), import Vue and VueRouter and then call Vue.use(VueRouter).
-import VueRouter from 'vue-router'
+import {VueRouter} from 'vue-router'
+// import VueRouter from 'vue-router'
 Vue.use( VueRouter );
 
 // Define some routes
@@ -43,7 +44,8 @@ const router = new VueRouter( {
 } );
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ STORE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-import Vuex from 'vuex'
+import { Vuex } from 'vuex'
+// import Vuex from 'vuex'
 Vue.use( Vuex );
 import store from '../store';
 

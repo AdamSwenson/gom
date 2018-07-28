@@ -13,6 +13,7 @@ const { mix } = require('laravel-mix');
 //     postCss: [require('autoprefixer')],
 //     clearConsole: false
 // });
+
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -23,40 +24,18 @@ const { mix } = require('laravel-mix');
  | file for your application, as well as bundling up your JS files.
  |
  */
-//mix.react('resources/assets/js/development/newSetup.js', 'public/js/Item/new-setup-package.js');
-mix
-    .react(['resources/assets/js/development/bootstrap.js','resources/assets/js/development/newSetup.js'], 'public/js/dev/new-setup-package.js')
+
+mix.react(['resources/assets/js/development/bootstrap.js','resources/assets/js/development/newSetup.js'], 'public/js/dev/new-setup-package.js')
     .browserSync('http://localhost:8000/');
 
-mix
-    .react(['resources/assets/js/development/bootstrap.js', 'resources/assets/js/development/newGrading.js'], 'public/js/dev/newest-grading-package.js')
+mix.react(['resources/assets/js/development/bootstrap.js', 'resources/assets/js/development/newGrading.js'], 'public/js/dev/newest-grading-package.js')
     .browserSync('http://localhost:8000/');
 
-mix
-    .react(['resources/assets/js/development/bootstrap.js', 'resources/assets/js/development/newPublicFeedback.js'], 'public/js/dev/newest-public-feedback-package.js')
-
+mix.react(['resources/assets/js/development/bootstrap.js', 'resources/assets/js/development/newPublicFeedback.js'], 'public/js/dev/newest-public-feedback-package.js')
     .browserSync('http://localhost:8000/');
 
-// mix.sass('resources/assets/sass/development/newSetup.scss', 'public/css/new-setup-package.css');
-// mix.sass(['resources/assets/sass/development/newGom.scss'], 'public/css/new-setup-package.css');
-//
-// mix.sass(['node_modules/bulma/bulma.sass','resources/assets/sass/development/newGom.scss'], 'public/css/new-setup-package.css');
 
 
-//this was not working for some reason
-//and slowed down everything
-// var LiveReloadPlugin = require('webpack-livereload-plugin');
-//
-// mix.webpackConfig({
-//     plugins: [
-//         new LiveReloadPlugin()
-//     ]
-// });
-
-
-
-// mix.js('resources/assets/js/', 'dist/')
-//    .sass('src/app.scss', 'dist/');
 
 // Full API
 // mix.js(src, output);
