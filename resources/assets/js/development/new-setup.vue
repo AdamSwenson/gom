@@ -72,7 +72,7 @@
                 border-right-color: $border-outline-color;
                 border-right-width: thin;
                 border-right-style: solid;
-                /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/-->
+                /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/
                 /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/
                 /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/
                 /*border-width: 10px;*/

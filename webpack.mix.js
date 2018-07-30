@@ -2,7 +2,7 @@
  * Created by adam on 3/21/17.
  */
 const { mix } = require('laravel-mix');
-const VueLoaderPlugin = require('vue-loader/lib/plugin');
+// const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 // mix.options({
 //     extractVueStyles: false,
