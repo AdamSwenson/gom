@@ -13,6 +13,8 @@ mix.options({
 //     clearConsole: false
 });
 
+mix.sourceMaps();
+
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
