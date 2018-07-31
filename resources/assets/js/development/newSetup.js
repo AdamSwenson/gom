@@ -4,7 +4,6 @@
  */
 import Vue from 'vue'
 
-
 import AsyncComputed from 'vue-async-computed'
 Vue.use( AsyncComputed )
 
@@ -44,7 +43,7 @@ Vue.use( VueAxios, window.axios );
 
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ROUTER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-import {VueRouter} from 'vue-router'
+import VueRouter from 'vue-router'
 Vue.use( VueRouter );
 
 // Define some routes
@@ -62,7 +61,7 @@ const router = new VueRouter( {
 
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ STORE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-import {Vuex} from 'vuex'
+import Vuex from 'vuex'
 Vue.use( Vuex );
 import store from '../store';
 

@@ -2,9 +2,8 @@
  * Created by adam on 3/21/17.
  */
 const { mix } = require('laravel-mix');
-// const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
-// mix.options({
+mix.options({
 //     extractVueStyles: false,
 //     processCssUrls: true,
 //     uglify: {},
@@ -12,7 +11,7 @@ const { mix } = require('laravel-mix');
 //     //purifyCss: {},
 //     postCss: [require('autoprefixer')],
 //     clearConsole: false
-// });
+});
 
 /*
  |--------------------------------------------------------------------------
@@ -25,10 +24,15 @@ const { mix } = require('laravel-mix');
  |
  */
 
-mix.react(['resources/assets/js/development/bootstrap.js','resources/assets/js/development/newSetup.js'], 'public/js/dev/new-setup-package.js')
+mix.react([
+    'resources/assets/js/development/bootstrap.js','resources/assets/js/development/newSetup.js'
+], 'public/js/dev/new-setup-package.js')
     .browserSync('http://localhost:8000/');
 
-mix.react(['resources/assets/js/development/bootstrap.js', 'resources/assets/js/development/newGrading.js'], 'public/js/dev/newest-grading-package.js')
+mix.react( [
+    'resources/assets/js/development/bootstrap.js',
+        'resources/assets/js/development/newGrading.js'
+    ], 'public/js/dev/newest-grading-package.js')
     .browserSync('http://localhost:8000/');
 
 mix.react(['resources/assets/js/development/bootstrap.js', 'resources/assets/js/development/newPublicFeedback.js'], 'public/js/dev/newest-public-feedback-package.js')

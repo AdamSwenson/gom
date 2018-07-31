@@ -1,7 +1,7 @@
 /**
  * This file bootstraps the application
  */
-window.console.log( 'bootstrap', 'bootstrapping', 4, );
+window.console.log( 'bootstrap', 'bootstrapping js', 4, );
 window._ = require( 'lodash' );
 
 /**
