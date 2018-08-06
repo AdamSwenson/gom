@@ -5,6 +5,7 @@ let Mix = require( 'laravel-mix' ).config;
 let webpackPlugins = require( 'laravel-mix' ).plugins;
 let dotenv = require( 'dotenv' )
 
+
 /*
  |--------------------------------------------------------------------------
  | Load Environment Variables
