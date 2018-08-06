@@ -1,43 +1,47 @@
 /**
  * Created by adam on 3/21/17.
  */
-const { mix } = require('laravel-mix');
+const { mix } = require( 'laravel-mix' );
 
-if(process.env.NODE_ENV == 'development'){
+if ( process.env.NODE_ENV == 'development' ) {
     mix.sourceMaps();
 
 }
 
 
-if(process.env.NODE_ENV == 'production'){
-    mix.options({
+if ( process.env.NODE_ENV == 'production' ) {
+    mix.options( {
 //     extractVueStyles: false,
 //     processCssUrls: true,
 //     uglify: {},
-    purifyCss: true,
+        purifyCss: true,
 //     //purifyCss: {},
 //     postCss: [require('autoprefixer')],
 //     clearConsole: false
-    });
+    } );
 
 }
 
 
-mix.react([
-    'resources/assets/js/development/bootstrap.js','resources/assets/js/development/newSetup.js'
-], 'public/js/dev/new-setup-package.js')
-    .browserSync('http://localhost:8000/');
+mix.react(
+    [
+        'resources/assets/js/development/bootstrap.js',
+        'resources/assets/js/development/newSetup.js'
+    ], 'public/js/dev/new-setup-package.js' )
+    .browserSync( 'http://localhost:8000/' );
 
-mix.react( [
-    'resources/assets/js/development/bootstrap.js',
+mix.react(
+    [
+        'resources/assets/js/development/bootstrap.js',
         'resources/assets/js/development/newGrading.js'
-    ], 'public/js/dev/newest-grading-package.js')
-    .browserSync('http://localhost:8000/');
+    ], 'public/js/dev/newest-grading-package.js' )
+    .browserSync( 'http://localhost:8000/' );
 
-mix.react(['resources/assets/js/development/bootstrap.js', 'resources/assets/js/development/newPublicFeedback.js'], 'public/js/dev/newest-public-feedback-package.js')
-    .browserSync('http://localhost:8000/');
-
-
+mix.react(
+    [ 'resources/assets/js/development/bootstrap.js',
+        'resources/assets/js/development/newPublicFeedback.js'
+    ], 'public/js/dev/newest-public-feedback-package.js' )
+    .browserSync( 'http://localhost:8000/' );
 
 
 // Full API

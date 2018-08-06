@@ -1,14 +1,15 @@
-var nodeExternals = require('webpack-node-externals');
+// webpack.config.js
+const path = require( 'path' )
+let glob = require( 'glob' );
+let webpack = require( 'webpack' );
+let dotenv = require( 'dotenv' )
 
-let path = require('path');
-let glob = require('glob');
-let webpack = require('webpack');
-let Mix = require('laravel-mix').config;
-let webpackPlugins = require('laravel-mix').plugins;
-let dotenv = require('dotenv')
+const VueLoaderPlugin = require( 'vue-loader/lib/plugin' )
+
+const nodeExternals = require( 'webpack-node-externals' );
 
 
-
+let root = path.resolve( __dirname );
 /*
  |--------------------------------------------------------------------------
  | Load Environment Variables
@@ -18,548 +19,326 @@ let dotenv = require('dotenv')
  | any environment variables that have already been set.
  |
  */
+dotenv.config( {
+    path: root + "/.env"  // string
+} );
 
-dotenv.config({
-    path: Mix.Paths.root('.env')
-});
+module.exports = {
 
-module.exports.mode = 'development';
+    /*
+    Entry
+    An entry point indicates which module webpack should use to begin building out its internal dependency graph,
+     webpack will figure out which other modules and libraries that entry point depends on (directly and indirectly).
+    By default its value is ./src/index.js, but you can specify a different (or multiple entry points)
+    by configuring the entry property in the webpack configuration. For example:
+    https://webpack.js.org/concepts/
+    */
+    // entry: root, // + '/resources/js',
+    output: root + '/public/js',
 
+    // externals: [ nodeExternals() ], // in order to ignore all modules in node_modules folder
 
+    output: {
+        // use absolute paths in sourcemaps (important for debugging via IDE)
+        devtoolModuleFilenameTemplate: '[absolute-resource-path]',
+        devtoolFallbackModuleFilenameTemplate: '[absolute-resource-path]?[hash]'
+    },
 
-/*
- |--------------------------------------------------------------------------
- | Mix Initialization
- |--------------------------------------------------------------------------
- |
- | As our first step, we'll require the project's Laravel Mix file
- | and record the user's requested compilation and build steps.
- | Once those steps have been recorded, we may get to work.
- |
- */
+    target: 'node',  // webpack should compile node compatible code
 
-Mix.initialize();
-
-
-//Setting this causes this error --- TypeError: _vm._ssrClass is not a function
-// module.exports.target = 'node';
-
-module.exports.externals =  [ nodeExternals() ]; // in order to ignore all modules in node_modules folder
-
-module.exports.mode = 'development';
-
-/*
- |--------------------------------------------------------------------------
- | Webpack Context
- |--------------------------------------------------------------------------
- |
- | This prop will determine the appropriate context, when running Webpack.
- | Since you have the option of publishing this webpack.config.js file
- | to your project root, we will dynamically set the path for you.
- |
- */
-
-module.exports.context = Mix.Paths.root();
-
-
-
-/*
- |--------------------------------------------------------------------------
- | Webpack Entry
- |--------------------------------------------------------------------------
- |
- | We'll first specify the entry point for Webpack. By default, we'll
- | assume a single bundled file, but you may call Mix.extract()
- | to make a separate bundle specifically for vendor libraries.
- |
- */
-
-module.exports.entry = Mix.entry().get();
-
-
-
-/*
- |--------------------------------------------------------------------------
- | Webpack Output
- |--------------------------------------------------------------------------
- |
- | Webpack naturally requires us to specify our desired output path and
- | file name. We'll simply echo what you passed to with Mix.js().
- | Note that, for Mix.version(), we'll properly hash the file.
- |
- */
-
-// module.exports.output = Mix.output();
-
-module.exports.output =  {
-    // use absolute paths in sourcemaps (important for debugging via IDE)
-    devtoolModuleFilenameTemplate: '[absolute-resource-path]',
-    devtoolFallbackModuleFilenameTemplate: '[absolute-resource-path]?[hash]'
-};
-
-
-
-
-/*
- |--------------------------------------------------------------------------
- | Rules
- |--------------------------------------------------------------------------
- |
- | Webpack rules allow us to register any number of loaders and options.
- | Out of the box, we'll provide a handful to get you up and running
- | as quickly as possible, though feel free to add to this list.
- |
- */
-
-let plugins = [];
-
-if (Mix.options.extractVueStyles) {
-    var vueExtractTextPlugin = Mix.vueExtractTextPlugin();
-
-    plugins.push(vueExtractTextPlugin);
-}
-
-let rules = [
-    {
-        test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-            loaders: Mix.options.extractVueStyles ? {
-                js: 'babel-loader' + Mix.babelConfig(),
-                scss: vueExtractTextPlugin.extract({
-                    use: 'css-loader!sass-loader',
-                    fallback: 'vue-style-loader'
-                }),
-                sass: vueExtractTextPlugin.extract({
-                    use: 'css-loader!sass-loader?indentedSyntax',
-                    fallback: 'vue-style-loader'
-                }),
-                less: vueExtractTextPlugin.extract({
-                    use: 'css-loader!less-loader',
-                    fallback: 'vue-style-loader'
-                }),
-                stylus: vueExtractTextPlugin.extract({
-                    use: 'css-loader!stylus-loader?paths[]=node_modules',
-                    fallback: 'vue-style-loader'
-                }),
-                css: vueExtractTextPlugin.extract({
-                    use: 'css-loader',
-                    fallback: 'vue-style-loader'
-                })
-            }: {
-                js: 'babel-loader' + Mix.babelConfig(),
-                scss: 'vue-style-loader!css-loader!sass-loader',
-                sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax',
-                less: 'vue-style-loader!css-loader!less-loader',
-                stylus: 'vue-style-loader!css-loader!stylus-loader?paths[]=node_modules'
+    module: {
+        rules: [
+            {
+                test: /\.vue$/,
+                loader: 'vue-loader',
+                // options: {
+                //     loaders: {
+                //         js: 'babel-loader',
+                //         scss: 'vue-style-loader!css-loader!sass-loader',
+                //         sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax',
+                //     }
+                // },
             },
 
-            postcss: Mix.options.postCss,
-
-            preLoaders: Mix.options.vue.preLoaders,
-
-            postLoaders: Mix.options.vue.postLoaders
-        }
-    },
-
-    {
-        test: /\.jsx?$/,
-        exclude: /(node_modules|bower_components)/,
-        loader: 'babel-loader' + Mix.babelConfig()
-    },
-
-    {
-        test: /\.css$/,
-        loaders: ['style-loader', 'css-loader']
-    },
-
-    {
-        test: /\.html$/,
-        loaders: ['html-loader']
-    },
-
-    {
-        test: /\.(png|jpe?g|gif)$/,
-        loaders: [
+            // this will apply to both plain `.scss` files
+            // AND `<style lang="scss">` blocks in `.vue` files
             {
-                loader: 'file-loader',
-                options: {
-                    name: path => {
-                        if (! /node_modules|bower_components/.test(path)) {
-                            return 'images/[name].[ext]?[hash]';
-                        }
-
-                        return 'images/vendor/' + path
-                            .replace(/\\/g, '/')
-                            .replace(
-                                /((.*(node_modules|bower_components))|images|image|img|assets)\//g, ''
-                            ) + '?[hash]';
-                    },
-                    publicPath: Mix.options.resourceRoot
-                }
+                test: /\.scss$/,
+                use: [
+                    'vue-style-loader',
+                    'css-loader',
+                    'sass-loader'
+                ]
             },
+
+// this will apply to both plain `.js` files
+// AND `<script>` blocks in `.vue` files
             {
-                loader: 'img-loader',
-                options: Mix.options.imgLoaderOptions
+                test: /\.js$/,
+                loader: 'babel-loader',
+                // options: {
+                //     cacheDirectory: true,
+                //     presets: [
+                //         [
+                //             'env',
+                //             {
+                //                 modules: false,
+                //                 targets: {
+                //                     browsers: [ '> 2%' ],
+                //                     uglify: true
+                //                 }
+                //             }
+                //         ]
+                //     ],
+                //     plugins: [
+                //         'transform-object-rest-spread',
+                //         [
+                //             'transform-runtime',
+                //             {
+                //                 polyfill: false,
+                //                 helpers: false
+                //             }
+                //         ]
+                //     ]
+                // },
+            },
+// this will apply to both plain `.css` files
+// AND `<style>` blocks in `.vue` files
+            {
+                test: /\.css$/,
+                use:
+                    [
+                        'vue-style-loader',
+                        'css-loader'
+                    ]
             }
         ]
     },
-
-    {
-        test: /\.(woff2?|ttf|eot|svg|otf)$/,
-        loader: 'file-loader',
-        options: {
-            name: path => {
-                if (! /node_modules|bower_components/.test(path)) {
-                    return 'fonts/[name].[ext]?[hash]';
-                }
-
-                return 'fonts/vendor/' + path
-                    .replace(/\\/g, '/')
-                    .replace(
-                        /((.*(node_modules|bower_components))|fonts|font|assets)\//g, ''
-                    ) + '?[hash]';
-            },
-            publicPath: Mix.options.resourceRoot
-        }
-    },
-
-    {
-        test: /\.(cur|ani)$/,
-        loader: 'file-loader',
-        options: {
-            name: '[name].[ext]?[hash]',
-            publicPath: Mix.options.resourceRoot
-        }
-    }
-];
-
-let extensions = ['*', '.js', '.jsx', '.vue'];
-
-if (Mix.ts) {
-    rules.push({
-        test: /\.tsx?$/,
-        loader: 'ts-loader',
-        exclude: /node_modules/,
-    });
-
-    extensions.push('.ts', '.tsx');
+    plugins: [
+        // make sure to include the plugin for the magic
+        new VueLoaderPlugin()
+    ]
 }
 
-let sassRule = {
-    test: /\.s[ac]ss$/,
-    loaders: ['style-loader', 'css-loader', 'sass-loader']
-};
 
-if (Mix.preprocessors) {
-    sassRule.exclude = Mix.preprocessors.map(preprocessor => preprocessor.test());
-}
-
-rules.push(sassRule);
-
-if (Mix.preprocessors) {
-    Mix.preprocessors.forEach(preprocessor => {
-        rules.push(preprocessor.rules());
-
-        plugins.push(preprocessor.extractPlugin);
-    });
-}
-
-module.exports.module = { rules };
+// console.log( 'webpack.mocha.config', 'root', 11, root);
 
 
-
-/*
- |--------------------------------------------------------------------------
- | Resolve
- |--------------------------------------------------------------------------
- |
- | Here, we may set any options/aliases that affect Webpack's resolving
- | of modules. To begin, we will provide the necessary Vue alias to
- | load the Vue common library. You may delete this, if needed.
- |
- */
-
-module.exports.resolve = {
-    extensions,
-
-    alias: {
-        'vue$': 'vue/dist/vue.common.js'
-    }
-};
-
-
-
-/*
- |--------------------------------------------------------------------------
- | Stats
- |--------------------------------------------------------------------------
- |
- | By default, Webpack spits a lot of information out to the terminal,
- | each you time you compile. Let's keep things a bit more minimal
- | and hide a few of those bits and pieces. Adjust as you wish.
- |
- */
-
-module.exports.stats = {
-    hash: false,
-    version: false,
-    timings: false,
-    children: false,
-    errors: false
-};
-
-process.noDeprecation = true;
-
-module.exports.performance = { hints: false };
-
-
-
-/*
- |--------------------------------------------------------------------------
- | Devtool
- |--------------------------------------------------------------------------
- |
- | Sourcemaps allow us to access our original source code within the
- | browser, even if we're serving a bundled script or stylesheet.
- | You may activate sourcemaps, by adding Mix.sourceMaps().
- |
- */
-
-module.exports.devtool = 'cheap-source-map'; //Mix.options.sourcemaps;
-
-
-
-/*
- |--------------------------------------------------------------------------
- | Webpack Dev Server Configuration
- |--------------------------------------------------------------------------
- |
- | If you want to use that flashy hot module replacement feature, then
- | we've got you covered. Here, we'll set some basic initial config
- | for the Node server. You very likely won't want to edit this.
- |
- */
-module.exports.devServer = {
-    headers: {
-        "Access-Control-Allow-Origin": "*"
-    },
-    historyApiFallback: true,
-    noInfo: true,
-    compress: true,
-    quiet: true
-};
-
-
-
-/*
- |--------------------------------------------------------------------------
- | Plugins
- |--------------------------------------------------------------------------
- |
- | Lastly, we'll register a number of plugins to extend and configure
- | Webpack. To get you started, we've included a handful of useful
- | extensions, for versioning, OS notifications, and much more.
- |
- */
-
-plugins.push(
-    new webpack.ProvidePlugin(Mix.autoload || {}),
-
-    new webpackPlugins.FriendlyErrorsWebpackPlugin({ clearConsole: Mix.options.clearConsole }),
-
-    new webpackPlugins.StatsWriterPlugin({
-        filename: 'mix-manifest.json',
-        transform: Mix.manifest.transform.bind(Mix.manifest),
-    }),
-
-    new webpack.LoaderOptionsPlugin({
-        minimize: Mix.inProduction,
-        options: {
-            postcss: Mix.options.postCss,
-            context: __dirname,
-            output: { path: './' }
-        }
-    })
-);
-
-if (Mix.browserSync) {
-    plugins.push(
-        new webpackPlugins.BrowserSyncPlugin(
-            Object.assign({
-                host: 'localhost',
-                port: 3000,
-                proxy: 'app.dev',
-                files: [
-                    'app/**/*.php',
-                    'resources/views/**/*.php',
-                    'public/js/**/*.js',
-                    'public/css/**/*.css'
-                ]
-            }, Mix.browserSync),
-            {
-                reload: false
-            }
-        )
-    );
-}
-
-if (Mix.options.notifications) {
-    plugins.push(
-        new webpackPlugins.WebpackNotifierPlugin({
-            title: 'Laravel Mix',
-            alwaysNotify: true,
-            contentImage: Mix.Paths.root('node_modules/laravel-mix/icons/laravel.png')
-        })
-    );
-}
-
-if (Mix.copy.length) {
-    new webpackPlugins.CopyWebpackPlugin(Mix.copy);
-}
-
-if (Mix.entry().hasExtractions()) {
-    plugins.push(
-        new webpack.optimize.CommonsChunkPlugin({
-            names: Mix.entry().getExtractions(),
-            minChunks: Infinity
-        })
-    );
-}
-
-if (Mix.options.versioning) {
-    plugins.push(
-        new webpack[Mix.inProduction ? 'HashedModuleIdsPlugin': 'NamedModulesPlugin'](),
-        new webpackPlugins.WebpackChunkHashPlugin()
-    );
-} else if (Mix.options.hmr) {
-    plugins.push(
-        new webpack.NamedModulesPlugin()
-    );
-}
-
-if (Mix.options.purifyCss) {
-    let PurifyCSSPlugin = require('purifycss-webpack');
-
-    // By default, we'll scan all Blade and Vue files in our project.
-    let paths = glob.sync(Mix.Paths.root('resources/views/**/*.blade.php')).concat(
-        Mix.entry().scripts.reduce((carry, js) => {
-            return carry.concat(glob.sync(js.base + '/**/*.vue'));
-        }, [])
-    );
-
-    plugins.push(new PurifyCSSPlugin(
-        Object.assign({ paths }, Mix.options.purifyCss, { minimize: Mix.inProduction })
-    ));
-}
-
-if (Mix.inProduction && Mix.options.uglify) {
-    plugins.push(
-        new webpack.optimize.UglifyJsPlugin(Mix.options.uglify)
-    );
-}
-
-plugins.push(
-    new webpack.DefinePlugin(
-        Mix.definitions({
-            NODE_ENV: Mix.inProduction
-                ? 'production'
-                : ( process.env.NODE_ENV || 'development' )
-        })
-    ),
-
-    new webpackPlugins.WebpackOnBuildPlugin(
-        stats => global.events.fire('build', stats)
-    )
-);
-
-if (! Mix.entry().hasScripts()) {
-    plugins.push(new webpackPlugins.MockEntryPlugin(Mix.output().path));
-}
-
-module.exports.plugins = plugins;
-
-
-
-/*
- |--------------------------------------------------------------------------
- | Mix Finalizing
- |--------------------------------------------------------------------------
- |
- | Now that we've declared the entirety of our Webpack configuration, the
- | final step is to scan for any custom configuration in the Mix file.
- | If mix.webpackConfig() is called, we'll merge it in, and build!
- |
- */
-
-if (Mix.webpackConfig) {
-    module.exports = require('webpack-merge').smart(
-        module.exports, Mix.webpackConfig
-    );
-}
 //
 //
-// module.exports = {
-//   module: {
-//       rules: rules,
-//           // [
-//           // {
-//           //     test: /\.vue$/,
-//           //     use: 'vue-loader',
-//           //     options: {
-//           //         loaders: Mix.options.extractVueStyles ? {
-//           //             js: 'babel-loader' + Mix.babelConfig(),
-//           //             scss: vueExtractTextPlugin.extract({
-//           //                 use: 'css-loader!sass-loader',
-//           //                 fallback: 'vue-style-loader'
-//           //             }),
-//           //             sass: vueExtractTextPlugin.extract({
-//           //                 use: 'css-loader!sass-loader?indentedSyntax',
-//           //                 fallback: 'vue-style-loader'
-//           //             }),
-//           //             less: vueExtractTextPlugin.extract({
-//           //                 use: 'css-loader!less-loader',
-//           //                 fallback: 'vue-style-loader'
-//           //             }),
-//           //             stylus: vueExtractTextPlugin.extract({
-//           //                 use: 'css-loader!stylus-loader?paths[]=node_modules',
-//           //                 fallback: 'vue-style-loader'
-//           //             }),
-//           //             css: vueExtractTextPlugin.extract({
-//           //                 use: 'css-loader',
-//           //                 fallback: 'vue-style-loader'
-//           //             })
-//           //         }: {
-//           //             js: 'babel-loader' + Mix.babelConfig(),
-//           //             scss: 'vue-style-loader!css-loader!sass-loader',
-//           //             sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax',
-//           //             less: 'vue-style-loader!css-loader!less-loader',
-//           //             stylus: 'vue-style-loader!css-loader!stylus-loader?paths[]=node_modules'
-//           //         },
-//           //
-//           //         postcss: Mix.options.postCss,
-//           //
-//           //         preLoaders: Mix.options.vue.preLoaders,
-//           //
-//           //         postLoaders: Mix.options.vue.postLoaders
-//           //     }
-//           // },
+// // module.exports.mode = 'development';
 //
-//       // ],
 //
-//       output: {
-//           // use absolute paths in sourcemaps (important for debugging via IDE)
-//           devtoolModuleFilenameTemplate: '[absolute-resource-path]',
-//           devtoolFallbackModuleFilenameTemplate: '[absolute-resource-path]?[hash]'
-//       },
 //
-//       target: 'node',  // webpack should compile node compatible code
+// //Setting this causes this error --- TypeError: _vm._ssrClass is not a function
+// // module.exports.target = 'node';
 //
-//       externals: [nodeExternals()], // in order to ignore all modules in node_modules folder
+// module.exports.externals = [ nodeExternals() ]; // in order to ignore all modules in node_modules folder
 //
-//       devtool: "inline-cheap-module-source-map"
-//   }
+// // module.exports.mode = 'development';
 //
-
-
-
+//
+// // module.exports.context = root + '/node_modules';
+//
+//
+//
+// // module.exports.output = root + '/public/js';
+// //
+// module.exports.output = {
+//     // use absolute paths in sourcemaps (important for debugging via IDE)
+//     devtoolModuleFilenameTemplate: '[absolute-resource-path]',
+//     devtoolFallbackModuleFilenameTemplate: '[absolute-resource-path]?[hash]'
+// };
+//
+//
+// /*
+//  |--------------------------------------------------------------------------
+//  | Rules
+//  |--------------------------------------------------------------------------
+//  |
+//  | Webpack rules allow us to register any number of loaders and options.
+//  | Out of the box, we'll provide a handful to get you up and running
+//  | as quickly as possible, though feel free to add to this list.
+//  |
+//  */
+//
+// let plugins = [];
+//
+//
+// let rules = [
+//     {
+//         test: /\.vue$/,
+//         loader: 'vue-loader',
+//         options: {
+//             // loaders: Mix.options.extractVueStyles ? {
+//             //     js: 'babel-loader' + Mix.babelConfig(),
+//             //     scss: vueExtractTextPlugin.extract( {
+//             //         use: 'css-loader!sass-loader',
+//             //         fallback: 'vue-style-loader'
+//             //     } ),
+//             //     sass: vueExtractTextPlugin.extract( {
+//             //         use: 'css-loader!sass-loader?indentedSyntax',
+//             //         fallback: 'vue-style-loader'
+//             //     } ),
+//             //     less: vueExtractTextPlugin.extract( {
+//             //         use: 'css-loader!less-loader',
+//             //         fallback: 'vue-style-loader'
+//             //     } ),
+//             //     stylus: vueExtractTextPlugin.extract( {
+//             //         use: 'css-loader!stylus-loader?paths[]=node_modules',
+//             //         fallback: 'vue-style-loader'
+//             //     } ),
+//             //     css: vueExtractTextPlugin.extract( {
+//             //         use: 'css-loader',
+//             //         fallback: 'vue-style-loader'
+//             //     } )
+//             // } : {
+//                 js: 'babel-loader' +
+//                     {
+//                         cacheDirectory: true,
+//                         presets: [
+//                             [
+//                                 'env',
+//                                 {
+//                                     modules: false,
+//                                     targets: {
+//                                         browsers: ['> 2%'],
+//                                         uglify: true
+//                                     }
+//                                 }
+//                             ]
+//                         ],
+//                         plugins: [
+//                             'transform-object-rest-spread',
+//                             [
+//                                 'transform-runtime',
+//                                 {
+//                                     polyfill: false,
+//                                     helpers: false
+//                                 }
+//                             ]
+//                         ]
+//                     },
+//                     // { "presets": ["env", "latest"],
+//                     // "plugins": ["transform-object-rest-spread", "syntax-async-functions","transform-regenerator"]
+//                 // },// + Mix.babelConfig(),
+//             // scss: vueExtractTextPlugin.extract( {
+//                 //         use: 'css-loader!sass-loader',
+//                 //         fallback: 'vue-style-loader'
+//                 //     } ),
+//                 //
+//                 scss: 'vue-style-loader!css-loader!sass-loader',
+//                 sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax',
+//                 less: 'vue-style-loader!css-loader!less-loader',
+//                 stylus: 'vue-style-loader!css-loader!stylus-loader?paths[]=node_modules'
+//             // },
+//
+//         }
+//     },
+//
+//     {
+//         test: /\.css$/,
+//         loaders: [ 'style-loader', 'css-loader' ]
+//     },
+//
+//
+//
+// ];
+//
+// let extensions = [ '*', '.js', '.jsx', '.vue' ];
+//
+// module.exports.module = { rules };
+//
+//
+// /*
+//  |--------------------------------------------------------------------------
+//  | Resolve
+//  |--------------------------------------------------------------------------
+//  |
+//  | Here, we may set any options/aliases that affect Webpack's resolving
+//  | of modules. To begin, we will provide the necessary Vue alias to
+//  | load the Vue common library. You may delete this, if needed.
+//  |
+//  */
+//
+// module.exports.resolve = {
+//     extensions,
+//
+//     alias: {
+//         'vue$': 'vue/dist/vue.common.js'
+//     }
+// };
+//
+//
+// module.exports.devtool = 'cheap-source-map'; //Mix.options.sourcemaps;
+//
+//
+// module.exports.plugins = plugins;
+//
+//
+// //
+// //
+// // module.exports = {
+// //   module: {
+// //       rules: rules,
+// //           // [
+// //           // {
+// //           //     test: /\.vue$/,
+// //           //     use: 'vue-loader',
+// //           //     options: {
+// //           //         loaders: Mix.options.extractVueStyles ? {
+// //           //             js: 'babel-loader' + Mix.babelConfig(),
+// //           //             scss: vueExtractTextPlugin.extract({
+// //           //                 use: 'css-loader!sass-loader',
+// //           //                 fallback: 'vue-style-loader'
+// //           //             }),
+// //           //             sass: vueExtractTextPlugin.extract({
+// //           //                 use: 'css-loader!sass-loader?indentedSyntax',
+// //           //                 fallback: 'vue-style-loader'
+// //           //             }),
+// //           //             less: vueExtractTextPlugin.extract({
+// //           //                 use: 'css-loader!less-loader',
+// //           //                 fallback: 'vue-style-loader'
+// //           //             }),
+// //           //             stylus: vueExtractTextPlugin.extract({
+// //           //                 use: 'css-loader!stylus-loader?paths[]=node_modules',
+// //           //                 fallback: 'vue-style-loader'
+// //           //             }),
+// //           //             css: vueExtractTextPlugin.extract({
+// //           //                 use: 'css-loader',
+// //           //                 fallback: 'vue-style-loader'
+// //           //             })
+// //           //         }: {
+// //           //             js: 'babel-loader' + Mix.babelConfig(),
+// //           //             scss: 'vue-style-loader!css-loader!sass-loader',
+// //           //             sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax',
+// //           //             less: 'vue-style-loader!css-loader!less-loader',
+// //           //             stylus: 'vue-style-loader!css-loader!stylus-loader?paths[]=node_modules'
+// //           //         },
+// //           //
+// //           //         postcss: Mix.options.postCss,
+// //           //
+// //           //         preLoaders: Mix.options.vue.preLoaders,
+// //           //
+// //           //         postLoaders: Mix.options.vue.postLoaders
+// //           //     }
+// //           // },
+// //
+// //       // ],
+// //
+// //       output: {
+// //           // use absolute paths in sourcemaps (important for debugging via IDE)
+// //           devtoolModuleFilenameTemplate: '[absolute-resource-path]',
+// //           devtoolFallbackModuleFilenameTemplate: '[absolute-resource-path]?[hash]'
+// //       },
+// //
+// //       target: 'node',  // webpack should compile node compatible code
+// //
+// //       externals: [nodeExternals()], // in order to ignore all modules in node_modules folder
+// //
+// //       devtool: "inline-cheap-module-source-map"
+// //   }
+// //
+//
+//
+//
