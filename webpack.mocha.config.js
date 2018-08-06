@@ -4,7 +4,7 @@ let glob = require( 'glob' );
 let webpack = require( 'webpack' );
 let dotenv = require( 'dotenv' )
 
-const VueLoaderPlugin = require( 'vue-loader/lib/plugin' )
+// const VueLoaderPlugin = require( 'vue-loader/lib/plugin' )
 
 const nodeExternals = require( 'webpack-node-externals' );
 
