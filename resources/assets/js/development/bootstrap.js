@@ -1,7 +1,7 @@
 /**
  * This file bootstraps the application
  */
-window.console.log( 'bootstrap', 'bootstrapping', 4, );
+window.console.log( 'bootstrap', 'bootstrapping js', 4, );
 window._ = require( 'lodash' );
 
 /**
@@ -15,7 +15,6 @@ window._ = require( 'lodash' );
 var element = document.querySelector( 'meta[name=csrf-token]');
 var content = element && element.getAttribute("content");
 window.Laravel = { csrfToken: content};
-// window.Laravel = { csrfToken: $( 'meta[name=csrf-token]' ).attr( "content" ) };
 
 
 /**
@@ -26,20 +25,12 @@ window.Laravel = { csrfToken: content};
 // require( 'bootstrap-sass' );
 
 
-/**
- * Vue is a modern JavaScript library for building interactive web interfaces
- * using reactive data binding and reusable components. Vue's API is clean
- * and simple, leaving you to focus on building your next great project.
- */
-
-// window.Vue = require('vue');
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
  * to our Laravel back-end. This library automatically handles sending the
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
-
 window.axios = require( 'axios' );
 
 window.axios.defaults.headers.common = {

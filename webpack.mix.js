@@ -1,54 +1,48 @@
 /**
  * Created by adam on 3/21/17.
  */
-const { mix } = require('laravel-mix');
-// require('laravel-elixir-webpack-official')
-// require('laravel-elixir-vue-2');
+const { mix } = require( 'laravel-mix' );
 
-/*
- |--------------------------------------------------------------------------
- | Mix Asset Management
- |--------------------------------------------------------------------------
- |
- | Mix provides a clean, fluent API for defining some Webpack build steps
- | for your Laravel application. By default, we are compiling the Sass
- | file for your application, as well as bundling up your JS files.
- |
- */
-//mix.react('resources/assets/js/development/newSetup.js', 'public/js/Item/new-setup-package.js');
-mix
-    .react(['resources/assets/js/development/bootstrap.js','resources/assets/js/development/newSetup.js'], 'public/js/dev/new-setup-package.js')
-    .browserSync('http://localhost:8000/');
+if ( process.env.NODE_ENV == 'development' ) {
+    mix.sourceMaps();
 
-mix
-    .react(['resources/assets/js/development/bootstrap.js', 'resources/assets/js/development/newGrading.js'], 'public/js/dev/newest-grading-package.js')
-    .browserSync('http://localhost:8000/');
-
-mix
-    .react(['resources/assets/js/development/bootstrap.js', 'resources/assets/js/development/newPublicFeedback.js'], 'public/js/dev/newest-public-feedback-package.js')
-
-    .browserSync('http://localhost:8000/');
-
-// mix.sass('resources/assets/sass/development/newSetup.scss', 'public/css/new-setup-package.css');
-mix.sass(['resources/assets/sass/development/newGom.scss'], 'public/css/new-setup-package.css');
-//
-// mix.sass(['node_modules/bulma/bulma.sass','resources/assets/sass/development/newGom.scss'], 'public/css/new-setup-package.css');
+}
 
 
-//this was not working for some reason
-//and slowed down everything
-// var LiveReloadPlugin = require('webpack-livereload-plugin');
-//
-// mix.webpackConfig({
-//     plugins: [
-//         new LiveReloadPlugin()
-//     ]
-// });
+if ( process.env.NODE_ENV == 'production' ) {
+    mix.options( {
+//     extractVueStyles: false,
+//     processCssUrls: true,
+//     uglify: {},
+        purifyCss: true,
+//     //purifyCss: {},
+//     postCss: [require('autoprefixer')],
+//     clearConsole: false
+    } );
+
+}
 
 
+mix.react(
+    [
+        'resources/assets/js/development/bootstrap.js',
+        'resources/assets/js/development/newSetup.js'
+    ], 'public/js/dev/new-setup-package.js' )
+    .browserSync( 'http://localhost:8000/' );
 
-// mix.js('resources/assets/js/', 'dist/')
-//    .sass('src/app.scss', 'dist/');
+mix.react(
+    [
+        'resources/assets/js/development/bootstrap.js',
+        'resources/assets/js/development/newGrading.js'
+    ], 'public/js/dev/newest-grading-package.js' )
+    .browserSync( 'http://localhost:8000/' );
+
+mix.react(
+    [ 'resources/assets/js/development/bootstrap.js',
+        'resources/assets/js/development/newPublicFeedback.js'
+    ], 'public/js/dev/newest-public-feedback-package.js' )
+    .browserSync( 'http://localhost:8000/' );
+
 
 // Full API
 // mix.js(src, output);
