@@ -3,11 +3,13 @@ const path = require( 'path' )
 let glob = require( 'glob' );
 let webpack = require( 'webpack' );
 let dotenv = require( 'dotenv' )
+require('babel-polyfill');
 
 // const VueLoaderPlugin = require( 'vue-loader/lib/plugin' )
 
 const nodeExternals = require( 'webpack-node-externals' );
 
+let extensions = [ '*', '.js', '.jsx', '.vue' ];
 
 let root = path.resolve( __dirname );
 /*
@@ -33,8 +35,28 @@ module.exports = {
     by configuring the entry property in the webpack configuration. For example:
     https://webpack.js.org/concepts/
     */
-    // entry: root, // + '/resources/js',
-    output: root + '/public/js',
+    // entry: root + '/public/js/dev/new-setup-package.js',
+    // output: root + '/public/js',
+    // context: root,
+
+    /*
+     |--------------------------------------------------------------------------
+     | Resolve
+     |--------------------------------------------------------------------------
+     |
+     | Here, we may set any options/aliases that affect Webpack's resolving
+     | of modules. To begin, we will provide the necessary Vue alias to
+     | load the Vue common library. You may delete this, if needed.
+     |
+     */
+
+    resolve: {
+        extensions,
+        alias: {
+            'vue$': 'vue/dist/vue.common.js'
+        }
+    },
+
 
     externals: [ nodeExternals() ], // in order to ignore all modules in node_modules folder
 
@@ -45,19 +67,19 @@ module.exports = {
     },
 
     target: 'node',  // webpack should compile node compatible code
-
+    // devtool: "inline-cheap-module-source-map",
     module: {
         rules: [
             {
                 test: /\.vue$/,
                 loader: 'vue-loader',
-                // options: {
-                //     loaders: {
-                //         js: 'babel-loader',
-                //         scss: 'vue-style-loader!css-loader!sass-loader',
-                //         sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax',
-                //     }
-                // },
+                options: {
+                    loaders: {
+                        js: 'babel-loader',
+                        scss: 'vue-style-loader!css-loader!sass-loader',
+                        sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax',
+                    }
+                },
             },
 
             // this will apply to both plain `.scss` files
@@ -76,31 +98,31 @@ module.exports = {
             {
                 test: /\.js$/,
                 loader: 'babel-loader',
-                // options: {
-                //     cacheDirectory: true,
-                //     presets: [
-                //         [
-                //             'env',
-                //             {
-                //                 modules: false,
-                //                 targets: {
-                //                     browsers: [ '> 2%' ],
-                //                     uglify: true
-                //                 }
-                //             }
-                //         ]
-                //     ],
-                //     plugins: [
-                //         'transform-object-rest-spread',
-                //         [
-                //             'transform-runtime',
-                //             {
-                //                 polyfill: false,
-                //                 helpers: false
-                //             }
-                //         ]
-                //     ]
-                // },
+                options: {
+                    cacheDirectory: true,
+                    // presets: [
+                    //     [
+                    //         'env',
+                    //         {
+                    //             modules: false,
+                    //             targets: {
+                    //                 browsers: [ '> 2%' ],
+                    //                 uglify: false
+                    //             }
+                    //         }
+                    //     ]
+                    // ],
+                    // plugins: [
+                    //     'transform-object-rest-spread',
+                    //     [
+                    //         'transform-runtime',
+                    //         {
+                    //             polyfill: true,
+                    //             helpers: true
+                    //         }
+                    //     ]
+                    // ]
+                },
             },
 // this will apply to both plain `.css` files
 // AND `<style>` blocks in `.vue` files
