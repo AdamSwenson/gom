@@ -4,7 +4,7 @@ let glob = require( 'glob' );
 let webpack = require( 'webpack' );
 let dotenv = require( 'dotenv' )
 
-const VueLoaderPlugin = require( 'vue-loader/lib/plugin' )
+// const VueLoaderPlugin = require( 'vue-loader/lib/plugin' )
 
 const nodeExternals = require( 'webpack-node-externals' );
 
@@ -36,7 +36,7 @@ module.exports = {
     // entry: root, // + '/resources/js',
     output: root + '/public/js',
 
-    // externals: [ nodeExternals() ], // in order to ignore all modules in node_modules folder
+    externals: [ nodeExternals() ], // in order to ignore all modules in node_modules folder
 
     output: {
         // use absolute paths in sourcemaps (important for debugging via IDE)
@@ -116,7 +116,7 @@ module.exports = {
     },
     plugins: [
         // make sure to include the plugin for the magic
-        new VueLoaderPlugin()
+        // new VueLoaderPlugin()
     ]
 }
 

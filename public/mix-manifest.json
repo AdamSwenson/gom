@@ -1,5 +1,3 @@
 {
-    "/js/dev/new-setup-package.js": "/js/dev/new-setup-package.js",
-    "/js/dev/newest-grading-package.js": "/js/dev/newest-grading-package.js",
-    "/js/dev/newest-public-feedback-package.js": "/js/dev/newest-public-feedback-package.js"
+    "/bundle.js": "/bundle.js"
 }
