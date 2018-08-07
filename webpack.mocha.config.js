@@ -2,16 +2,21 @@
 const path = require( 'path' )
 let glob = require( 'glob' );
 let webpack = require( 'webpack' );
-let dotenv = require( 'dotenv' )
+let dotenv = require( 'dotenv' );
 require('babel-polyfill');
 
 // const VueLoaderPlugin = require( 'vue-loader/lib/plugin' )
 
+
 const nodeExternals = require( 'webpack-node-externals' );
 
-let extensions = [ '*', '.js', '.jsx', '.vue' ];
-
+let extensions = [ '.js', '.vue' ];
+//'*',
 let root = path.resolve( __dirname );
+let e = root;// + '/resources/assets/js/development/newSetup.js'; //'/tests/mocha/mocha.setup.js', // + '/public/js/dev/new-setup-package.js',
+let entry = e; //{ main: [e]};
+let context = root; //path.resolve(__dirname, '/resources/assets/js')
+
 /*
  |--------------------------------------------------------------------------
  | Load Environment Variables
@@ -27,6 +32,8 @@ dotenv.config( {
 
 module.exports = {
 
+    devtool: "inline-cheap-module-source-map",
+
     /*
     Entry
     An entry point indicates which module webpack should use to begin building out its internal dependency graph,
@@ -35,9 +42,10 @@ module.exports = {
     by configuring the entry property in the webpack configuration. For example:
     https://webpack.js.org/concepts/
     */
-    // entry: root + '/public/js/dev/new-setup-package.js',
-    // output: root + '/public/js',
-    // context: root,
+    // entry,
+    context,
+
+    // context: root+ '/resources/assets/js',
 
     /*
      |--------------------------------------------------------------------------
@@ -67,7 +75,8 @@ module.exports = {
     },
 
     target: 'node',  // webpack should compile node compatible code
-    // devtool: "inline-cheap-module-source-map",
+
+
     module: {
         rules: [
             {
@@ -99,29 +108,8 @@ module.exports = {
                 test: /\.js$/,
                 loader: 'babel-loader',
                 options: {
-                    cacheDirectory: true,
-                    // presets: [
-                    //     [
-                    //         'env',
-                    //         {
-                    //             modules: false,
-                    //             targets: {
-                    //                 browsers: [ '> 2%' ],
-                    //                 uglify: false
-                    //             }
-                    //         }
-                    //     ]
-                    // ],
-                    // plugins: [
-                    //     'transform-object-rest-spread',
-                    //     [
-                    //         'transform-runtime',
-                    //         {
-                    //             polyfill: true,
-                    //             helpers: true
-                    //         }
-                    //     ]
-                    // ]
+                    // cacheDirectory: true,
+
                 },
             },
 // this will apply to both plain `.css` files
