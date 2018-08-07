@@ -1,18 +1,13 @@
 // webpack.config.js
 const path = require( 'path' )
-let glob = require( 'glob' );
-let webpack = require( 'webpack' );
-let dotenv = require( 'dotenv' );
+const glob = require( 'glob' );
+const webpack = require( 'webpack' );
+const dotenv = require( 'dotenv' );
+const nodeExternals = require( 'webpack-node-externals' );
 require('babel-polyfill');
 
+//todo dev not needed until upgrade to webpack 4
 // const VueLoaderPlugin = require( 'vue-loader/lib/plugin' )
-
-
-const nodeExternals = require( 'webpack-node-externals' );
-
-let extensions = [ '.js', '.vue' ];
-// Including this in extensions caused problems with loading modules
-//'*',
 
 let root = path.resolve( __dirname );
 let context = root;
@@ -32,8 +27,6 @@ dotenv.config( {
 
 module.exports = {
 
-    devtool: "inline-cheap-module-source-map",
-
     /*
     Entry
     An entry point indicates which module webpack should use to begin building out its internal dependency graph,
@@ -44,41 +37,13 @@ module.exports = {
     */
     // entry,
 
+    //Important so ide can use sourcemaps for debugging
+    devtool: "inline-cheap-module-source-map",
+
     context,
-    
-    /*
-     |--------------------------------------------------------------------------
-     | Resolve
-     |--------------------------------------------------------------------------
-     |
-     | Here, we may set any options/aliases that affect Webpack's resolving
-     | of modules. To begin, we will provide the necessary Vue alias to
-     | load the Vue common library. You may delete this, if needed.
-     |
-     */
-    resolve: {
-        /*
-        | Automatically resolve certain extensions. This defaults to:
-        |      resolve: {
-        |        extensions: ['.wasm', '.mjs', '.js', '.json']
-        |     }
-        | which is what enables users to leave off the extension when importing:
-        |       import File from '../path/to/file';
-        | Using this will override the default array, meaning that webpack will no longer
-        | try to resolve modules using the default extensions. For modules that are imported with their extension,
-        | e.g. import SomeFile from "./somefile.ext", to be properly resolved,
-        | a string containing "*" must be included in the array.
-         */
-        extensions,
-
-        // See https://webpack.js.org/configuration/resolve/#resolve-alias
-        alias: {
-            'vue$': 'vue/dist/vue.common.js'
-        }
-    },
-
 
     externals: [ nodeExternals() ], // in order to ignore all modules in node_modules folder
+
 
     output: {
         // use absolute paths in sourcemaps (important for debugging via IDE)
@@ -139,6 +104,41 @@ module.exports = {
         // todo dev will need to do this when upgrade to webpack 4
         // make sure to include the plugin for the magic
         // new VueLoaderPlugin()
-    ]
+    ],
+
+    /*
+     |--------------------------------------------------------------------------
+     | Resolve
+     |--------------------------------------------------------------------------
+     |
+     | Here, we may set any options/aliases that affect Webpack's resolving
+     | of modules. To begin, we will provide the necessary Vue alias to
+     | load the Vue common library. You may delete this, if needed.
+     |
+     */
+    resolve: {
+        /*
+        | Automatically resolve certain extensions. This defaults to:
+        |      resolve: {
+        |        extensions: ['.wasm', '.mjs', '.js', '.json']
+        |     }
+        | which is what enables users to leave off the extension when importing:
+        |       import File from '../path/to/file';
+        | Using this will override the default array, meaning that webpack will no longer
+        | try to resolve modules using the default extensions. For modules that are imported with their extension,
+        | e.g. import SomeFile from "./somefile.ext", to be properly resolved,
+        | a string containing "*" must be included in the array.
+         */
+        extensions : [ '.js', '.vue' ],
+        // Including this in extensions caused problems with loading modules
+        // '*',
+
+
+        // See https://webpack.js.org/configuration/resolve/#resolve-alias
+        alias: {
+            'vue$': 'vue/dist/vue.common.js'
+        }
+    },
+
 }
 
