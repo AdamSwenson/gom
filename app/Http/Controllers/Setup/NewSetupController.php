@@ -50,62 +50,14 @@ class NewSetupController extends Controller
     {
         $this->middleware('auth');
     }
-//
-//    protected function makeNewExam()
-//    {
-//        $exam = Exam::create();
-//        //this is a brand new exam, so there are no
-//        //kumis associated with it. So we create
-//        //and empty one to be the default kumi
-//        $kumi = Kumi::create(['name' => self::DEFAULT_KUMI_NAME]);
-//        $kumi->is_roster = true; //make it the default roster
-//        $exam->kumis()->attach($kumi->id);
-//        $kumi->save();
-//        return $exam;
-//    }
-//
-//    /**
-//     * Looks for an existing exam which meets all the
-//     * following conditions:
-//     *     Properties are all default
-//     *     No associated items
-//     *     No associated kumis or students
-//     *     No associated notes
-//     */
-//    public function findEmptyExam()
-//    {
-//        $e = Exam::where('name', null)
-//            ->where('public_name', null)
-//            ->where('year', null)
-//            ->where('term', null)->where('description', null)
-//            ->doesntHave('assignments')//no items
-//            ->doesntHave('notes')//no notes
-//            ->withCount('kumis')
-//            ->first();
-//        if ( is_null($e) ) {
-//            return $this->makeNewExam();
-//        }
-//
-//        //every exam will have one kumi
-//        if ( $e->kumis_count > 1 ) {
-//            return $this->makeNewExam();
-//        }
-//
-//        //now check if there are any students
-//        $students = $e->roster()->students()->first();
-//        if ( !is_null($students) ) {
-//            return $this->makeNewExam();
-//        }
-//
-//        return $e;
-//    }
-
-// -------------------------------- Controller methods
 
     /**
+     * Called to setup a new exam.
+     *
      * Returns the setup page when no exam is requested
-     * Creates an exam first and redirects to the usual
-     * handler
+     * Looks for an empty exam and if none exists, creates a
+     * new one before redirecting to the usual
+     * handler.
      *
      * @return \Illuminate\Http\Response
      */
@@ -115,14 +67,6 @@ class NewSetupController extends Controller
         $emptyExams = $repo->getEmptyExams();
 
         $exam = sizeof($emptyExams) === 0 ? $repo->makeNewExam(self::DEFAULT_KUMI_NAME) : $emptyExams[0];
-//        $exam = Exam::create();
-//        //this is a brand new exam, so there are no
-//        //kumis associated with it. So we create
-//        //and empty one to be the default kumi
-//        $kumi = Kumi::create(['name' => self::DEFAULT_KUMI_NAME]);
-//        $kumi->is_roster = true; //make it the default roster
-//        $exam->kumis()->attach($kumi->id);
-//        $kumi->save();
 
         return redirect()->route('show-exam', $exam);
     }
