@@ -89,5 +89,11 @@ class NewSetupControllerTest extends \TestCase
 
     }
 
+    /** @test */
+    public function findEmptyExam(){
+        $e = Exam::all();
+    var_dump(sizeof($e));
+    }
+
 
 }

@@ -15,6 +15,7 @@ use App\Repositories\Assignment\IAssignmentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
 use App\Repositories\Exam\IExamRepository;
+use App\Repositories\Exam\INewExamRepository;
 use App\Repositories\Item\IItemCommentRepository;
 use App\Repositories\Item\IItemRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
@@ -47,66 +48,57 @@ class NewSetupController extends Controller
      */
     public function __construct()
     {
-
         $this->middleware('auth');
-//        IExamRepository $examDao,
-//        IItemRepository $itemRepository,
-//        IAssignmentRepository $assignmentRepository,
-//        IItemCommentRepository $commentRepository )
-
-
-        //        $this->itemRepository = $itemRepository;
-//        $this->examDao = $examDao;
-//        $this->assignmentRepository = $assignmentRepository;
-//        $this->commentRepository = $commentRepository;
     }
-
-    protected function makeNewExam()
-    {
-        $exam = Exam::create();
-        //this is a brand new exam, so there are no
-        //kumis associated with it. So we create
-        //and empty one to be the default kumi
-        $kumi = Kumi::create(['name' => self::DEFAULT_KUMI_NAME]);
-        $kumi->is_roster = true; //make it the default roster
-        $exam->kumis()->attach($kumi->id);
-        $kumi->save();
-        return $exam;
-    }
-
-    /**
-     * Looks for an existing exam which meets all the
-     * following conditions:
-     *     Properties are all default
-     *     No associated items
-     *     No associated kumis or students
-     *     No associated notes
-     */
-    protected function findEmptyExam()
-    {
-        $e = Exam::where('name', null)
-            ->where('public_name', null)
-            ->where('year', null)
-            ->where('term', null)->where('description', null)
-            ->doesntHave('assignments')//no items
-            ->doesntHave('notes')//no notes
-            ->withCount('kumis')
-            ->first();
-        if ( is_null($e) ) {
-            return $this->makeNewExam();
-        }
-
-        //every exam will have one kumi
-        if ( $e->kumis_count > 1 ) {
-            return $this->makeNewExam();
-        }
-        $students = $e->roster()->first();
-        if ( !is_null($students) ) {
-            return $this->makeNewExam();
-        }
-
-        return $e;
-    }
+//
+//    protected function makeNewExam()
+//    {
+//        $exam = Exam::create();
+//        //this is a brand new exam, so there are no
+//        //kumis associated with it. So we create
+//        //and empty one to be the default kumi
+//        $kumi = Kumi::create(['name' => self::DEFAULT_KUMI_NAME]);
+//        $kumi->is_roster = true; //make it the default roster
+//        $exam->kumis()->attach($kumi->id);
+//        $kumi->save();
+//        return $exam;
+//    }
+//
+//    /**
+//     * Looks for an existing exam which meets all the
+//     * following conditions:
+//     *     Properties are all default
+//     *     No associated items
+//     *     No associated kumis or students
+//     *     No associated notes
+//     */
+//    public function findEmptyExam()
+//    {
+//        $e = Exam::where('name', null)
+//            ->where('public_name', null)
+//            ->where('year', null)
+//            ->where('term', null)->where('description', null)
+//            ->doesntHave('assignments')//no items
+//            ->doesntHave('notes')//no notes
+//            ->withCount('kumis')
+//            ->first();
+//        if ( is_null($e) ) {
+//            return $this->makeNewExam();
+//        }
+//
+//        //every exam will have one kumi
+//        if ( $e->kumis_count > 1 ) {
+//            return $this->makeNewExam();
+//        }
+//
+//        //now check if there are any students
+//        $students = $e->roster()->students()->first();
+//        if ( !is_null($students) ) {
+//            return $this->makeNewExam();
+//        }
+//
+//        return $e;
+//    }
 
 // -------------------------------- Controller methods
 
@@ -119,7 +111,10 @@ class NewSetupController extends Controller
      */
     public function index()
     {
-        $exam = $this->findEmptyExam();
+        $repo = app()->make(INewExamRepository::class);
+        $emptyExams = $repo->getEmptyExams();
+
+        $exam = sizeof($emptyExams) === 0 ? $repo->makeNewExam(self::DEFAULT_KUMI_NAME) : $emptyExams[0];
 //        $exam = Exam::create();
 //        //this is a brand new exam, so there are no
 //        //kumis associated with it. So we create
