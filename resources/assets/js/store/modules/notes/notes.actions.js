@@ -18,6 +18,9 @@ import { loadNotesForItemRequest } from '../../../api/requests/noteRequests';
 
 
 module.exports = {
+    /**
+     *
+     */
     createNewNote: ( { state, dispatch, commit, getters }, payload ) => {
         return new Promise( function ( resolve, reject ) {
             let itm = payload.obj;
