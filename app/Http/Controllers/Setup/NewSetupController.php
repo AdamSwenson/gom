@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers\Setup;
 
+use Bugsnag\BugsnagLaravel\Facades\Bugsnag;
+use RuntimeException;
+
+
 use App\Assignment;
 use App\Element;
 use App\Exam;
@@ -68,6 +72,7 @@ class NewSetupController extends Controller
 
         $exam = sizeof($emptyExams) === 0 ? $repo->makeNewExam(self::DEFAULT_KUMI_NAME) : $emptyExams[0];
 
+
         return redirect()->route('show-exam', $exam);
     }
 
@@ -82,7 +87,6 @@ class NewSetupController extends Controller
      */
     public function show( Exam $exam )
     {
-
         return view('new.newsetup', ['exam' => $exam]);
 
         /*

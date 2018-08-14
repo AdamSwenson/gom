@@ -142,6 +142,7 @@ return [
         //new in 5.3
         Illuminate\Notifications\NotificationServiceProvider::class,
 
+        Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class,
 
         /*
          * Application Service Providers...
