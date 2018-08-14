@@ -60,7 +60,7 @@
             #examCardArea {
                 /*height: 100vh;*/
                 height: -moz-available;
-                height: -webkit-fill-avialble;
+                height: -webkit-fill-available;
                 height: fill-available;
                 /*height:auto !important;*/
 
