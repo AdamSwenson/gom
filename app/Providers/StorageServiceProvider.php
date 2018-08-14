@@ -23,6 +23,8 @@ use App\Repositories\Element\ElementRepository;
 use App\Repositories\Element\ICommentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
+use App\Repositories\Exam\INewExamRepository;
+use App\Repositories\Exam\NewExamRepository;
 use App\Repositories\Item\IItemCommentRepository;
 use App\Repositories\Item\IItemScoreStatisticsRepository;
 use App\Repositories\Item\ItemCommentRepository;
@@ -212,10 +214,13 @@ class StorageServiceProvider extends ServiceProvider
         $this->app->bind(IJsDataPreparation::class,
             JsDataPreparation::class);
 
+        /* ########################### >= VERSION 2.0.0 ########## */
 
         //new setup
         $this->app->bind(IAssignmentRepository::class,
             AssignmentRepository::class);
         $this->app->bind(IItemCommentRepository::class, ItemCommentRepository::class);
+
+        $this->app->bind(INewExamRepository::class, NewExamRepository::class);
     }
 }

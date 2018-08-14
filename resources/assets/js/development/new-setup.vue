@@ -49,13 +49,12 @@
 
     #setup-main-page {
         background-color: $main-background-color-gradient-limit;
-
         #setup-main-body {
 
-            /*<!-- background-image:linear-gradient(bottom left, $main-background-color, $main-background-color-gradient-limit);-->*/
+            background-image:linear-gradient(bottom left, $main-background-color, $main-background-color-gradient-limit);
 
             #examCardArea {
-                /*<!--background-color: $color-primary-2;-->*/
+                background-color: $color-primary-2;
                 padding-left: 2px;
                 padding-right: 2px;
                 background-color: $main-background-color-gradient-limit;

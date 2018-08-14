@@ -15,6 +15,7 @@ use App\Repositories\Assignment\IAssignmentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
 use App\Repositories\Exam\IExamRepository;
+use App\Repositories\Exam\INewExamRepository;
 use App\Repositories\Item\IItemCommentRepository;
 use App\Repositories\Item\IItemRepository;
 use App\Repositories\Question\IQuestionAssignmentRepository;
@@ -41,46 +42,31 @@ class NewSetupController extends Controller
 
     public $type;
     public $exam;
+
     /**
      * NewSetupController constructor.
      */
     public function __construct()
- {
-
+    {
         $this->middleware('auth');
-//        IExamRepository $examDao,
-//        IItemRepository $itemRepository,
-//        IAssignmentRepository $assignmentRepository,
-//        IItemCommentRepository $commentRepository )
-
-
-        //        $this->itemRepository = $itemRepository;
-//        $this->examDao = $examDao;
-//        $this->assignmentRepository = $assignmentRepository;
-//        $this->commentRepository = $commentRepository;
     }
 
-
-
-// -------------------------------- Controller methods
-
     /**
+     * Called to setup a new exam.
+     *
      * Returns the setup page when no exam is requested
-     * Creates an exam first and redirects to the usual
-     * handler
+     * Looks for an empty exam and if none exists, creates a
+     * new one before redirecting to the usual
+     * handler.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $exam = Exam::create();
-        //this is a brand new exam, so there are no
-        //kumis associated with it. So we create
-        //and empty one to be the default kumi
-        $kumi = Kumi::create(['name' => self::DEFAULT_KUMI_NAME]);
-        $kumi->is_roster = true; //make it the default roster
-        $exam->kumis()->attach($kumi->id);
-        $kumi->save();
+        $repo = app()->make(INewExamRepository::class);
+        $emptyExams = $repo->getEmptyExams();
+
+        $exam = sizeof($emptyExams) === 0 ? $repo->makeNewExam(self::DEFAULT_KUMI_NAME) : $emptyExams[0];
 
         return redirect()->route('show-exam', $exam);
     }
@@ -99,39 +85,39 @@ class NewSetupController extends Controller
 
         return view('new.newsetup', ['exam' => $exam]);
 
-/*
- * WE'VE MOVED TO THE SETUP PAGE LOADING THE DATA
- * VIA AJAX. KEEPING THIS HERE FOR REFERENCE IF
- * DECIDE TO GO BACK TO LOADING FROM PAGE JSON. ALSO
- * MAY BE USEFUL FOR THE FEEDBACK PAGE WHICH WILL NOT
- * USE AJAX
+        /*
+         * WE'VE MOVED TO THE SETUP PAGE LOADING THE DATA
+         * VIA AJAX. KEEPING THIS HERE FOR REFERENCE IF
+         * DECIDE TO GO BACK TO LOADING FROM PAGE JSON. ALSO
+         * MAY BE USEFUL FOR THE FEEDBACK PAGE WHICH WILL NOT
+         * USE AJAX
 
-        $out = $this->assignmentRepository->getItemOrderForClient($exam);
-        //The returned array  will have the keys
-        //  'itemObjects'
-        //  'itemOrder'
-        $kumis = $exam->kumis()->get();
+                $out = $this->assignmentRepository->getItemOrderForClient($exam);
+                //The returned array  will have the keys
+                //  'itemObjects'
+                //  'itemOrder'
+                $kumis = $exam->kumis()->get();
 
-        if ( $kumis->count() === 0 ) {
-            //if there isn't one, we need it
-            $kumi = Kumi::create();
-            $exam->kumis()->attach($kumi->id);
-            $kumis = $exam->kumis()->get();
-        }
+                if ( $kumis->count() === 0 ) {
+                    //if there isn't one, we need it
+                    $kumi = Kumi::create();
+                    $exam->kumis()->attach($kumi->id);
+                    $kumis = $exam->kumis()->get();
+                }
 
-        //So we add some additional elements that the page expects
-        $standard = [
-            'examObjectJsonName' => self::EXAM_JSON_NAME,
-            'itemObjectJsonName' => self::ITEM_OBJECT_JSON_NAME,
-            'itemOrderJsonName' => self::ITEM_ORDER_JSON_NAME,
-            'kumisJsonName' => self::KUMIS_JSON_NAME,
-            'exam' => $exam,
-            'kumis' => $kumis];
+                //So we add some additional elements that the page expects
+                $standard = [
+                    'examObjectJsonName' => self::EXAM_JSON_NAME,
+                    'itemObjectJsonName' => self::ITEM_OBJECT_JSON_NAME,
+                    'itemOrderJsonName' => self::ITEM_ORDER_JSON_NAME,
+                    'kumisJsonName' => self::KUMIS_JSON_NAME,
+                    'exam' => $exam,
+                    'kumis' => $kumis];
 
-        $out += $standard;
+                $out += $standard;
 
-        return view('development.newsetup', $out);
-*/
+                return view('development.newsetup', $out);
+        */
     }
 
     //keep this for the hybrid api!!!!!!!

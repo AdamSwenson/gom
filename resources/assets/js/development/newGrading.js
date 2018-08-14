@@ -12,11 +12,6 @@ Vue.use( AsyncComputed )
 
 import App from '../development/components/grading/grading-page.vue'
 
-//Navigation bars
-// import examSelectionBar from './components/top-nav/exam-selection-bar.vue';
-// Vue.component( 'exam-selection-bar', examSelectionBar );
-// import bottomNavbar from '../development/components/bottom-nav/bottom-navbar.vue';
-// Vue.component('bottom-navbar', bottomNavbar)
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ API ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 import VueAxios from 'vue-axios'
@@ -43,7 +38,7 @@ const router = new VueRouter( {
 } );
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ STORE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-import Vuex from 'vuex'
+import  Vuex  from 'vuex'
 Vue.use( Vuex );
 import store from '../store';
 
