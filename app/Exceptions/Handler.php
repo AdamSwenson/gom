@@ -22,9 +22,8 @@ class Handler extends ExceptionHandler
     protected $dontReport = [
         AuthorizationException::class,
         HttpException::class,
-//            ModelNotFoundException::class,
+        ModelNotFoundException::class,
         ValidationException::class,
-
     ];
 
     /**
@@ -58,13 +57,17 @@ class Handler extends ExceptionHandler
     }
 
 
+    /**
+     * Send email to dev team with the stack trace, et cetera
+     * @param Exception $e
+     */
     public function emailAboutException( Exception $e )
     {
         $msg = $e->getMessage() . ' \n ' . $e->getTraceAsString();
 
         Mail::raw($msg, function ( $message ) {
             $message->to('gradeomatic@gmail.com', 'devteam')
-                ->subject('Exception');
+                ->subject('Exception:');
         });
 
     }
@@ -80,32 +83,10 @@ class Handler extends ExceptionHandler
      */
     public function report( Exception $e )
     {
-        $this->emailAboutException($e);
-        $this->notifySlackOfException($e);
-//        $msg = $e->getMessage() . ' \n ' . $e->getTraceAsString();
-//
-//        Mail::raw($msg, function ( $message ) {
-//            $message->to('gradeomatic@gmail.com', 'devteam')->subject('Exception');
-//        });
-//
-//        $client = new Client();
-//
-//        $params = [
-//            "icon_emoji" => ":ghost:",
-//            'attachments' => [
-//                [
-//                    'fallback' => $e->getMessage(),
-//                    'title' => $e->getFile() . ' ' . $e->getLine(),
-//                    'pretext' => $e->getMessage(),
-//                    'text' => $e->getTraceAsString(),
-//                    'color' => 'danger'
-//                ]
-//            ],
-//        ];
-//
-//        $url = env('SLACK_HOOK_ERRORS');
-//        $res = $client->request('POST', $url, ['json' => $params]);
-//
+        if ( env('APP_ENV') === 'production' ) {
+            $this->emailAboutException($e);
+            $this->notifySlackOfException($e);
+        }
 
         return parent::report($e);
     }
