@@ -175,8 +175,8 @@ Route::get('dev/test', 'TestController@test');
 
 
 //====================================== New setup page
-Route::get('dev/setup/{exam}', 'Item\SetupController@show')->name('show-exam');
-Route::get('dev/setup', 'Item\SetupController@index');
+Route::get('dev/setup/{exam}', 'Setup\NewSetupController@show')->name('show-exam');
+Route::get('dev/setup', 'Setup\NewSetupController@index');
 
 // ====================================== NEW GRADING
 Route::get('dev/grading/{exam}', 'Grading\NewGradingController@show');
@@ -253,8 +253,8 @@ Route::resource('dev/notes', 'Notes\NotesController');
         Preferences and settings
    ============================= */
 Route::resource('dev/preferences/user', 'Preferences\UserPreferencesController' );
-Route::resource('dev/preferences/setup', 'Preferences\setupPreferencesController' );
-Route::resource('dev/preferences/grade', 'Preferences\gradePreferencesController' );
+Route::resource('dev/preferences/setup', 'Preferences\SetupPreferencesController' );
+Route::resource('dev/preferences/grade', 'Preferences\GradePreferencesController' );
 
 
 /* =============================
@@ -306,6 +306,8 @@ Route::post('dev/roster/{student}/diss/{kumi}', 'Roster\RosterController@disasso
 Route::post('dev/roster/anon/{exam}', 'Roster\RosterController@anonymizeStudents');
 Route::get('dev/roster/exam/{exam}', 'Roster\RosterController@getStudentsForExam');
 
+// Import from canvas
+Route::post('dev/import/canvas', 'Roster\CanvasImportController@importStudents');
 
 /* =============================
         Tags

@@ -27,6 +27,11 @@
 </template>
 
 <style lang="scss">
+    #questionPanel {
+        .noElementsDiv {
+            background-color: #DDDDDD
+        }
+    }
 
 </style>
 

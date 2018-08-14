@@ -2,6 +2,7 @@
     <a class="finish-button button is-success "
        v-if="isFinishButtonVisible"
        v-on="handleFinishClick"
+       title="Click to complete grading this exam"
     >
         <span class="icon">
             <i class="fa fa-save" aria-hidden="true"> Save & Finish </i></span>

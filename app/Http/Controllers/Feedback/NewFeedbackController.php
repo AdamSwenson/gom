@@ -48,12 +48,12 @@ class NewFeedbackController extends Controller
         $standard = [
             'exam' => $exam,
             'student' => $student,
-        'scores' => $scores
+            'scores' => $scores
         ];
 
         $out += $standard;
 
-        return view('development.newfeedback', $out);
+        return view('new.newfeedback', $out);
 
     }
 

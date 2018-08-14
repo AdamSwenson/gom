@@ -1,11 +1,12 @@
 <template>
 
     <textarea class="comment-text textarea"
-              placeholder="No score for this element"
+              placeholder="No score yet"
               v-bind:rows="numRows"
               v-model="commentText"
               v-on:focus="maximize"
               v-on:blur="minimize"
+              title="The comment text for this item"
     ></textarea>
 
 </template>

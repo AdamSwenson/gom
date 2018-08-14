@@ -1,18 +1,3 @@
-<!--<template>-->
-<!--<a v-bind:id="id"-->
-<!--class="add-sibling-button button is-primary is-outlined"-->
-<!--v-bind:class="styling"-->
-<!--v-on:click="add"-->
-<!--&gt;-->
-<!--<span class="icon is-small">-->
-<!--<i class="fa fa-plus" aria-hidden="true"></i>-->
-<!--</span>-->
-<!--<span>Add Sibling</span>-->
-<!--</a>-->
-<!--</template>-->
-<style>
-
-</style>
 <script>
     import * as aTypes from '../../../store/action-types';
     import * as mTypes from '../../../store/mutation-types';

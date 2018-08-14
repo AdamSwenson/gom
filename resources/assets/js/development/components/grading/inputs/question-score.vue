@@ -12,11 +12,12 @@
                    type="number"
                    v-bind:min="minScore"
                    v-bind:max="maxScore"
+                   title="The score for this item"
             />
         </p>
 
         <p class="control">
-            <a class="button is-static">/ {{ maxScore }}</a>
+            <a class="button is-static" title="The max possible score">/ {{ maxScore }}</a>
         </p>
 
     </div>

@@ -13,7 +13,7 @@
                  class="columns is-centered"
             >
 
-                <div class="column is-three-fourths ">
+                <div class="central-column column is-three-fourths ">
                     <!--<div class="column is-four-fifths ">-->
 
                     <div id="examCardArea">
@@ -29,19 +29,10 @@
 
             </div>
 
-            <!--<div class="columns">-->
-                <!--<div class="column">-->
-                    <!--<progress-dashboard></progress-dashboard>-->
-                <!--</div>-->
-                <!--<div class="column is-1">-->
-                    <!--<sync-indicator></sync-indicator>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!---->
 
         </div>
+        <!--<bottom-navbar></bottom-navbar>-->
 
-        <bottom-navbar></bottom-navbar>
 
     </div>
 </template>
@@ -52,12 +43,28 @@
     #setup-main-page {
         background-color: $main-background-color-gradient-limit;
 
-        #setup-main-body {
+        /*height: 100vh;*/
+        /*height:auto !important;*/
+        /*.container {*/
+            /*height: 100vh;*/
+        /*}*/
 
-            /*<!-- background-image:linear-gradient(bottom left, $main-background-color, $main-background-color-gradient-limit);-->*/
+        #setup-main-body {
+            /*height: 100vh;*/
+            background-image: linear-gradient(bottom left, $main-background-color, $main-background-color-gradient-limit);
+
+            .central-column{
+                /*height: 100vh;*/
+            }
 
             #examCardArea {
-                /*<!--background-color: $color-primary-2;-->*/
+                /*height: 100vh;*/
+                height: -moz-available;
+                height: -webkit-fill-avialble;
+                height: fill-available;
+                /*height:auto !important;*/
+
+                background-color: $color-primary-2;
                 padding-left: 2px;
                 padding-right: 2px;
                 background-color: $main-background-color-gradient-limit;

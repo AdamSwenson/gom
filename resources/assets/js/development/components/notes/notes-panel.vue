@@ -118,7 +118,7 @@
                 watch: function() {
                     //reloads from server when this value
                     //is updated in response to an event
-                    // this.loadTrigger;
+                    this.loadTrigger;
                 }
 
             }

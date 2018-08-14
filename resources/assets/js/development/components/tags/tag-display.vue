@@ -8,8 +8,7 @@
             <span>Tags</span>
         </h5>
 
-        <div class="object-tag-list field is-grouped is-grouped-multiline"
-        >
+        <div class="object-tag-list field is-grouped is-grouped-multiline">
             <tag-object
                     v-if="isReady"
                     v-for="tag in tags"
@@ -25,7 +24,7 @@
                 <div v-on:click="handleEditClick" class="control">
                     <div class="tags has-addons">
                         <span class="tag is-info is-small edit-tag-button"
-                        >Edit Tags</span>
+                        >{{ buttonDisplayText }}</span>
                     </div>
                 </div>
             </div>
@@ -83,11 +82,23 @@
                 clickCounter: 0,
                 useCentralStore: true,
                 defaults: {},
-                isEditable: false
+                isEditable: false,
+                buttonText: {
+                    editing: 'Done',
+                    notEditing: 'Edit Tags'
+                }
             }
         },
 
         computed: {
+            /**
+             * The text displayed on the edit button
+             */
+            buttonDisplayText: function(){
+              if(this.isEditable) return this.buttonText.editing;
+              return this.buttonText.notEditing;
+            },
+
             tags: {
                 get() {
                     if ( _.isUndefined( this.object ) ) return [];

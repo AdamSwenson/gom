@@ -20,7 +20,8 @@
     "laracasts/utilities": "^2.1",
     "pusher/pusher-php-server": "^2.6",
     "spatie/flysystem-dropbox": "^1.0",
-    "franzose/closure-table": "5.*"
+    "franzose/closure-table": "5.*",
+    "bugsnag/bugsnag-laravel": "^2.0"
   },
   "require-dev": {
     "symfony/dom-crawler": "~3.0",
