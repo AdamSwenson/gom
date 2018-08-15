@@ -15,19 +15,12 @@
             >
                 <div class="central-column column is-three-fourths">
 
-                    <!--<div class="central-column column is-three-fourths graph-paper-background-big">-->
-                    <!--<div class="column is-four-fifths ">-->
-
-                    <div id="examCardArea">
-
                         <exam-card
                                 v-if="exam"
                                 :exam="exam"
                         ></exam-card>
-                    </div>
-                    <!--<div class="columns">-->
-                        <div class="card-holder box graph-paper-background-big">
-                            <!--v-if="numberChildren > 0">-->
+
+                        <div class="item-card-holder box graph-paper-background-big">
 
                             <div v-for="item in items">
                                 <!--Now we make cards recursively-->
@@ -36,8 +29,6 @@
                                 ></item-card>
                             </div>
                         </div>
-                    <!--</div>-->
-                    <!--</div>-->
 
                 </div>
 
@@ -54,7 +45,8 @@
 
     #setup-main-page {
 
-        min-height: 100%;
+        min-height: 1000px;
+        /*height: 100%;*/
         /*height: -moz-available;*/
         /*height: -webkit-fill-available;*/
         /*height: fill-available;*/
@@ -70,10 +62,7 @@
             background-image: linear-gradient(bottom left, $main-background-color, $main-background-color-gradient-limit);
 
             .central-column {
-                /*height: 100vh;*/
-            }
 
-            #examCardArea {
                 /* Setting these causes the parent background not to fill in */
                 /*height: 100%;*/
                 /*height: -moz-available;*/
@@ -91,9 +80,9 @@
                 box-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 3px 9px rgba(0, 0, 0, .2);
             }
 
-            #itemCardArea {
-                box-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 3px 9px rgba(0, 0, 0, .2);
-            }
+            /*#itemCardArea {*/
+                /*box-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 3px 9px rgba(0, 0, 0, .2);*/
+            /*}*/
 
             .itemCol {
                 border-left-color: $border-outline-color;

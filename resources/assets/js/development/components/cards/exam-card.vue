@@ -107,12 +107,12 @@
         border-bottom: solid;
 
 
-        .card-holder {
+        /*.card-holder {*/
             /* these control the sizing of the graph paper area */
             /*min-height: 100%;*/
             /*height: -webkit-fill-available;*/
             /*height: -moz-fill-available;*/
-        }
+        /*}*/
 
         /*!*width: 80%;*!*/
         /*.button-row {*/
