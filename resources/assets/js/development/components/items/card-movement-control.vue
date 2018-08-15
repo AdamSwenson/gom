@@ -10,7 +10,7 @@
                    class="fa fa-angle-left">
                     <span class="sr-only">Click to make item a sibling of it's parent</span>
                 </i></span>
-            <span>Left</span>
+            <span class=" is-hidden-mobile ">Left</span>
         </a>
 
         <a href="#"
@@ -24,7 +24,7 @@
                     <span class="sr-only">Click to promote the item</span>
                 </i>
             </span>
-            <span>Up</span>
+            <span  class=" is-hidden-mobile ">Up</span>
         </a>
 
         <a href="#"
@@ -37,7 +37,7 @@
                     <span class="sr-only">Click to remove item</span>
                 </i>
             </span>
-            <span class="has-text-danger">Remove</span>
+            <span class="has-text-danger is-hidden-mobile">Remove</span>
         </a>
 
         <a href="#"
@@ -52,7 +52,7 @@
                     <span class="sr-only">Click to demote the item</span>
                 </i>
             </span>
-            <span>Down</span>
+            <span  class=" is-hidden-mobile ">Down</span>
         </a>
 
         <a href="#"
@@ -60,7 +60,7 @@
            title="Make the item a child of it's older sibling"
            v-on:click=" moveRight"
         >
-            <span>Right</span>
+            <span  class=" is-hidden-mobile ">Right</span>
             <span class="icon">
                 <i aria-hidden="true"
                    class="fa fa-angle-right"

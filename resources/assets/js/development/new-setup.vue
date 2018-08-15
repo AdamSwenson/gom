@@ -1,6 +1,6 @@
 <template>
     <div id="setup-main-page"
-         class=" mainBodyLocator"
+         class="mainBodyLocator"
     >
         <top-navbar
                 page-type="setup"
@@ -29,10 +29,8 @@
 
             </div>
 
-
         </div>
         <!--<bottom-navbar></bottom-navbar>-->
-
 
     </div>
 </template>
@@ -43,17 +41,20 @@
     #setup-main-page {
         background-color: $main-background-color-gradient-limit;
 
+        height: -moz-available;
+        height: -webkit-fill-available;
+        height: fill-available;
         /*height: 100vh;*/
         /*height:auto !important;*/
         /*.container {*/
-            /*height: 100vh;*/
+        /*height: 100vh;*/
         /*}*/
 
         #setup-main-body {
             /*height: 100vh;*/
             background-image: linear-gradient(bottom left, $main-background-color, $main-background-color-gradient-limit);
 
-            .central-column{
+            .central-column {
                 /*height: 100vh;*/
             }
 
@@ -65,8 +66,10 @@
                 /*height:auto !important;*/
 
                 background-color: $color-primary-2;
-                padding-left: 2px;
-                padding-right: 2px;
+                /*@media screen and (min-width: 767px) {*/
+                    padding-left: 2px;
+                    padding-right: 2px;
+                /*}*/
                 background-color: $main-background-color-gradient-limit;
                 box-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 3px 9px rgba(0, 0, 0, .2);
             }

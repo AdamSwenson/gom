@@ -9,7 +9,6 @@
 
             <exam-nav-tabs
                     :exam="exam"
-
             ></exam-nav-tabs>
 
             <item-main
@@ -105,13 +104,11 @@
         /*margin-top: 2em;*/
         border-bottom: solid;
 
-        .card-holder{
+        .card-holder {
             min-height: 100px;
-height: -webkit-fill-available;
-
+            height: -webkit-fill-available;
             height: -moz-fill-available;
         }
-
 
         /*!*width: 80%;*!*/
         /*.button-row {*/
