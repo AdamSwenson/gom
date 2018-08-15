@@ -23,11 +23,12 @@
                         <div class="item-card-holder box graph-paper-background-big">
 
                             <div v-for="item in items">
-                                <!--Now we make cards recursively-->
+                                <!--make cards recursively-->
                                 <item-card :item="item"
                                            :key="item.serialNumber"
                                 ></item-card>
                             </div>
+
                         </div>
 
                 </div>
@@ -54,10 +55,13 @@
 
         background-color: $main-background-color-gradient-limit;
         .container {
-
+            /*height: 100%;*/
         }
 
         #setup-main-body {
+            /*min-height: 100%;*/
+
+            /*height: 100%;*/
             /*height: 100vh;*/
             background-image: linear-gradient(bottom left, $main-background-color, $main-background-color-gradient-limit);
 
@@ -83,6 +87,15 @@
             /*#itemCardArea {*/
                 /*box-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 3px 9px rgba(0, 0, 0, .2);*/
             /*}*/
+
+            .item-card-holder{
+                /* make the graph paper area have a minimum size for when no items present.
+                This doesn't seem to cause problems with overflowing the parent, as long as it is
+                relatively small
+                */
+                min-height: 300px;
+
+            }
 
             .itemCol {
                 border-left-color: $border-outline-color;
