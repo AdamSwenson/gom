@@ -2,18 +2,19 @@
     <div id="setup-main-page"
          class="mainBodyLocator"
     >
-        <top-navbar
-                page-type="setup"
-                :exam="exam"
-        ></top-navbar>
+
 
         <div class="container">
-
+            <top-navbar
+                    page-type="setup"
+                    :exam="exam"
+            ></top-navbar>
             <div id="setup-main-body"
                  class="columns is-centered"
             >
+                <div class="central-column column is-three-fourths">
 
-                <div class="central-column column is-three-fourths ">
+                <!--<div class="central-column column is-three-fourths graph-paper-background-big">-->
                     <!--<div class="column is-four-fifths ">-->
 
                     <div id="examCardArea">
@@ -39,16 +40,17 @@
     @import '../../sass/development/newSetup';
 
     #setup-main-page {
-        background-color: $main-background-color-gradient-limit;
 
+        /*height: 100vh;*/
         height: -moz-available;
         height: -webkit-fill-available;
-        height: fill-available;
-        /*height: 100vh;*/
+        /*height: fill-available;*/
         /*height:auto !important;*/
-        /*.container {*/
-        /*height: 100vh;*/
-        /*}*/
+
+        background-color: $main-background-color-gradient-limit;
+        .container {
+
+        }
 
         #setup-main-body {
             /*height: 100vh;*/
@@ -59,16 +61,18 @@
             }
 
             #examCardArea {
-                /*height: 100vh;*/
-                height: -moz-available;
-                height: -webkit-fill-available;
-                height: fill-available;
+                /* Setting these causes the parent background not to fill in */
+                /*height: 100%;*/
+                /*height: -moz-available;*/
+                /*height: -webkit-fill-available;*/
+                /*height: fill-available;*/
                 /*height:auto !important;*/
+                min-height: 300px;
 
                 background-color: $color-primary-2;
                 /*@media screen and (min-width: 767px) {*/
-                    padding-left: 2px;
-                    padding-right: 2px;
+                padding-left: 2px;
+                padding-right: 2px;
                 /*}*/
                 background-color: $main-background-color-gradient-limit;
                 box-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 3px 9px rgba(0, 0, 0, .2);

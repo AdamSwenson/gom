@@ -84,6 +84,8 @@
 
         <!--Check whether the item has children, if it does-->
         <!--we will make a box that will surround the children-->
+        <!--<div class="card-holder box ">-->
+
         <div class="card-holder box graph-paper-background-big">
             <!--v-if="numberChildren > 0">-->
 
@@ -104,10 +106,12 @@
         /*margin-top: 2em;*/
         border-bottom: solid;
 
+
         .card-holder {
-            min-height: 100px;
-            height: -webkit-fill-available;
-            height: -moz-fill-available;
+            /* these control the sizing of the graph paper area */
+            /*min-height: 100%;*/
+            /*height: -webkit-fill-available;*/
+            /*height: -moz-fill-available;*/
         }
 
         /*!*width: 80%;*!*/

@@ -26,7 +26,7 @@
 
 <body>
 
-    <div class="main-area">
+    {{--<div class="main-area">--}}
 
         <div id="app"></div>
 
@@ -39,7 +39,7 @@
         <input type="hidden" id="routeRoot" data="{{ url('') }}"/>
         <input type="hidden" id="examId" data="{{ $exam->id }}"/>
 
-    </div>
+    {{--</div>--}}
 
     <script type="text/javascript">
         window.routeRoot = document.getElementById( 'routeRoot' ).getAttribute( 'data' );
