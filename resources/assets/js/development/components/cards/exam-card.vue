@@ -86,16 +86,16 @@
         <!--we will make a box that will surround the children-->
         <!--<div class="card-holder box ">-->
 
-        <div class="card-holder box graph-paper-background-big">
-            <!--v-if="numberChildren > 0">-->
+        <!--<div class="card-holder box graph-paper-background-big">-->
+            <!--&lt;!&ndash;v-if="numberChildren > 0">&ndash;&gt;-->
 
-            <div v-for="item in items">
-                <!--Now we make cards recursively-->
-                <item-card :item="item"
-                           :key="item.serialNumber"
-                ></item-card>
-            </div>
-        </div>
+            <!--<div v-for="item in items">-->
+                <!--&lt;!&ndash;Now we make cards recursively&ndash;&gt;-->
+                <!--<item-card :item="item"-->
+                           <!--:key="item.serialNumber"-->
+                <!--&gt;</item-card>-->
+            <!--</div>-->
+        <!--</div>-->
 
     </div>
 </template>
@@ -182,24 +182,24 @@
 
         asyncComputed: {
 
-
-            /**
-             * The children of the item
-             */
-            items: {
-                get() {
-                    // if ( _.isUndefined( this.exam ) ) return [];
-                    let me = this;
-                    // let p = this.$store.dispatch( 'loadItemsFromServer', this.exam.id );
-                    // return p.then( function () {
-                    let c = me.$store.getters.getItemChildren( me.exam );
-                    return !_.isUndefined( c ) ? c : [];
-                    // } );
-                },
-                // default() {
-                //     return [];
-                // }
-            },
+            //
+            // /**
+            //  * The children of the item
+            //  */
+            // items: {
+            //     get() {
+            //         // if ( _.isUndefined( this.exam ) ) return [];
+            //         let me = this;
+            //         // let p = this.$store.dispatch( 'loadItemsFromServer', this.exam.id );
+            //         // return p.then( function () {
+            //         let c = me.$store.getters.getItemChildren( me.exam );
+            //         return !_.isUndefined( c ) ? c : [];
+            //         // } );
+            //     },
+            //     // default() {
+            //     //     return [];
+            //     // }
+            // },
         },
 
         computed: {
@@ -263,8 +263,7 @@
         },
 
         created: function () {
-            this.$store.dispatch( 'loadItemsFromServer', this.exam.id );
-
+            // this.$store.dispatch( 'loadItemsFromServer', this.exam.id );
         },
 
         directives: {

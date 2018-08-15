@@ -3,18 +3,19 @@
          class="mainBodyLocator"
     >
 
+        <top-navbar
+                page-type="setup"
+                :exam="exam"
+        ></top-navbar>
 
         <div class="container">
-            <top-navbar
-                    page-type="setup"
-                    :exam="exam"
-            ></top-navbar>
+
             <div id="setup-main-body"
                  class="columns is-centered"
             >
                 <div class="central-column column is-three-fourths">
 
-                <!--<div class="central-column column is-three-fourths graph-paper-background-big">-->
+                    <!--<div class="central-column column is-three-fourths graph-paper-background-big">-->
                     <!--<div class="column is-four-fifths ">-->
 
                     <div id="examCardArea">
@@ -23,8 +24,20 @@
                                 v-if="exam"
                                 :exam="exam"
                         ></exam-card>
-
                     </div>
+                    <!--<div class="columns">-->
+                        <div class="card-holder box graph-paper-background-big">
+                            <!--v-if="numberChildren > 0">-->
+
+                            <div v-for="item in items">
+                                <!--Now we make cards recursively-->
+                                <item-card :item="item"
+                                           :key="item.serialNumber"
+                                ></item-card>
+                            </div>
+                        </div>
+                    <!--</div>-->
+                    <!--</div>-->
 
                 </div>
 
@@ -41,8 +54,8 @@
 
     #setup-main-page {
 
-        /*height: 100vh;*/
-        height: -moz-available;
+        min-height: 100%;
+        /*height: -moz-available;*/
         /*height: -webkit-fill-available;*/
         /*height: fill-available;*/
         /*height:auto !important;*/
@@ -67,7 +80,7 @@
                 /*height: -webkit-fill-available;*/
                 /*height: fill-available;*/
                 /*height:auto !important;*/
-                min-height: 300px;
+                /*min-height: 300px;*/
 
                 background-color: $color-primary-2;
                 /*@media screen and (min-width: 767px) {*/
@@ -110,6 +123,8 @@
     // import ProgressDashboard from './components/dashboard.progress.component.vue'
 
     import ExamCard from './components/cards/exam-card.vue'
+    import ItemCard from './components/cards/item-card';
+
 
     //navigation bars
     import BottomNavbar from '../development/components/bottom-nav/bottom-navbar.vue';
@@ -123,6 +138,7 @@
         components: {
             BottomNavbar,
             ExamCard,
+            ItemCard,
             // ProgressDashboard,
             // SyncIndicator,
             TopNavbar
@@ -149,8 +165,29 @@
                 } );
             },
 
+            /**
+             * The children of the item
+             */
+            items: {
+                get() {
+                    let me = this;
+                    if ( _.isUndefined(me.exam) || _.isNull(me.exam) || _.isUndefined( me.exam.serialNumber ) ) return [];
 
+                    let p = this.$store.dispatch( 'loadItemsFromServer', this.examId );
+                    return p.then( function () {
+                            // let p = this.$store.dispatch( 'loadItemsFromServer', this.exam.id );
+                            // return p.then( function () {
+                            let c = me.$store.getters.getItemChildren( me.exam );
+                            return !_.isUndefined( c ) ? c : [];
+
+                    } );
+                },
+                // default() {
+                //     return [];
+                // }
+            },
         },
+
 
         computed: {
 
@@ -158,16 +195,21 @@
                 return !_.isNull( this.exam ) ? this.exam.serialNumber : null;
                 // return this.$store.getters.getExamSerialNumber;
             }
-        },
+        }
+        ,
 
-        methods: {},
+        methods: {}
+        ,
 
-        directives: {},
+        directives: {}
+        ,
 
-        events: {},
+        events: {}
+        ,
 
         created: function () {
-        },
+        }
+        ,
 
 
     }
