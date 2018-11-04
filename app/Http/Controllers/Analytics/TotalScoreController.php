@@ -5,12 +5,22 @@ namespace App\Http\Controllers\Analytics;
 use App\Exam;
 use App\Http\Controllers\Controller;
 use App\Models\NewGom\ItemScore;
+use App\Repositories\Score\ITotalScoreRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 
 class TotalScoreController extends Controller
 {
+    /**
+     * @var ITotalScoreRepository
+     */
+    public $totalScoreRepository;
+
+    public function __construct( ITotalScoreRepository $totalScoreRepository)
+    {
+        $this->totalScoreRepository = $totalScoreRepository;
+    }
 
     /**
      * Returns just the total score for each student on the exam
@@ -22,20 +32,26 @@ class TotalScoreController extends Controller
      */
     public function getTotalScoresForExam( Exam $exam )
     {
-        $query = <<<MYSQL
-        SELECT SUM(s.score) AS totalScore FROM item_scores s
-        INNER JOIN items i ON s.item_id = i.id
-        WHERE s.exam_id = :examId AND i.counts_in_total = 1
-        GROUP BY s.student_id;
-MYSQL;
+        $sorted = $this->totalScoreRepository->getTotalScoresForExam($exam);
+        return ['totalScores' => $sorted];
 
-        $result = DB::select($query, ['examId' => $exam->id]);
-//        $scores = $result[0]->totalScores;
-
-        $scores = [];
-        foreach($result as $r){
-            $scores[] = $r->totalScore;
-        }
+//
+//
+//
+//        $query = <<<MYSQL
+//        SELECT SUM(s.score) AS totalScore FROM item_scores s
+//        INNER JOIN items i ON s.item_id = i.id
+//        WHERE s.exam_id = :examId AND i.counts_in_total = 1
+//        GROUP BY s.student_id;
+//MYSQL;
+//
+//        $result = DB::select($query, ['examId' => $exam->id]);
+////        $scores = $result[0]->totalScores;
+//
+//        $scores = [];
+//        foreach($result as $r){
+//            $scores[] = $r->totalScore;
+//        }
 
 //        $byStudent = collect(ItemScore::where('exam_id', $exam->id)->get())->groupBy('student_id');
 //
@@ -44,9 +60,9 @@ MYSQL;
 //        }
 
         //sort the scores before returning
-        $sorted = collect($scores)->sort();
+//        $sorted = collect($scores)->sort();
 
-        return ['totalScores' => $sorted];
+//        return ['totalScores' => $sorted];
     }
 
 }

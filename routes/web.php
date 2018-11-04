@@ -199,6 +199,13 @@ Route::get('dev/exams', 'Exam\ExamResourceController@index');
 Route::put('dev/exam/{exam}', 'Exam\ExamResourceController@update');
 Route::get('dev/exam/{exam}', 'Exam\ExamResourceController@show');
 
+/* =============================
+        NEW FEEDBACK
+   ============================= */
+Route::get('dev/feedback/{exam}', 'Feedback\NewFeedbackController@createkeys');
+Route::get('dev/feedback/{exam}/{student}', 'Feedback\NewFeedbackController@show');
+
+
 
 /* =============================
         Items

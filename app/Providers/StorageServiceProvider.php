@@ -53,8 +53,10 @@ use App\Repositories\Score\ElementScoreRepository;
 use App\Repositories\Score\IElementScoreRepository;
 use App\Repositories\Score\IQuestionScoreRepository;
 use App\Repositories\Score\IScoreStatisticsRepository;
+use App\Repositories\Score\ITotalScoreRepository;
 use App\Repositories\Score\QuestionScoreRepository;
 use App\Repositories\Score\ScoreStatisticsRepository;
+use App\Repositories\Score\TotalScoreRepository;
 use App\Repositories\Student\IKumiRepository;
 use App\Repositories\Student\IStudentRepository;
 use App\Repositories\Student\KumiRepository;
@@ -129,7 +131,6 @@ class StorageServiceProvider extends ServiceProvider
         //Item
         $this->app->bind(IItemRepository::class,
             ItemRepository::class);
-        $this->app->bind(IItemScoreStatisticsRepository::class, ItemScoreStatisticsRepository::class);
 
         //Kumi (classes)
         $this->app->bind(IKumiRepository::class,
@@ -146,10 +147,14 @@ class StorageServiceProvider extends ServiceProvider
             QuestionScoreRepository::class);
         $this->app->bind(IElementScoreRepository::class,
             ElementScoreRepository::class);
+        $this->app->bind(ITotalScoreRepository::class,
+            TotalScoreRepository::class);
 
         //Stats
         $this->app->bind(IScoreStatisticsRepository::class,
             ScoreStatisticsRepository::class);
+        $this->app->bind(IItemScoreStatisticsRepository::class,
+            ItemScoreStatisticsRepository::class);
 
         //Students
         $this->app->bind(IStudentRepository::class,

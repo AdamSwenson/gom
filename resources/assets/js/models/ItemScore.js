@@ -9,6 +9,8 @@ export default class ItemScore  {
         this.studentId;
         this._score = null;
         this.commentText;
+        //Whether to include this score in calculations of overall score
+        this.countsInTotal;
         this.isCustomText = false;
     }
 
@@ -30,6 +32,7 @@ export default class ItemScore  {
     static get fillableProps() {
         return [
             'examId',
+            'countsInTotal',
             'itemId',
             'studentId',
             'score',

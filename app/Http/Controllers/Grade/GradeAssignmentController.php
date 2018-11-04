@@ -314,7 +314,7 @@ class GradeAssignmentController extends Controller
      */
     public function show( Exam $exam )
     {
-        // create assignments if none exist
+        // create standard grades if none exist in the db
         if ( Grade::all()->count() === 0 ) GradeFactory::initializeStandardGrades();
 
         $assignments = GradeAssignment::where('exam_id', $exam->id)->get();

@@ -124,7 +124,7 @@ module.exports = {
 
     /**
      * Returns the maximum possible score for the exam.
-     * This is either set on the exam object, or if not,
+     * This is either a custom score set on the exam object, or if not,
      * the sum of all item max scores
      * for which the item's countsInTotal flag is set.
      *
@@ -135,7 +135,7 @@ module.exports = {
      */
     [ gTypes.getMaxPossibleScore ]: ( state, getters, rootState ) => {
         let exam = getters[gTypes.getActiveExam];
-        if(! _.isUndefined(exam) && !_.isUndefined(exam.customMaxScore)){
+        if(! _.isNull(exam) && !_.isNull(exam.customMaxScore)){
             // window.console.log( 'grades.getters', 'custom max', 139, exam.customMaxScore);
             return exam.customMaxScore;
         }

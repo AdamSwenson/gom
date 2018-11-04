@@ -3,7 +3,7 @@
          class="feedback-page mainBodyLocator container "
     >
 
-        <feedback-panel :exam="exam" :student="student"></feedback-panel>
+        <feedback-panel :exam="exam" :student="student" ></feedback-panel>
 
     </div>
 </template>
@@ -49,30 +49,31 @@
         computed: {
             student: function () {
                 let loadedStudents = this.$store.getters[ gTypes.getStudentsFromRoster ];
-                if(! _.isUndefined(loadedStudents)) return loadedStudents[0];
+                if ( !_.isUndefined( loadedStudents ) ) return loadedStudents[ 0 ];
             },
 
             exam: function () {
                 return this.$store.getters.currentExam;
-            },
+            }
 
         },
 
         created: function () {
             let me = this;
+
             me.$store.dispatch( 'loadStudentsFromPageJson', me.jsonLocations )
                 .then( function () {
-                me.$store.dispatch( 'loadExamFromPageJson', me.jsonLocations )
-                    .then( function () {
-                        me.$store.dispatch( 'loadItemsFromPageJson', me.jsonLocations )
-                            .then( function () {
-                                me.$store.dispatch( 'loadScoresFromPageJson', me.jsonLocations )
-                                    .then( function () {
-                                    window.console.log( 'feedback-page', 'ready' );
+                    me.$store.dispatch( 'loadExamFromPageJson', me.jsonLocations )
+                        .then( function () {
+                            me.$store.dispatch( 'loadItemsFromPageJson', me.jsonLocations )
+                                .then( function () {
+                                    me.$store.dispatch( 'loadScoresFromPageJson', me.jsonLocations )
+                                        .then( function () {
+                                            window.console.log( 'feedback-page', 'ready' );
+                                        } );
                                 } );
-                            } );
-                    } );
-            } );
+                        } );
+                } );
         }
     };
 </script>

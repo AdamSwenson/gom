@@ -77,7 +77,7 @@ module.exports = {
             let scores = getters.getStudentScores( student.id );
             let total = 0;
             _.forEach( scores, function ( scoreObj ) {
-                total += _.isNumber( scoreObj.score ) ? scoreObj.score : 0;
+                total += (_.isNumber( scoreObj.score ) && (scoreObj.countsInTotal === 1)) ? scoreObj.score : 0;
             } );
             return total;
     },

@@ -17,7 +17,8 @@ export const create = ( state, exam, item, student ) => {
     let obj = ItemScore.factory( {
         examId: exam.id,
         itemId: item.id,
-        studentId: student.id
+        studentId: student.id,
+        countsInTotal: item.countsInTotal
     } );
     //add it to storage
     state.scores.push( obj )

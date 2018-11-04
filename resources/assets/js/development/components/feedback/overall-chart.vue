@@ -17,6 +17,8 @@
 
 <script>
     import * as nggTypes from '../../../store/new-grading-getter-types';
+    import * as gTypes from '../../../store/getter-types';
+
     import ItemStat from '../../../models/ItemStat';
 
     import {
@@ -25,11 +27,11 @@
         getTotalScoreSummaryStats
     } from '../../../api/requests/statsRequests';
 
-    import feedbackMixin from './feedback.mixin';
+    // import feedbackMixin from './feedback.mixin';
     import { GoogleCharts } from 'google-charts';
 
     export default {
-        mixins: [ feedbackMixin ],
+        // mixins: [ feedbackMixin ],
 
         props: [ 'exam', 'student' ],
 
@@ -38,28 +40,22 @@
         data: function () {
             return {
                 divId: 'overall-chart',
-                options: {
-                    title: "Total score ",
 
-                    // width: 600,
-                    // height: 400,
-                    bar: { groupWidth: "65%" },
-                    legend: { position: "bottom" }
-                },
-
-                defaults: {}
+                defaults: {
+                    max: 200
+                }
             }
         },
 
         watch: {
             preparedData: function ( newVal, oldVal ) {
-                if ( newVal.length >0 ) this.load();
+                if ( newVal.length > 0 ) this.load();
             },
         },
 
         asyncComputed: {
             totalScoreStats: function () {
-                if ( ! _.isUndefined( this.exam ) && ! _.isNull( this.exam ) ){
+                if ( !_.isUndefined( this.exam ) && !_.isNull( this.exam ) ) {
                     let p = getTotalScoreSummaryStats( this.exam );
                     return p.then( function ( data ) {
                         return data;
@@ -67,8 +63,27 @@
                 }
             }
         },
+
         computed: {
+            options: function () {
+                return {
+                    title: "Total score ",
+
+                    // width: 600,
+                    // height: 400,
+                    bar: { groupWidth: "65%" },
+                    legend: { position: "bottom" },
+                    vAxis: {
+                        minValue: 0,
+                        maxValue: this.maxPossible
+                    },
+                }
+            },
+
             classAverage: function () {
+                return 130;
+                if ( !_.isUndefined( this.staticClassAverage ) ) return Math.round( Number( this.staticClassAverage ) );
+
                 return this.totalScoreStats ? this.totalScoreStats.mean : null;
             },
 
@@ -77,6 +92,14 @@
                 if ( _.isUndefined( this.student ) || _.isNull( this.student ) ) return null;
                 return this.$store.getters[ nggTypes.getTotalScoreForStudent ]( this.student );
             },
+
+
+            maxPossible: function () {
+                let s = this.$store.getters[ gTypes.getMaxPossibleScore ];
+                return !_.isUndefined( s ) ? s : this.defaults.max;
+
+            },
+
 
             preparedData: function () {
                 let dt = [];
@@ -89,18 +112,22 @@
                     'Total score',
                     this.totalScore,
                     this.classAverage,
-                   ];
+                ];
 
                 dt.push( d );
 
                 return dt;
             },
 
+            staticClassAverage: function () {
+                return document.getElementById( 'averageTotalScore' ).getAttribute( 'data' );
+            }
+
             // title: function(){}
         },
 
         methods: {
-            load: function (  ) {
+            load: function () {
                 let me = this;
                 this.$nextTick( function () {
                     //Load the charts library with a callback

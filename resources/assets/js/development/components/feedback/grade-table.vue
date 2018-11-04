@@ -31,7 +31,7 @@
     import feedbackMixin from './feedback.mixin';
 
     export default {
-        mixins: [ feedbackMixin ],
+        // mixins: [ feedbackMixin ],
 
         props: [ 'exam', 'student' ],
 
@@ -42,6 +42,7 @@
                 defaults: {}
             }
         },
+
 
         watch: {
             exam: function ( newVal, oldVal ) {
@@ -59,16 +60,17 @@
                     let ga = me.$store.getters[ gTypes.getGradeAssignmentForScore ]( me.totalScore );
                     return ga;
                 }
-
             },
         },
 
         computed: {
-            chartDivId: function () {
-                return 'overallScoreChart';
-            },
 
             totalScore: function () {
+
+                //On the page given to the student, this is loaded as a prop, so use that
+                if(!_.isUndefined(this.staticTotalScore)) return this.staticTotalScore;
+
+                //Otherwise use what's in the store
                 if ( _.isUndefined( this.student ) || _.isNull( this.student ) ) return this.placeHolder;
                 return this.$store.getters[ nggTypes.getTotalScoreForStudent ]( this.student );
             },
@@ -78,10 +80,31 @@
                 return !_.isUndefined( s ) ? s : this.placeHolder;
             },
 
+
             letterGrade: function () {
+                if(!_.isUndefined(this.staticLetterGrade)) return this.staticLetterGrade;
+
+                //Use the value from store
                 if ( this.gradeAssignmentObject ) return this.gradeAssignmentObject.displayValue;
 
                 return this.placeHolder;
+            },
+
+
+            /**
+             * For some uses, the letter grade may have been defined statically in
+             * the page html. This gets and returns it
+             */
+            staticLetterGrade: function () {
+                return document.getElementById( 'letterGrade' ).getAttribute( 'data' );
+            },
+
+            /**
+             * For some uses, the total score may have been defined statically in
+             * the page html. This gets and returns it
+             */
+            staticTotalScore: function () {
+                return document.getElementById( 'totalScore' ).getAttribute( 'data' );
             }
 
         },

@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="{{ asset("css/common-package.css")}}">
     <link rel="stylesheet" href="{{ asset("css/new-setup-package.css")}}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style type="text/css">
+        /*.feedback-panel{*/
+            /*margin: 5%;*/
+        /*}*/
+    </style>
 </head>
 
 <body>
@@ -24,6 +29,9 @@
     <input type="hidden" id="order" data="{{ collect($itemOrder)->toJson() }}"/>
     <input type="hidden" id="scores" data="{{ $scores->toJson() }}"/>
     <input type="hidden" id="students" data="{{ collect($student)->toJson() }}"/>
+    <input type="hidden" id="letterGrade" data="{{ $letterGrade }}"/>
+    <input type="hidden" id="totalScore" data="{{ $totalScore }}"/>
+    <input type="hidden" id="averageTotalScore" data="{{ $avgTotalScore }}"/>
 
 </div>
 

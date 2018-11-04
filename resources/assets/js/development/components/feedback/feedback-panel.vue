@@ -73,6 +73,7 @@
                 return this.$store.getters.getItemChildren( this.exam );
             },
 
+
         },
 
     }

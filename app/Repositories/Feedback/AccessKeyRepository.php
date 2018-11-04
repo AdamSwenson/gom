@@ -71,15 +71,15 @@ class AccessKeyRepository implements IAccessKeyRepository
             $k->setStudentId($studentId);
             $k->setExpirationDate($expire);
 
-            //save student info so don't have to look up from feedback processes
-            $student = Student::loggedIn()
-                ->where('id', $studentId)->firstOrFail();
-            $name = $student->getFullName() ? $student->getFullName() : '';
-            $id = $student->student_identifier ? $student->student_identifier : '';
-            $k->student_info = [
-                'studentName'       => $name,
-                'studentIdentifier' => $id,
-            ];
+//            //save student info so don't have to look up from feedback processes
+//            $student = Student::loggedIn()
+//                ->where('id', $studentId)->firstOrFail();
+//            $name = $student->getFullName() ? $student->getFullName() : '';
+//            $id = $student->student_identifier ? $student->student_identifier : '';
+//            $k->student_info = [
+//                'studentName'       => $name,
+//                'studentIdentifier' => $id,
+//            ];
 
             $k->save();
 
