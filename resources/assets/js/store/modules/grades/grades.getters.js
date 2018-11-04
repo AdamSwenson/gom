@@ -14,7 +14,7 @@ module.exports = {
      */
     [ gTypes.getGradeAssignmentForScore ]: ( state, getters, rootState, score ) => ( score ) => {
         // return (function ( score ) {
-            return gradeGetterForScore( state.gradeAssignments, score );
+        return gradeGetterForScore( state.gradeAssignments, score );
         // })( score );
     },
 
@@ -123,7 +123,10 @@ module.exports = {
 
 
     /**
-     * Returns a numerical value which is the sum of all item minimum scores
+     * Returns the maximum possible score for the exam.
+     * This is either set on the exam object, or if not,
+     * the sum of all item max scores
+     * for which the item's countsInTotal flag is set.
      *
      * @param state
      * @param getters
@@ -136,8 +139,11 @@ module.exports = {
 
         if ( !_.isUndefined( items ) && !_.isNull( items ) ) {
             _.forEach( items, function ( item ) {
-                // window.console.log( 'grades.getters', 'ic', 139, item.countsInTotal == 0);
-                score += (!_.isUndefined( item.maxScore ) && (item.countsInTotal === 1)) ? item.maxScore : 0;
+                if ( !_.isUndefined( item.maxScore )){
+                    if ( item.countsInTotal === 1 ) {
+                        score += item.maxScore
+                    }
+                }
             } );
         }
         return score;
