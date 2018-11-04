@@ -35,6 +35,14 @@ use Illuminate\Support\Facades\View;
 
 use JavaScript;
 
+/**
+ * Used for setting the grade distribution cutoffs.
+ * Versions:
+ *      >= 0.2.0
+ *
+ * Class GradeAssignmentController
+ * @package App\Http\Controllers\Grade
+ */
 class GradeAssignmentController extends Controller
 {
     const INVALID_GRADE_ASSIGNMENT_MESSAGE = 'The criteria you entered were inconsistent.';
@@ -299,18 +307,21 @@ class GradeAssignmentController extends Controller
      * If no assignments exist, it creates them with
      * default values based on the maximum possible score on the
      * exam
+     *
+     * @version >= 0.2.0
      * @param Exam $exam
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
     public function show( Exam $exam )
     {
+        // create assignments if none exist
         if ( Grade::all()->count() === 0 ) GradeFactory::initializeStandardGrades();
 
         $assignments = GradeAssignment::where('exam_id', $exam->id)->get();
 
         //If we have some assignments, then we just return them
         if ( is_null($assignments) || sizeof($assignments) === 0 ) {
-//Otherwise we need to initialize them
+            //Otherwise we need to initialize them
             //This will give it default values based on the max possible score,
             GradeAssignment::initializeOnExam($exam, true);
         }
@@ -325,14 +336,13 @@ class GradeAssignmentController extends Controller
 //        return $out;
 
 
-
         $out = [];
         foreach ( GradeAssignment::where('exam_id', $exam->id)->with('grade')->get() as $assign ) {
             $out[] = [
                 'id' => $assign->id,
                 'calcValue' => $assign->grade->calc_value,
                 'displayValue' => $assign->grade->display_value,
-                'gradeId' =>$assign->grade->id,
+                'gradeId' => $assign->grade->id,
                 'group' => $assign->grade->group,
                 'minScore' => $assign->min_score,
                 'ordinal' => $assign->grade->ordinal

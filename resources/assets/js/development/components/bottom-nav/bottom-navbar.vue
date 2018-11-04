@@ -1,7 +1,7 @@
 <template>
 
     <nav id="bottom-navbar"
-         class="navbar is-transparent"
+         class="navbar "
          role="navigation"
          aria-label="main navigation"
     >

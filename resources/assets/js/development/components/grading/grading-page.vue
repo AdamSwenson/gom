@@ -81,7 +81,7 @@
             </div>
         </div>
 
-        <bottom-navbar></bottom-navbar>
+        <!--<bottom-navbar></bottom-navbar>-->
 
     </div>
 
@@ -106,6 +106,12 @@
         background-color: $main-background-color-gradient-limit;
         box-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 3px 9px rgba(0, 0, 0, .2);
 
+        /*height: 100vh;*/
+        height: -moz-available;
+        height: -webkit-fill-available;
+        height: fill-available;
+        /*!*height:auto !important;*!*/
+
         #questionAndSliderColumn {
             width-max: 700px;
         }
@@ -116,6 +122,11 @@
         }
 
         #grade-main-body {
+
+            height: -moz-available;
+            height: -webkit-fill-available;
+            height: fill-available;
+            /*height: 100vh;*/
             /*<!--background-image: linear-gradient(bottom left, $main-background-color, $main-background-color-gradient-limit);-->*/
             /*padding-left: 1em;*/
             /*padding-right: 1em;*/

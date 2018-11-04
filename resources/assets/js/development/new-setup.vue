@@ -1,26 +1,33 @@
 <template>
     <div id="setup-main-page"
-         class=" mainBodyLocator"
+         class="mainBodyLocator"
     >
+
+        <top-navbar
+                page-type="setup"
+                :exam="exam"
+        ></top-navbar>
+
         <div class="container">
-            <top-navbar
-                    page-type="setup"
-                    :exam="exam"
-            ></top-navbar>
 
             <div id="setup-main-body"
                  class="columns is-centered"
             >
+                <div class="central-column column is-three-fourths">
 
-                <div class="column is-three-fourths ">
-                    <!--<div class="column is-four-fifths ">-->
+                    <exam-card
+                            v-if="exam"
+                            :exam="exam"
+                    ></exam-card>
 
-                    <div id="examCardArea">
+                    <div class="item-card-holder box graph-paper-background-big">
 
-                        <exam-card
-                                v-if="exam"
-                                :exam="exam"
-                        ></exam-card>
+                        <div v-for="item in items">
+                            <!--make cards recursively-->
+                            <item-card :item="item"
+                                       :key="item.serialNumber"
+                            ></item-card>
+                        </div>
 
                     </div>
 
@@ -28,18 +35,8 @@
 
             </div>
 
-            <!--<div class="columns">-->
-                <!--<div class="column">-->
-                    <!--<progress-dashboard></progress-dashboard>-->
-                <!--</div>-->
-                <!--<div class="column is-1">-->
-                    <!--<sync-indicator></sync-indicator>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!---->
         </div>
-
-        <bottom-navbar></bottom-navbar>
+        <!--<bottom-navbar></bottom-navbar>-->
 
     </div>
 </template>
@@ -48,41 +45,77 @@
     @import '../../sass/development/newSetup';
 
     #setup-main-page {
+
+        min-height: 1000px;
+        /*height: 100%;*/
+        /*height: -moz-available;*/
+        /*height: -webkit-fill-available;*/
+        /*height: fill-available;*/
+        /*height:auto !important;*/
+
         background-color: $main-background-color-gradient-limit;
-        #setup-main-body {
 
-            background-image:linear-gradient(bottom left, $main-background-color, $main-background-color-gradient-limit);
+        .container {
+            /*height: 100%;*/
 
-            #examCardArea {
-                background-color: $color-primary-2;
-                padding-left: 2px;
-                padding-right: 2px;
-                background-color: $main-background-color-gradient-limit;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 3px 9px rgba(0, 0, 0, .2);
-            }
+            #setup-main-body {
+                /*min-height: 100%;*/
 
-            #itemCardArea {
-                box-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 3px 9px rgba(0, 0, 0, .2);
-            }
+                /*height: 100%;*/
+                /*height: 100vh;*/
+                background-image: linear-gradient(bottom left, $main-background-color, $main-background-color-gradient-limit);
 
-            .itemCol {
-                border-left-color: $border-outline-color;
-                border-left-width: thin;
-                border-left-style: solid;
-                border-right-color: $border-outline-color;
-                border-right-width: thin;
-                border-right-style: solid;
-                /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/
-                /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/
-                /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/
-                /*border-width: 10px;*/
-                /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/
+                .central-column {
 
-            }
+                    /* Setting these causes the parent background not to fill in */
+                    /*height: 100%;*/
+                    /*height: -moz-available;*/
+                    /*height: -webkit-fill-available;*/
+                    /*height: fill-available;*/
+                    /*height:auto !important;*/
+                    /*min-height: 300px;*/
 
-            .infoCol {
-                margin-top: 2em;
-                /*background-color: #00496C;*/
+                    background-color: $color-primary-2;
+                    /*@media screen and (min-width: 767px) {*/
+                    padding-left: 2px;
+                    padding-right: 2px;
+                    /*}*/
+                    background-color: $main-background-color-gradient-limit;
+                    box-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 3px 9px rgba(0, 0, 0, .2);
+                }
+
+                /*#itemCardArea {*/
+                /*box-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 3px 9px rgba(0, 0, 0, .2);*/
+                /*}*/
+
+                .item-card-holder {
+                    /* make the graph paper area have a minimum size for when no items present.
+                    This doesn't seem to cause problems with overflowing the parent, as long as it is
+                    relatively small
+                    */
+                    min-height: 300px;
+
+                }
+
+                .itemCol {
+                    border-left-color: $border-outline-color;
+                    border-left-width: thin;
+                    border-left-style: solid;
+                    border-right-color: $border-outline-color;
+                    border-right-width: thin;
+                    border-right-style: solid;
+                    /*-moz-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/
+                    /*-webkit-border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/
+                    /*border-image: url(http://localhost:8000/images/styling/border.png) 10 stretch round;*/
+                    /*border-width: 10px;*/
+                    /*border-image : url('http://localhost:8000/images/styling/border.png') 10 repeat;*/
+
+                }
+
+                .infoCol {
+                    margin-top: 2em;
+                    /*background-color: #00496C;*/
+                }
             }
         }
     }
@@ -93,6 +126,8 @@
     // import ProgressDashboard from './components/dashboard.progress.component.vue'
 
     import ExamCard from './components/cards/exam-card.vue'
+    import ItemCard from './components/cards/item-card';
+
 
     //navigation bars
     import BottomNavbar from '../development/components/bottom-nav/bottom-navbar.vue';
@@ -106,6 +141,7 @@
         components: {
             BottomNavbar,
             ExamCard,
+            ItemCard,
             // ProgressDashboard,
             // SyncIndicator,
             TopNavbar
@@ -132,8 +168,29 @@
                 } );
             },
 
+            /**
+             * The children of the item
+             */
+            items: {
+                get() {
+                    let me = this;
+                    if ( _.isUndefined( me.exam ) || _.isNull( me.exam ) || _.isUndefined( me.exam.serialNumber ) ) return [];
 
+                    let p = this.$store.dispatch( 'loadItemsFromServer', this.examId );
+                    return p.then( function () {
+                        // let p = this.$store.dispatch( 'loadItemsFromServer', this.exam.id );
+                        // return p.then( function () {
+                        let c = me.$store.getters.getItemChildren( me.exam );
+                        return !_.isUndefined( c ) ? c : [];
+
+                    } );
+                },
+                // default() {
+                //     return [];
+                // }
+            },
         },
+
 
         computed: {
 
@@ -141,16 +198,21 @@
                 return !_.isNull( this.exam ) ? this.exam.serialNumber : null;
                 // return this.$store.getters.getExamSerialNumber;
             }
-        },
+        }
+        ,
 
-        methods: {},
+        methods: {}
+        ,
 
-        directives: {},
+        directives: {}
+        ,
 
-        events: {},
+        events: {}
+        ,
 
         created: function () {
-        },
+        }
+        ,
 
 
     }
