@@ -239,6 +239,8 @@ class ExamTest extends \TestCase
         }
     }
 
+
+
 #----------------------------------------------------------- Setters and getters
 
 
@@ -304,6 +306,22 @@ class ExamTest extends \TestCase
 
     }
 
+    /** @test */
+    public function getMaxPossibleScore(){
+        //prep
+        $exam = factory(Exam::class)->create();
+        $exam->initializeAssignmentRoot();
+
+        $items = collect(factory(Item::class, 2)->create(['max_score' =>100]));
+        $items_non_counting = collect(factory(Item::class, 2)->create(['max_score' =>100]));
+        $items->merge($items_non_counting);
+//        array_merge($items, $items_non_counting);
+        foreach ($items as $it){
+            $exam->addAssignment($it, $exam->id, 1);
+        }
+        self::assertEquals($exam->getMaxPossibleScore, 400);
+
+    }
 #----------------------------------------------------------- Item ordering
 
     /** @test */

@@ -262,7 +262,7 @@ MYSQL;
      */
     public function roster()
     {
-return $this->kumis()->where('is_roster', true)->first();
+        return $this->kumis()->where('is_roster', true)->first();
     }
 
 #------------------------------------------------------- Queries
@@ -452,10 +452,20 @@ return $this->kumis()->where('is_roster', true)->first();
         return $this->attributes['locked'];
     }
 
+    /**
+     * Returns the sum of max scores for all items
+     * which count toward the total exam score.
+     * @return array|mixed
+     */
     public function getMaxPossibleScore()
     {
-        $items = collect($this->getItems());
-        return $items->sum('max_score');
+        $query = <<<MYSQL
+            SELECT  SUM(i.max_score) as maxScore FROM assignments a
+            INNER JOIN items i ON i.id = a.item_id
+            WHERE a.exam_id = :examId AND i.counts_in_total = 1
+MYSQL;
+        $result = DB::select($query, ['examId' => $this->attributes['id']]);
+        return $result[0]->maxScore;
     }
 
     public function getMaxPossibleScoreAttribute()

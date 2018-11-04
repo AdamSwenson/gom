@@ -22,5 +22,8 @@ margin:0;
 @endsection
 
 @section('pageJs')
+
     <script src="{{ asset('/js/dev/new-setup-package.js') }}"></script>
+
+
 @endsection

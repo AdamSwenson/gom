@@ -136,7 +136,7 @@ module.exports = {
 
         if ( !_.isUndefined( items ) && !_.isNull( items ) ) {
             _.forEach( items, function ( item ) {
-                score += !_.isUndefined( item.maxScore ) ? item.maxScore : 0;
+                score += (!_.isUndefined( item.maxScore ) && item.countsInTotal) ? item.maxScore : 0;
             } );
         }
         return score;
