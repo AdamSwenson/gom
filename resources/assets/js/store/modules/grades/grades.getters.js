@@ -134,6 +134,12 @@ module.exports = {
      * @returns {number}
      */
     [ gTypes.getMaxPossibleScore ]: ( state, getters, rootState ) => {
+        let exam = getters[gTypes.getActiveExam];
+        if(! _.isUndefined(exam) && !_.isUndefined(exam.customMaxScore)){
+            // window.console.log( 'grades.getters', 'custom max', 139, exam.customMaxScore);
+            return exam.customMaxScore;
+        }
+
         let score = 0;
         let items = getters[ gTypes.getAllItems ];
 

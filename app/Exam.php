@@ -453,12 +453,18 @@ MYSQL;
     }
 
     /**
-     * Returns the sum of max scores for all items
+     * Returns the maximum possible achievable score on the exam.
+     * If there is a custom max set, it will return that.
+     * Otherwise, it returns the sum of max scores for all items
      * which count toward the total exam score.
      * @return array|mixed
      */
     public function getMaxPossibleScore()
     {
+        if(! is_null($this->custom_max_score)){
+            return $this->custom_max_score;
+        }
+
         $query = <<<MYSQL
             SELECT  SUM(i.max_score) as maxScore FROM assignments a
             INNER JOIN items i ON i.id = a.item_id

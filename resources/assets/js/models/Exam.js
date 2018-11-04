@@ -26,6 +26,8 @@ export default class Exam extends Item {
          */
         this.averageGradingSeconds;
 
+        this.customMaxScore;
+
         this.description;
 
         // this._name; // = name;
@@ -74,6 +76,7 @@ export default class Exam extends Item {
     static get fillableProps() {
         return [
             'averageGradingSeconds',
+            'customMaxScore',
             'description',
             'id',
             'maxPossibleScore',
@@ -189,7 +192,8 @@ export default class Exam extends Item {
 
     static get aliasMap() {
         return {
-            public_name : 'publicName'
+            public_name : 'publicName',
+            custom_max_score: 'customMaxScore'
             // examId: 'id',
             // examIndex: 'index'
         };
