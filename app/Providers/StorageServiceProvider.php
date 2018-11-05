@@ -25,6 +25,8 @@ use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Element\IElementRepository;
 use App\Repositories\Exam\INewExamRepository;
 use App\Repositories\Exam\NewExamRepository;
+use App\Repositories\Feedback\INewFeedbackRepository;
+use App\Repositories\Feedback\NewFeedbackRepository;
 use App\Repositories\Item\IItemCommentRepository;
 use App\Repositories\Item\IItemScoreStatisticsRepository;
 use App\Repositories\Item\ItemCommentRepository;
@@ -121,6 +123,8 @@ class StorageServiceProvider extends ServiceProvider
             AccessKeyRepository::class);
         $this->app->bind(IFeedbackBuilder::class,
             FeedbackBuilder::class);
+        $this->app->bind(INewFeedbackRepository::class,
+            NewFeedbackRepository::class);
 
         //Grade and grade assignments
         $this->app->bind(IGradeAssignmentRepository::class,

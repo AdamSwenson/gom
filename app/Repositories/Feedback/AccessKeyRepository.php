@@ -4,6 +4,7 @@
  * User: adam
  * Date: 8/1/15
  * Time: 3:11 PM
+ * Updated to work with version 0.2.0+
  */
 
 namespace App\Repositories\Feedback;
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\DB;
  * Handles checking if access key is already in use, creating a key, checking
  * whether a key is valid on login, and destroying keys.
  *
+ * @version 0.1 & 0.2+
  * @package Repositories\Feedback
  */
 class AccessKeyRepository implements IAccessKeyRepository
@@ -50,20 +52,18 @@ class AccessKeyRepository implements IAccessKeyRepository
      * @return string
      * @throws FeedbackCreationException
      */
-    public function createAccessKey($examId, $studentId, $daysUntilExpiration = 10, $forceNew = false)
+    public function createAccessKey( $examId, $studentId, $daysUntilExpiration = 10, $forceNew = false )
     {
         //make a new hash
         $accessHash = $this->generateNewKey();
-        if ( $accessHash )
-        {
+        if ( $accessHash ) {
             $expire = Carbon::now()->addDays($daysUntilExpiration);
 
             $k = AccessKey::firstOrNew(['exam_id' => $examId, 'student_id' => $studentId]);
 
             //Keep the existing key if one already exists
             //of if have been instructed to create a new access key
-            if ( empty($k->access_key) || $forceNew )
-            {
+            if ( empty($k->access_key) || $forceNew ) {
                 $k->setKey($accessHash);
             }
 
@@ -83,8 +83,7 @@ class AccessKeyRepository implements IAccessKeyRepository
 
             $k->save();
 
-            if ( $k )
-            {
+            if ( $k ) {
                 return $k->getKey();
             }
         }
@@ -96,8 +95,10 @@ class AccessKeyRepository implements IAccessKeyRepository
      * Removes an access key (and associated feedback) from storage
      *
      * @param string $accessKey
+     * @return bool|null
+     * @throws \Exception
      */
-    public function removeAccessKey($accessKey)
+    public function removeAccessKey( $accessKey )
     {
         $key = AccessKey::where('access_key', $accessKey)->firstOrFail();
 
@@ -112,8 +113,9 @@ class AccessKeyRepository implements IAccessKeyRepository
      *
      * @param integer $examId
      * @return boolean
+     * @throws \Exception
      */
-    public function removeAccessForExam($examId)
+    public function removeAccessForExam( $examId )
     {
         return AccessKey::where('exam_id', $examId)->delete();
     }
@@ -127,8 +129,9 @@ class AccessKeyRepository implements IAccessKeyRepository
      * @param integer $examId
      * @param integer $studentId
      * @return boolean
+     * @throws \Exception
      */
-    public function removeAccessForStudent($examId, $studentId)
+    public function removeAccessForStudent( $examId, $studentId )
     {
         return AccessKey::where('student_id', $studentId)
             ->where('exam_id', $examId)
@@ -138,13 +141,13 @@ class AccessKeyRepository implements IAccessKeyRepository
     /**
      * Loads the stored feedback by access key
      * @param $accessKey
-     * @return array
+     * @return Feedback
+     * @throws InputTypeException
      */
-    public function retrieveFeedback($accessKey)
+    public function retrieveFeedback( $accessKey )
     {
         $this->validateKey($accessKey);
-        if ( ! empty($this->validKey) )
-        {
+        if ( !empty($this->validKey) ) {
             return $this->loadFeedback();
         }
     }
@@ -159,13 +162,12 @@ class AccessKeyRepository implements IAccessKeyRepository
      * @param $studentId
      * @return string The access key for the student
      */
-    public function getAccessKeyForStudent($examId, $studentId)
+    public function getAccessKeyForStudent( $examId, $studentId )
     {
         $key = AccessKey::where('exam_id', $examId)
             ->where('student_id', $studentId)
             ->first();
-        if ( ! empty($key) )
-        {
+        if ( !empty($key) ) {
             return $key->getKey();
         }
 
@@ -178,18 +180,17 @@ class AccessKeyRepository implements IAccessKeyRepository
      * Array keys: studentName, studentIdentifier
      * @param $accessKey
      * @return array
+     * @throws InputTypeException
      */
-    public function getStudentInfo($accessKey)
+    public function getStudentInfo( $accessKey )
     {
         //if had the object passed in for some weird reason
-        if ( $accessKey instanceof AccessKey )
-        {
+        if ( $accessKey instanceof AccessKey ) {
             return $accessKey->student_info;
         }
         //it's a string as usual
         $this->validateKey($accessKey);
-        if ( ! empty($this->validKey) )
-        {
+        if ( !empty($this->validKey) ) {
             $key = AccessKey::where('access_key', $accessKey)->first();
 
             return $key->student_info;
@@ -207,8 +208,9 @@ class AccessKeyRepository implements IAccessKeyRepository
     /**
      * Loads all access keys for a given exam
      * @param $examId
+     * @return
      */
-    public function getAccessKeysForExam($examId)
+    public function getAccessKeysForExam( $examId )
     {
         return AccessKey::onExam($examId)->get();
     }
@@ -222,20 +224,18 @@ class AccessKeyRepository implements IAccessKeyRepository
      * @return mixed
      * @throws InputTypeException
      */
-    protected function validateKey($accessKey)
+    protected function validateKey( $accessKey )
     {
         //Remove whitespace
         $trimmed = \trim($accessKey);
 
         //Check that not longer than allowed length
-        if ( \mb_strlen($trimmed) <= self::TRIM_TO_LENGTH )
-        {
+        if ( \mb_strlen($trimmed) <= self::TRIM_TO_LENGTH ) {
             //Clean it to make sure it is just nice stringy goodness
             $cleaned = \filter_var($trimmed, \FILTER_SANITIZE_STRING);
         }
 
-        if ( ! empty($cleaned) )
-        {
+        if ( !empty($cleaned) ) {
             $this->validKey = $cleaned;
 
             return $this->validKey;
@@ -250,12 +250,10 @@ class AccessKeyRepository implements IAccessKeyRepository
      */
     protected function loadFeedback()
     {
-        if ( ! empty($this->validKey) )
-        {
+        if ( !empty($this->validKey) ) {
             //TODO do I need to throw an exception manually if it doesn't find?
             $feedback = Feedback::where('access_key', $this->validKey)->first();;
-            if ( $feedback )
-            {
+            if ( $feedback ) {
                 return $feedback;
             }
             $e = new ModelNotFoundException();
@@ -274,8 +272,7 @@ class AccessKeyRepository implements IAccessKeyRepository
     protected function generateNewKey()
     {
         $candidate = $this->createCandidateKey();
-        if ( $this->checkIfKeyIsUnique($candidate) )
-        {
+        if ( $this->checkIfKeyIsUnique($candidate) ) {
             return $candidate;
         }
     }
@@ -286,11 +283,10 @@ class AccessKeyRepository implements IAccessKeyRepository
      * @param $candidate
      * @return bool
      */
-    protected function checkIfKeyIsUnique($candidate)
+    protected function checkIfKeyIsUnique( $candidate )
     {
         $key = DB::table('access_keys')->where('access_key', $candidate)->first();
-        if ( empty($key) )
-        {
+        if ( empty($key) ) {
             return $candidate;
         }
 

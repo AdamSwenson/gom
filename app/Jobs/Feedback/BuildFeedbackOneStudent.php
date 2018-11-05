@@ -60,7 +60,7 @@ class BuildFeedbackOneStudent extends Job implements ShouldQueue
 //        }
 //
 //        //Instantiate the class which will actually do the work
-//        $this->feedbackBuilder = app()->make(IFeedbackBuilder::class);
+//        $this->feedbackRepository = app()->make(IFeedbackBuilder::class);
      //   $this->exam = Exam::find($this->examId);
       //  $this->student = Student::find($this->studentId);
     }

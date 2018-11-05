@@ -23,12 +23,12 @@
     <div id="app"></div>
 
     <input type="hidden" id="routeRoot" data="{{ url('') }}"/>
-    <input type="hidden" id="examId" data="{{ $exam->id }}"/>
-    <input type="hidden" id="exam" data="{{ $exam->toJson() }}"/>
+    <input type="hidden" id="examId" data="{{ $examId }}"/>
+    <input type="hidden" id="exam" data="{{ $exam }}"/>
     <input type="hidden" id="items" data="{{ collect($itemObjects)->toJson() }}"/>
     <input type="hidden" id="order" data="{{ collect($itemOrder)->toJson() }}"/>
-    <input type="hidden" id="scores" data="{{ $scores->toJson() }}"/>
-    <input type="hidden" id="students" data="{{ collect($student)->toJson() }}"/>
+    <input type="hidden" id="scores" data="{{ collect($scores)->toJson() }}"/>
+    <input type="hidden" id="students" data="{{ $student }}"/>
     <input type="hidden" id="letterGrade" data="{{ $letterGrade }}"/>
     <input type="hidden" id="totalScore" data="{{ $totalScore }}"/>
     <input type="hidden" id="averageTotalScore" data="{{ $avgTotalScore }}"/>
