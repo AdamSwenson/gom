@@ -14,6 +14,7 @@ use App\Feedback;
 use App\Models\NewGom\ItemScore;
 use App\Repositories\Assignment\IAssignmentRepository;
 use App\Repositories\Grade\StudentGradeRepositoryNew;
+use App\Repositories\Item\IItemScoreStatisticsRepository;
 use App\Repositories\Score\ITotalScoreRepository;
 use App\Student;
 
@@ -27,25 +28,34 @@ class NewFeedbackRepository implements INewFeedbackRepository
      * @var IAssignmentRepository
      */
     private $assignmentRepository;
+    /**
+     * @var IItemScoreStatisticsRepository
+     */
+    private $scoreStatisticsRepository;
 
     /**
      * NewFeedbackRepository constructor.
      * @param ITotalScoreRepository $totalScoreRepository
      * @param IAssignmentRepository $assignmentRepository
      * @param IAccessKeyRepository $accessKeyRepository
+     * @param IItemScoreStatisticsRepository $scoreStatisticsRepository
      */
-    public function __construct( ITotalScoreRepository $totalScoreRepository, IAssignmentRepository $assignmentRepository, IAccessKeyRepository $accessKeyRepository )
+    public function __construct( ITotalScoreRepository $totalScoreRepository, IAssignmentRepository $assignmentRepository, IAccessKeyRepository $accessKeyRepository, IItemScoreStatisticsRepository $scoreStatisticsRepository )
     {
         $this->accessKeyRepository = $accessKeyRepository;
 //
         $this->studentGradeRepository = new StudentGradeRepositoryNew();
         $this->totalScoreRepository = $totalScoreRepository;
         $this->assignmentRepository = $assignmentRepository;
+        $this->scoreStatisticsRepository = $scoreStatisticsRepository;
     }
 
 
     /**
-     * Creates the data array that will be used to display feedback
+     * Creates the data array that will be used to display feedback.
+     * The returned array should contain all info required by the
+     * feedback page.
+     *
      * @param Exam $exam
      * @param Student $student
      * @return array
@@ -70,6 +80,14 @@ class NewFeedbackRepository implements INewFeedbackRepository
         $out['scores'] = ItemScore::where('student_id', $student->id)
             ->where('exam_id', $exam->id)
             ->get();
+
+        //add item score stats
+
+        $out['itemStats'] = [];
+        foreach($out['scores'] as $scoreObj){
+            $item = $scoreObj->item()->first();
+            $out['itemStats'][$item->id] = $this->scoreStatisticsRepository->getDescriptiveStats($item, $exam);
+        }
 
         //Item and item order data
         //This adds the keys

@@ -84,21 +84,30 @@
         },
 
         asyncComputed: {
-
+            // todo renable once figure out loop
             childItemStatsObjects: function () {
                 let me = this;
                 let s = [];
-
-                if ( _.isUndefined( this.itemChildren ) || _.isNull( this.itemChildren ) || this.itemChildren.length === 0 ) return s;
-
-                _.forEach( this.itemChildren, function ( item ) {
-                    me.$store.dispatch( 'loadItemScoreSummaryForExam', { item: item, exam: me.exam } )
-                        .then( function () {
-                            s.push( me.$store.getters.getItemStatsForExam( { exam: me.exam, item: item } ) );
-                        } );
-
-                } );
-
+// //
+                let itemChildren = this.$store.getters.getItemChildren( this.item );
+                if ( _.isUndefined( itemChildren ) || _.isNull( itemChildren ) || itemChildren.length === 0 ) return s;
+                // let p = me.$store.dispatch( 'loadItemScoreSummaryForExamFromPageJson', { exam: me.exam } );
+                // p.then( function () {
+// //     _.forEach(this.itemChildren, function(item){
+// //         s.push( me.$store.getters.getItemStatsForExam( { exam: me.exam, item: item } ) );
+// //
+// //     });
+//
+// // });
+                    _.forEach( itemChildren, function ( item ) {
+//                     window.console.log( 'item-chart', 'jjj', 95, item.id);
+//                 //     me.$store.dispatch( 'loadItemScoreSummaryForExam', { item: item, exam: me.exam } )
+//                 //         .then( function () {
+                        s.push( me.$store.getters.getItemStatsForExam( { exam: me.exam, item: item } ) );
+                    } );
+//                 //
+//                 } );
+//
                 return s;
             },
 
@@ -148,11 +157,17 @@
 
             itemStats: function () {
                 let me = this;
-                let p = this.$store.dispatch( 'loadItemScoreSummaryForExam', { item: this.item, exam: this.exam } );
 
-                return p.then( function () {
-                    return me.$store.getters.getItemStatsForExam( { exam: me.exam, item: me.item } );
-                } );
+                //The action will check first for if the stats are loaded on the page (i.e., if
+                //public feedback)
+                // let p = this.$store.dispatch( 'loadItemScoreSummaryForExamFromPageJson');
+                // let p = this.$store.dispatch( 'loadItemScoreSummaryForExam', { item: this.item, exam: this.exam } );
+
+                // return p.then( function () {
+                    let d = me.$store.getters.getItemStatsForExam( { exam: me.exam, item: me.item } );
+                // return _.isUndefined(d) ? d : [];
+                    // } );
+                return d;
 
             },
 
@@ -166,6 +181,7 @@
         },
 
         computed: {
+
             divId: function () {
                 if ( this.item ) return 'scoreChart' + this.item.id;
             },
@@ -193,7 +209,6 @@
             },
 
 
-
             draw: function () {
                 var me = this;
                 //push into data table as chart is expecting
@@ -212,13 +227,16 @@
         },
 
         mounted: function () {
+
             // var me = this;
-            // this.$nextTick( function () {
+            this.$nextTick( function () {
+
+            // }
             //     //Load the charts library with a callback
             //     GoogleCharts.load( (function () {
             //         return me.draw
             //     })() );
-            // } );
+            } );
 
         }
     }

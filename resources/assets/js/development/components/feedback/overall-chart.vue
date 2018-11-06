@@ -1,9 +1,6 @@
 <template>
     <div class="overall-chart">
         <div class="box">
-            <!--{{score}}-->
-            <!--mean : {{ itemStats ? itemStats.mean : '-' }}-->
-            <!--median : {{itemStats ? itemStats.median : '-' }}-->
             <div class="chart-area"
                  v-bind:id="divId"
             ></div>
@@ -19,7 +16,7 @@
     import * as nggTypes from '../../../store/new-grading-getter-types';
     import * as gTypes from '../../../store/getter-types';
 
-    import ItemStat from '../../../models/ItemStat';
+    // import ItemStat from '../../../models/ItemStat';
 
     import {
         getItemScoreSummaryForExam,
@@ -81,7 +78,7 @@
             },
 
             classAverage: function () {
-                return 130;
+                // return 130;
                 if ( !_.isUndefined( this.staticClassAverage ) ) return Math.round( Number( this.staticClassAverage ) );
 
                 return this.totalScoreStats ? this.totalScoreStats.mean : null;

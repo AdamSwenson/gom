@@ -3,7 +3,7 @@
          class="feedback-page mainBodyLocator container "
     >
 
-        <feedback-panel :exam="exam" :student="student" ></feedback-panel>
+        <feedback-panel :exam="exam" :student="student"></feedback-panel>
 
     </div>
 </template>
@@ -69,7 +69,10 @@
                                 .then( function () {
                                     me.$store.dispatch( 'loadScoresFromPageJson', me.jsonLocations )
                                         .then( function () {
-                                            window.console.log( 'feedback-page', 'ready' );
+                                            me.$store.dispatch( 'loadItemScoreSummaryForExamFromPageJson' ).then( function () {
+                                                window.console.log( 'feedback-page', 'ready' );
+                                            } );
+
                                         } );
                                 } );
                         } );

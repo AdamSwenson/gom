@@ -28,6 +28,7 @@
     <input type="hidden" id="items" data="{{ collect($itemObjects)->toJson() }}"/>
     <input type="hidden" id="order" data="{{ collect($itemOrder)->toJson() }}"/>
     <input type="hidden" id="scores" data="{{ collect($scores)->toJson() }}"/>
+    <input type="hidden" id="itemStats" data="{{ collect($itemStats)->toJson() }}"/>
     <input type="hidden" id="students" data="{{ $student }}"/>
     <input type="hidden" id="letterGrade" data="{{ $letterGrade }}"/>
     <input type="hidden" id="totalScore" data="{{ $totalScore }}"/>
