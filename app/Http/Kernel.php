@@ -30,7 +30,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
 
             //custom
-            \App\Http\Middleware\LogAllRequests::class
+//            \App\Http\Middleware\LogAllRequests::class
         ],
         'api' => [
             'throttle:60,1',
