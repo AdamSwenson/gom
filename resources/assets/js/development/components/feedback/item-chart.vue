@@ -158,8 +158,6 @@
             itemStats: function () {
                 let me = this;
 
-                //The action will check first for if the stats are loaded on the page (i.e., if
-                //public feedback)
                 // let p = this.$store.dispatch( 'loadItemScoreSummaryForExamFromPageJson');
                 // let p = this.$store.dispatch( 'loadItemScoreSummaryForExam', { item: this.item, exam: this.exam } );
 
