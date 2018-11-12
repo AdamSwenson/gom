@@ -37,7 +37,7 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest', ['except' => 'logout']);
-
+//$this->middleware('logAllRequests');
         $message = "<p>We'd love to hear what you think about the gradeomatic. Please fill out this short survey: <a href='https://docs.google.com/forms/d/e/1FAIpQLSdJBXiK_lmWtT15BrXLpFBiFR5Qly9ab2bgZoy3Wlpu_qDgtw/viewform'>Survey Link</a></p>";
 
 //        //Push message for login into session
