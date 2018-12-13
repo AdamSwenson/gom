@@ -9,7 +9,7 @@
 
                     <div class="tile is-parent">
 <div class="tile is-child">
-    <exam-release-control></exam-release-control>
+    <exam-release-control :exam="exam"></exam-release-control>
 
 </div>
                         <div class="tile is-child">

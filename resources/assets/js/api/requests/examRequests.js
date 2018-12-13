@@ -96,5 +96,49 @@ module.exports = {
                 errorHandling( error );
             } );
 
+    },
+
+    /**
+     * Requests that the server create feedback with access keys
+     * for students
+     * @param exam
+     * @returns {Promise<T | never>}
+     */
+    releaseExamToStudents: ( exam ) => {
+        let out = {
+            requestVersion: REQUEST_VERSION
+        };
+
+        return window.axios
+            .post( Routes.studentAccess( exam ), out )
+            .then( ( response ) => {
+                return response.data;
+            } )
+            .catch( function ( error ) {
+                errorHandling( error );
+            } );
+
+    },
+
+    /**
+     * Requests that student access be removed
+     * @param exam
+     * @returns {Promise<T | never>}
+     */
+    revokeExamAccess: ( exam ) => {
+        let out = {
+            requestVersion: REQUEST_VERSION
+        };
+
+        return window.axios
+            .delete( Routes.studentAccess( exam ), out )
+            .then( ( response ) => {
+                return response.data;
+            } )
+            .catch( function ( error ) {
+                errorHandling( error );
+            } );
+
     }
+
 }

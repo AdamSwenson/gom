@@ -39,7 +39,7 @@ class NewFeedbackController extends Controller
      * @param ITotalScoreRepository $totalScoreRepository
      * @param INewFeedbackRepository $feedbackBuilder
      */
-    public function __construct( ITotalScoreRepository $totalScoreRepository, INewFeedbackRepository $feedbackBuilder)
+    public function __construct( ITotalScoreRepository $totalScoreRepository, INewFeedbackRepository $feedbackBuilder )
     {
         $this->studentGradeRepository = new StudentGradeRepositoryNew();
         $this->totalScoreRepository = $totalScoreRepository;
@@ -139,7 +139,8 @@ class NewFeedbackController extends Controller
 
     }
 
-    public function showPublicFeedback($accessKey){
+    public function showPublicFeedback( $accessKey )
+    {
         $f = Feedback::where('access_key', $accessKey)->first();
 //        $out = $this->feedbackRepository->buildDataOutput($exam, $student);
 
@@ -157,7 +158,8 @@ class NewFeedbackController extends Controller
      * @param Exam $exam
      * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function create( Exam $exam){
+    public function create( Exam $exam )
+    {
 //        return $exam->roster()->students()->get();
 
 //        dispatch(new NewBuildFeedbackAllStudents($exam));
@@ -167,11 +169,21 @@ class NewFeedbackController extends Controller
         $rosterKumi = $exam->roster();
         $students = $rosterKumi->students()->get();
         foreach ( $students as $student ) {
-                $this->feedbackRepository->buildFeedback($exam, $student);
+            $this->feedbackRepository->buildFeedback($exam, $student);
 //           }
         }
 //
         return $this->sendAjaxSuccess();
 
+    }
+
+    /**
+     * Revokes access from students
+     * @param Exam $exam
+     */
+    public function destroy( Exam $exam )
+    {
+        //todo write
+        return $this->sendAjaxSuccess();
     }
 }

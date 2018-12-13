@@ -32,6 +32,8 @@ export const storeCommentText = 'storeCommentText';
 //exams
 export const addNewExam = 'addNewExam';
 export const loadExams = 'loadExams';
+export const releaseExam ='releaseExam';
+export const revokeExamAccess = 'revokeExamAccess';
 
 
 //grades

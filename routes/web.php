@@ -202,7 +202,9 @@ Route::get('dev/exam/{exam}', 'Exam\ExamResourceController@show');
 /* =============================
         NEW FEEDBACK
    ============================= */
-Route::get('dev/feedbackmake/{exam}', 'Feedback\NewFeedbackController@create');
+Route::post('dev/studentaccess/{exam}', 'Feedback\NewFeedbackController@create');
+Route::delete('dev/studentaccess/{exam}', 'Feedback\NewFeedbackController@destroy');
+
 Route::get('dev/feedback/{exam}/{student}', 'Feedback\NewFeedbackController@show');
 Route::get('dev/studentview/feedback/{accesskey}', 'Feedback\PublicFeedbackControllerNew@show');
 

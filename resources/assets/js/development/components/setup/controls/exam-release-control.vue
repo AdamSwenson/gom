@@ -16,6 +16,8 @@
 <script>
     import ExamReleaseButton from "./exam-release-button";
     import ConfirmationModal from "../../modals/confirmation-modal";
+    import Payload from '../../../../models/Payload';
+    import * as aTypes from '../../../../store/action-types'
 
     export default {
         name: "exam-release-control",
@@ -39,7 +41,16 @@
              * the exam
              */
             confirmRelease: function () {
-                window.console.log( 'exam-release-control', 'confirmRelease', 39, );
+                let pl = Payload.factory({obj: this.exam});
+                window.console.log( 'exam-release-control', 'confirmRelease', 39, pl);
+                if(this.exam.released) {
+                    //the request is to remove access
+                    this.$store.dispatch(aTypes.revokeExamAccess, pl);
+                }else{
+                    //the request is to create access
+                    this.$store.dispatch(aTypes.releaseExam, pl);
+                }
+
             }
         }
     }

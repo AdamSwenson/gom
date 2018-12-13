@@ -17,7 +17,6 @@
             return {
                 buttonId: 'exam-release-button',
 
-
                 styles: {
                     public: 'is-warning',
                     private: 'is-primary'
