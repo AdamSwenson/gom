@@ -21,6 +21,11 @@
                          class="questionAndSliderColumn tile is-child box"
                     >
 
+                            <a class="button is-pulled-right"
+                               v-on:click="toggleDashVisibility"
+                            ><span class="icon"><i v-bind:class="dashControlIcon"></i></span>
+                            </a>
+
                         <p class="subtitle"
                            v-if="! isQuestionAreaVisible"
                            id="selectPrompt"
@@ -44,6 +49,7 @@
                     <!-- Right column holds Roster and Time info -->
                     <div id="rosterAndDashboardColumn"
                          class="tile is-child rosterAndDashboardColumn box"
+                         v-show="isDashColumnVisible"
                     >
 
                         <div class="roster-column tile is-parent is-vertical">
@@ -209,6 +215,8 @@
 
                 isFinishButtonVisible: false,
 
+                isDashColumnVisible: true,
+
                 /**
                  * Which tab should be open by default
                  * when a new user is selected.
@@ -255,8 +263,23 @@
             isQuestionAreaVisible: function () {
                 let s = this.$store.getters[ nggTypes.getActiveStudent ];
                 return !_.isUndefined( s ) && !_.isNull( s );
+            },
+
+
+            dashControlIcon: function () {
+                if ( this.isDashColumnVisible ) {
+                    return 'fa fa-angle-double-right';
+                }
+                return 'fa fa-angle-double-left';
             }
 
+        },
+
+        watch: {
+          isQuestionAreaVisible: function(newVal){
+              this.isDashColumnVisible = ! newVal;
+
+          }
         },
 
 
@@ -307,6 +330,10 @@
 
             showQuestionPanel: function () {
             },
+
+            toggleDashVisibility: function () {
+                this.isDashColumnVisible = ! this.isDashColumnVisible;
+            }
 
 
         },
