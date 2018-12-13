@@ -6,8 +6,12 @@
             <div class="tile is-vertical">
                 <div class="tile is-parent">
 
-                    <div class="tile is-parent">
 
+                    <div class="tile is-parent">
+<div class="tile is-child">
+    <exam-release-control></exam-release-control>
+
+</div>
                         <div class="tile is-child">
 
                             <year-input :exam="exam"></year-input>
@@ -84,9 +88,11 @@
     import FamilyInput from "./detail/family-input.vue";
     import DescriptionInput from "./detail/description-input.vue";
     import PublicNameInput from "./detail/public-name-input.vue";
+    import ExamReleaseControl from "./controls/exam-release-control";
 
     export default {
         components: {
+            ExamReleaseControl,
             PublicNameInput,
             DescriptionInput,
             FamilyInput,
