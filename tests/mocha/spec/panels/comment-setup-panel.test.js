@@ -41,23 +41,25 @@ describe( "comment-setup-panel  ", () => {
             mutations
         } );
 
+
         $route.params.serialNumber = item.serialNumber;
         $parent = { serialNumber: item.serialNumber};
 
-
         wrapper = mount( Component, {
             store, localVue,
-            stubs: [ 'router-link', 'router-view' ],
-            mocks: {
-                $route,
-                $parent
-            }
+            // stubs: [ 'router-link', 'router-view' ],
+            // mocks: {
+            //     $route,
+            //     $parent
+            // }
         } );
+
     } );
 
     describe( " loads into expected default state for testing ", () => {
         it( 'properly displays the component', () => {
-            expect( wrapper.find( '.comment-setup-panel' ).isEmpty() ).toBe( false );
+            // expect( wrapper.exists() ).toBe( true);
+            expect( wrapper.find( 'div' ).exists() ).toBe( true );
         });
         //
         // // wrapper.setProps( { dataSerialNumber: item.serialNumber } );

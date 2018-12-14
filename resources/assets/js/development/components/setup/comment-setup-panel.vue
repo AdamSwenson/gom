@@ -86,6 +86,8 @@
      * Created by adam on 2/19/17.
      */
     export default {
+        name: 'comment-setup-panel',
+
         components: {
             valenceButtons, // 'valence-buttons': valenceButtons,
         },
