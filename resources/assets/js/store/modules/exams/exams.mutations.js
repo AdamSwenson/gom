@@ -10,9 +10,10 @@ import * as ngmTypes from '../../new-grading-mutation-types';
 
 import Exam from '../../../models/Exam'
 import Payload from '../../../models/Payload'
+import Vue from "vue";
 
 
-module.exports  = {
+module.exports = {
 
     /**
      * Push an exam into storage
@@ -56,7 +57,22 @@ module.exports  = {
         Payload.checkIfPayload( payload );
         //add exams
         state.exams = payload.obj;
-    }
+    },
+
+    /**
+     * Alters the the property named in updateProp to have the
+     * the value set in updateVal
+     * @param state
+     * @param payload
+     */
+    [ mTypes.updateExam ]: ( state, payload ) => {
+        let exam = payload.obj;
+
+        if ( typeof exam !== 'undefined' ) {
+            //Set the value so vue can see it
+            Vue.set( exam, payload.updateProp, payload.updateVal );
+        }
+    },
 
 };
 

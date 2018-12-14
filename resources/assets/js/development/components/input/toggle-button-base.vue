@@ -35,7 +35,10 @@
 
         computed: {
             buttonText : function(){},
-            srTextDisplay: function(){}
+            srTextDisplay: function(){},
+            computedStyling: function (  ) {
+                return this.styling;
+            }
         },
 
         methods: {
@@ -56,7 +59,7 @@
     <a class=" button "
        v-bind:id="buttonId"
        v-bind:title="title"
-       v-bind:class="styling"
+       v-bind:class="computedStyling"
        v-on:click="toggle"
     >
         <span class="sr-only">{{ srTextDisplay }}</span>

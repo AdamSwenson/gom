@@ -17,6 +17,7 @@
             return {
                 buttonId: 'exam-release-button',
 
+                styling: 'exam-release-button is-outlined ',
                 styles: {
                     public: 'is-warning',
                     private: 'is-primary'
@@ -27,7 +28,7 @@
                     off: 'fa fa-eye-slash'
                 },
 
-                styling: 'exam-release-button is-primary is-outlined ',
+
 
                 text: {
                     off: "Release to students",
@@ -50,6 +51,12 @@
                 if(!_.isUndefined(this.exam)) return this.exam.released;
 
                 return true;
+            },
+            computedStyling: function(){
+                if (this.isActive){
+                    return this.styling + this.styles.public;
+                }
+                return this.styling + this.styles.private;
             }
         },
 

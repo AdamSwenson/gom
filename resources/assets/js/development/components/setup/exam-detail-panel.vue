@@ -136,8 +136,9 @@
             },
 
             exam: function () {
-                return this.item;
+                return this.$store.getters[ gTypes.getActiveExam ];
             },
+
 
             isExam: function () {
                 return true;

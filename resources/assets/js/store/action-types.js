@@ -32,7 +32,7 @@ export const storeCommentText = 'storeCommentText';
 //exams
 export const addNewExam = 'addNewExam';
 export const loadExams = 'loadExams';
-export const releaseExam ='releaseExam';
+export const grantExamAccess ='grantExamAccess';
 export const revokeExamAccess = 'revokeExamAccess';
 
 

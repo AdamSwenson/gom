@@ -57,7 +57,7 @@ module.exports = {
      * @param rootState
      * @param payload
      */
-    [ aTypes.loadExams ]: ( {state, rootState}, payload ) => {
+    [ aTypes.loadExams ]: ( { state, rootState }, payload ) => {
         //check if payload has correct structure
         //todo
 
@@ -78,16 +78,33 @@ module.exports = {
      * @param rootState
      * @param payload
      */
-    [ aTypes.releaseExam ]: ( {state, rootState}, payload ) => {
-        let p = releaseExamToStudents( payload.obj );
-        //todo change local exam when done
+    [ aTypes.grantExamAccess ]: ( { state, rootState, commit }, payload ) => {
+        let exam = payload.obj;
+        let p = releaseExamToStudents( exam );
+
+        p.then( ( exam ) => {
+            //change the released property of the exam
+            //once it is successful
+            payload.updateProp = 'released';
+            payload.updateVal = true;
+            commit( mTypes.updateExam, payload );
+        } );
     },
 
     /**
      * Removes all student access to their feedback and grades
      */
-    [ aTypes.revokeExamAccess ]: ( state, rootState, payload ) => {
+    [ aTypes.revokeExamAccess ]: ( { state, rootState, commit }, payload ) => {
+        let exam = payload.obj;
         let p = revokeExamAccess( payload.obj );
+
+        p.then( ( exam ) => {
+            //change the released property of the exam
+            //once it is successful
+            payload.updateProp = 'released';
+            payload.updateVal = false;
+            commit( mTypes.updateExam, payload );
+        } );
     },
 
 
