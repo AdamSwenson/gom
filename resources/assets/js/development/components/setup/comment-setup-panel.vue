@@ -19,10 +19,12 @@
             <p class="control">
                 <textarea
                         class="textarea comment-text"
-                        rows="4"
+                        v-bind:rows="numRows"
                         v-bind:placeholder="placeholder"
                         v-model="commentText"></textarea>
             </p>
+            <!--<p class="help">{{numCharacters}}</p>-->
+
             <p v-if=" isOverwriteHelpMessageVisible "
                class="help is-danger"
             >Changes to the stock text will be used to create rough drafts of the text for the other comments. If you
@@ -138,6 +140,13 @@
                         item:
                             "Explain in detail what needed to be done in order to fully complete this task. This will form the basis for the response seen by the student.",
                     },
+
+                rows : {
+                    // isMaximized : false,
+                    maximizeAtChars: 200,
+                    minimized: 4,
+                    maximized: 8
+                },
 
                 /** Whether to pre-populate the comments */
                 shouldPrePopulate: false,
@@ -278,6 +287,25 @@
                 return this.labels.item;
             },
 
+            numCharacters: function(){
+                if(!_.isUndefined(this.commentText) && !_.isNull(this.commentText)){
+                    return this.commentText.length;
+                }
+                return 0;
+            },
+
+            /**
+             * How many rows of the text area to display
+             */
+            numRows: function () {
+                // return this.rows.isMaximized ? this.rows.maximized : this.rows.minimized;
+                if(this.numCharacters < this.rows.maximizeAtChars) {
+                    return this.rows.minimized;
+                }
+                return this.rows.maximized;
+            },
+
+
             panelId: function () {
                 return this.identifier + '-' + this.serialNumber;
             },
@@ -315,6 +343,13 @@
                 return _.drop( Comment.valences );
             }
         },
+
+        // watch: {
+        //   commentText: function(v){
+        //       window.console.log( 'comment-setup-panel', 'commentText', 349, v);
+        //   }
+        // },
+
 
         methods: {
 
