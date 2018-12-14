@@ -45,8 +45,10 @@
                     <div class="field">
                         <label class="label">{{ syncControlLabel }} </label>
                         <p class="control">
-                            <a class="button is-outlined is-primary" v-on:click="handlePopulateClick">Create comments
-                                from stock</a>
+                            <a id="prepopulationControl"
+                               class="button is-outlined is-primary"
+                               v-on:click="handlePopulateClick"
+                            >Create comments from stock</a>
                             <!--<input type="checkbox" class="prepopulationControl" v-model="shouldPrePopulate">-->
                             <!--{{ syncControlLabel }}                            -->
                         </p>

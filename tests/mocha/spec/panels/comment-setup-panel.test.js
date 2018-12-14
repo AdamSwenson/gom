@@ -45,7 +45,7 @@ describe( "comment-setup-panel  ", () => {
         $parent = { serialNumber: item.serialNumber};
 
 
-        wrapper = shallow( Component, {
+        wrapper = mount( Component, {
             store, localVue,
             stubs: [ 'router-link', 'router-view' ],
             mocks: {
@@ -56,7 +56,9 @@ describe( "comment-setup-panel  ", () => {
     } );
 
     describe( " loads into expected default state for testing ", () => {
-
+        it( 'properly displays the component', () => {
+            expect( wrapper.find( '.comment-setup-panel' ).isEmpty() ).toBe( false );
+        });
         //
         // // wrapper.setProps( { dataSerialNumber: item.serialNumber } );
         // expect( wrapper.vm.serialNumber).toBe( 99 );
@@ -67,8 +69,8 @@ describe( "comment-setup-panel  ", () => {
         } );
 
         it( 'displays the expected default on first load', () => {
-            expect( wrapper.vm.displayed ).toBe( 'stock' )
             expect( wrapper.find( '.comment-setup-panel' ).isEmpty() ).toBe( false );
+            expect( wrapper.vm.displayed ).toBe( 'stock' )
 
         } );
 
