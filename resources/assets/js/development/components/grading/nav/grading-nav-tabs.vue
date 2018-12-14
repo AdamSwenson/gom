@@ -9,7 +9,7 @@
                     v-bind:key="r.route"
                     v-bind:active-class="activeClass"
             >
-                <a>Q{{r.number}}</a>
+                <a>Q{{r.number + 1}}</a>
             </router-link>
         </ul>
     </div>
