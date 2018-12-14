@@ -66,9 +66,6 @@
         data: function () {
             return {
 
-                /** Start in paused state */
-                // paused: true,
-
                 /** Holds the actual timer object once created */
                 timer: 0,
 

@@ -96,7 +96,8 @@
              * the page html. This gets and returns it
              */
             staticLetterGrade: function () {
-                return document.getElementById( 'letterGrade' ).getAttribute( 'data' );
+                let el = document.getElementById( 'letterGrade' );
+                if(! _.isNull(el)) return el.getAttribute( 'data' );
             },
 
             /**
@@ -104,7 +105,8 @@
              * the page html. This gets and returns it
              */
             staticTotalScore: function () {
-                return document.getElementById( 'totalScore' ).getAttribute( 'data' );
+                let el = document.getElementById( 'totalScore' );
+                if(!_.isNull(el)) return el.getAttribute( 'data' );
             }
 
         },

@@ -60,7 +60,9 @@ const actions = {
         timer = setInterval( function () {
             //increment the time
             //tell store to record it
-            dispatch( ngaTypes.incrementGradingTime, 1 );
+            //todo fix this hack which addresses GOM-396
+            dispatch( ngaTypes.incrementGradingTime, 0.5 );
+            // window.console.log( 'timer-new', 'timeupdate', 64, );
         }, 1000 );
 
     },
