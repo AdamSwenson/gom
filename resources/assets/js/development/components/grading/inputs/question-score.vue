@@ -20,6 +20,8 @@
             <a class="button is-static" title="The max possible score">/ {{ maxScore }}</a>
         </p>
 
+        <slot name="input-button"></slot>
+
     </div>
 </template>
 

@@ -1,33 +1,22 @@
 <template>
     <div class="item-input  questionPanel box">
 
-        <div class="level">
-            <div class="level-left">
-                <div class="level-item">
-                    <!-- question Name -->
-                    <p v-bind:class="labelStyling">{{ name }}</p>
-                </div>
+        <div class="input-container-top">
+            <div class="item-name">
+                <p v-bind:class="labelStyling">{{ name }}</p>
+            </div>
+            <div class="item-score">
+                <question-score
+                        :item="item"
+                        :student="student"
+                >
+                    <letter-grade-button slot="input-button"
+                                         :item="item"
+                                         :student="student"
+                    ></letter-grade-button>
+                </question-score>
             </div>
 
-            <div class="level-right">
-                <div class="level-item">
-                    <div class="is-clearfix">
-                        <!-- question Score -->
-                        <question-score
-                                :item="item"
-                                :student="student"
-                        ></question-score>
-                    </div>
-
-                    <div class="is-clearfix">
-                        <letter-grade-button
-                                :item="item"
-                                :student="student"
-                        ></letter-grade-button>
-                    </div>
-
-                </div>
-            </div>
         </div>
 
         <div class="field ">
@@ -42,16 +31,33 @@
         </div>
 
         <div class="level">
+            <!--<div class="level-left ">-->
             <div class="level-item has-text-centered is-fullwidth">
                 <score-slider
                         :item="item"
                         :student="student"
                 ></score-slider>
             </div>
+            <!--</div>-->
+            <!--<div class="level-right">-->
             <div class="level-item">
                 <clear-score-button :item="item" :student="student"></clear-score-button>
+                <!--</div>-->
             </div>
         </div>
+
+        <!--<div class="input-container-bottom">-->
+        <!--<div class="slider-item">-->
+        <!--<score-slider-->
+        <!--:item="item"-->
+        <!--:student="student"-->
+        <!--&gt;</score-slider>-->
+        <!--</div>-->
+        <!--<div class="clear-button-item">-->
+        <!--<clear-score-button :item="item" :student="student"></clear-score-button>-->
+        <!--</div>-->
+        <!--</div>-->
+
 
     </div>
 
@@ -59,13 +65,36 @@
 
 <style lang="scss">
 
+    .input-container-top {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+
+        .item-name {
+
+        }
+        .item-score {
+
+        }
+    }
+
+    .input-container-bottom {
+        display: flex;
+        /*justify-content: space-between;*/
+        flex-wrap: wrap;
+        .slider-item {
+            width: 90%
+        }
+        .clear-button-item {
+
+        }
+
+    }
+
 </style>
 
 <script>
-    import * as ngmTypes from '../../../../store/new-grading-mutation-types';
-    import * as ngaTypes from '../../../../store/new-grading-action-types';
     import * as nggTypes from '../../../../store/new-grading-getter-types';
-    import * as gTypes from '../../../../store/getter-types';
 
     import QuestionScore from '../inputs/question-score.vue';
     import CommentText from "../inputs/comment-text.vue";

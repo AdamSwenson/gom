@@ -11,8 +11,13 @@
 <style lang="scss">
     @import "../../../../../sass/libraries/bootstrap-slider";
 
-    .slider-horizontal {
-        margin-right: 35px;
+    .slider.slider-horizontal {
+        /*width: 430px;*/
+        width: 100%;
+        /*margin-right: 35px;*/
+    }
+    .slider.slider-tick-label{
+        /*width: 100px;*/
     }
 </style>
 
