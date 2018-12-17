@@ -65,8 +65,10 @@ class NewExamRepository implements INewExamRepository
             ->where('year', null)
             ->where('term', null)
             ->where('description', null)
-            ->doesntHave('assignments')//no items
-            ->doesntHave('notes')//no notes
+//            ->doesntHave('assignments')//no items
+//            ->doesntHave('notes')//no notes
+                ->withCount('assignments')
+            ->withCount('notes')
             ->withCount('kumis')
             ->get();
 
@@ -77,7 +79,7 @@ class NewExamRepository implements INewExamRepository
             foreach ( $exams as $e ) {
                 //every exam will have one kumi, if it has any more
                 //we're not interested in it
-                if ( $e->kumis_count === 1 ) {
+                if ( ($e->kumis_count === 1) && ($e->assignments_count === 0) && ($e->notes_count === 0) ) {
                     //now check if there are any students
                     $students = $e->roster()->students()->first();
                     if ( is_null($students) ) {
