@@ -1,31 +1,29 @@
 <template>
     <!-- Single button -->
-
-    <p id="letterGradeArea" class="control">
-
-            <span class="select" title="The grade for this item">
+    <div class="field letter-grade-button">
+        <div class="control">
+            <div class="select" title="The grade for this item">
                 <select class="letterGradeList"
                         v-model="selectedGradeAssignment"
                 >
-                    <option disabled value="" class="title-option"> {{ defaultDisplay }} </option>
+                    <option disabled value="" class="title-option"> {{ defaultDisplay }}</option>
 
                     <option
                             v-for="ga in gradeAssignments"
                             :key="ga.displayValue"
                             v-bind:value="ga"
                             v-bind:data="ga.calcValue"
-                    >{{ ga.displayValue  }}</option>
+                    >{{ ga.displayValue }}
+                    </option>
 
                 </select>
-            </span>
-    </p>
-
+            </div>
+        </div>
+    </div>
 </template>
 <script>
 
     // import gTypes from '../../../../store/getter-types';
-    import * as nggTypes from '../../../../store/new-grading-getter-types';
-    import * as ngmTypes from '../../../../store/new-grading-mutation-types';
     import * as ngaTypes from '../../../../store/new-grading-action-types';
 
 
@@ -34,7 +32,6 @@
         calculateItemScoreFromLetterGrade
     } from '../../../../store/modules/scores/itemLetterGradeHelpers';
     import GradeAssignment from '../../../../models/GradeAssignment';
-    import PayloadScore from '../../../../models/PayloadScore';
 
     import scoreInputMixin from './scoreInputMixin';
 
@@ -104,17 +101,6 @@
             //maxScore , score, and exam are defined in the mixin
 
             /**
-             * Json of grades with keys displayValue and calcValue
-             * @returns {{}}
-             */
-            gradeAssignments: function () {
-                return GradeAssignment.defaults;
-                //this should be reenabled if we allow this component
-                //to be used for entire exams
-                // return this.$store.getters.getGradeAssignmentsInSortedList;
-            },
-
-            /**
              * The value displayed on the button
              * @returns {*}
              */
@@ -132,6 +118,18 @@
                 if ( _.isUndefined( this.score ) || _.isNull( this.score ) ) return null;
                 return calculateGradeAssignmentFromItemScore( this.score, this.maxScore );
             },
+
+            /**
+             * Json of grades with keys displayValue and calcValue
+             * @returns {{}}
+             */
+            gradeAssignments: function () {
+                return GradeAssignment.defaults;
+                //this should be reenabled if we allow this component
+                //to be used for entire exams
+                // return this.$store.getters.getGradeAssignmentsInSortedList;
+            },
+
 
             /**
              * Converts the question score to a string for display
