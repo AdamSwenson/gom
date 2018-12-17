@@ -62,8 +62,8 @@ export default class Comment extends IModel {
             },
 
             excellent: {
-                prefix: 'As was evident from your excellent answer, you recognized that you needed to',
-                postfix: 'You did a great job here'
+                prefix: 'It was clear from your answer that you recognized that this question required you to ',
+                postfix: 'You did a great job with this task.'
             }
         };
     }
