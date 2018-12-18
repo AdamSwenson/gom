@@ -99,6 +99,8 @@
 
                 if ( this.ignoreChanges ) return true;
 
+                if(_.isNull(gradeAssignment) || _.isUndefined(gradeAssignment)) return true;
+
                 let score = calculateItemScoreFromLetterGrade( gradeAssignment, this.maxScore );
                 let pl = {
                     exam: this.exam,
