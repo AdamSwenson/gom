@@ -9,6 +9,9 @@
 </template>
 
 <style lang="scss">
+    /*!*Customize certain stuff in bootstrap*!*/
+    /*@import "../../../../../sass/libraries/bootstrap";*/
+    /*@import '../../../../../sass/common/bootstrap_overrides';*/
     @import "../../../../../sass/libraries/bootstrap-slider";
 
     .slider.slider-horizontal {

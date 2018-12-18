@@ -3,8 +3,14 @@
         <div class="navbar-brand">
             <!-- navbar items, navbar burger... -->
 
-            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" v-on:click="toggleNavMenu"
-               v-bind:class="burgerActiveClass">
+            <a role="button"
+               class="navbar-burger"
+               aria-label="menu"
+               aria-expanded="false"
+               v-on:click="toggleNavMenu"
+               v-bind:class="burgerActiveClass"
+            >
+                <!--These empty tags are required by bulma-->
                 <span aria-hidden="true"></span>
                 <span aria-hidden="true"></span>
                 <span aria-hidden="true"></span>
@@ -35,10 +41,6 @@
                     </div>
                 </div>
                 <div class="navbar-item">
-                    <!--<div class="buttons">-->
-                    <!--</div>-->
-
-                    <!--<div class="navbar-item">-->
                     <backup-button :exam="exam"></backup-button>
                 </div>
 
@@ -115,7 +117,7 @@
 </template>
 
 <style lang="scss">
-    @import '../../../../sass/development/custom-bulma';
+    /*@import '../../../../sass/development/custom-bulma';*/
 
     .top-navbar {
         /*.exam-selection-bar {*/
@@ -185,6 +187,7 @@
 
         methods: {
             toggleNavMenu: function () {
+                // window.console.log( 'top-navbar', 'toggleNavMenu', 190, this.showMenu);
                 this.showMenu = !this.showMenu;
             }
         },
@@ -194,6 +197,31 @@
         events: {},
 
         mounted: function () {
+            // document.addEventListener('DOMContentLoaded', () => {
+            //
+            //     // Get all "navbar-burger" elements
+            //     const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+            //
+            //     // Check if there are any navbar burgers
+            //     if ($navbarBurgers.length > 0) {
+            //
+            //         // Add a click event on each of them
+            //         $navbarBurgers.forEach( el => {
+            //             el.addEventListener('click', () => {
+            //
+            //                 // Get the target from the "data-target" attribute
+            //                 const target = el.dataset.target;
+            //                 const $target = document.getElementById(target);
+            //
+            //                 // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+            //                 el.classList.toggle('is-active');
+            //                 $target.classList.toggle('is-active');
+            //
+            //             });
+            //         });
+            //     }
+            //
+            // });
         }
     }
 </script>
