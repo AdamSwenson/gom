@@ -132,20 +132,6 @@
 
             }
 
-
-            /*.input-group.full-width .input-group-btn:last-child > .btn {*/
-                /*margin-left: 5px;*/
-            /*}*/
-
-            /*.input-group.full-width .input-group-btn:last-child > .btn {*/
-                /*border-bottom-left-radius: 4px;*/
-                /*border-top-left-radius: 4px;*/
-            /*}*/
-
-            /*.input-group.full-width .form-control:first-child {*/
-                /*border-bottom-right-radius: 4px;*/
-                /*border-top-right-radius: 4px;*/
-            /*}*/
         }
     }
 </style>
