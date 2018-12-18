@@ -117,7 +117,8 @@
             },
 
             staticClassAverage: function () {
-                return document.getElementById( 'averageTotalScore' ).getAttribute( 'data' );
+                let el = document.getElementById( 'averageTotalScore' );
+                if(!_.isUndefined(el) && !_.isNull(el)) return el.getAttribute( 'data' );
             }
 
             // title: function(){}
