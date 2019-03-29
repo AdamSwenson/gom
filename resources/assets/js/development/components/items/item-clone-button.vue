@@ -51,7 +51,11 @@
             handleClick: function () {
                 if ( !this.isExam ) {
                     window.console.log( 'item-clone-button', 'handleClick', 53, 'clone item requested', this.item);
-                    let payload = { parent: this.parentSerialNumber, toClone: this.item };
+
+                    //This change was for GOM-408 before created branch to work on. Not sure if it helps.
+                    let payload = { parent: this.parent, toClone: this.item };
+                    // let payload = { parent: this.parentSerialNumber, toClone: this.item };
+
                     this.$store.dispatch( aTypes.cloneItem, payload );
                 }
                 else{
