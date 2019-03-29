@@ -25,6 +25,7 @@ module.exports = {
 
 
         parentSerialNumber: function () {
+            if(! _.isNull(this.parent))return this.parent.serialNumber;
             if(! _.isNull(this.serialNumber)) return this.node.parent;
         },
 
