@@ -34,7 +34,7 @@
         >
             <span class="icon is-small has-text-danger ">
                 <i class="fa fa-times" aria-hidden="true">
-                    <span class="sr-only">Click to remove item</span>
+                    <span class="sr-only">Click to remove item (the item will still exist, it just won't be part of this exam)</span>
                 </i>
             </span>
             <span class="has-text-danger is-hidden-mobile">Remove</span>

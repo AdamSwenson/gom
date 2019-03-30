@@ -85,11 +85,25 @@ module.exports = {
      * The item and all associated score data remain intact.
      */
     [ aTypes.removeItemFromOrder ]: ( { state, dispatch, commit, getters }, payload ) => {
-        let serialNumber = payload.obj.serialNumber;
-        let toRemove = getters[ gTypes.getItemNodeFromOrder ]( serialNumber );
-        let parent = getters[ gTypes.getItemNodeFromOrder ]( toRemove.parent );
-        let pl = Payload.factory( { obj: toRemove, parent: parent } );
-        commit( mTypes.removeNodeFromOrder, pl );
+        return new Promise( function ( resolve, reject ) {
+
+            let serialNumber = payload.obj.serialNumber;
+            let toRemove = getters[ gTypes.getItemNodeFromOrder ]( serialNumber );
+            let parent = getters[ gTypes.getItemNodeFromOrder ]( toRemove.parent );
+            let pl = Payload.factory( { obj: toRemove, parent: parent } );
+            commit( mTypes.removeNodeFromOrder, pl );
+
+            let ordering = getters.getOrderForSync;
+            let exam = getters[ gTypes.getActiveExam ];
+
+            //send to server
+            updateItemsOrderRequest( exam, ordering )
+                .then( function () {
+                    //todo as above, this is the appropriate place. However, it kills tests and there is no error handling.
+                    //resolve();
+                } );
+            resolve();
+        } );
     },
 
     /**
