@@ -250,13 +250,15 @@
              */
             haveCommentsBeenCustomized: function () {
                 let me = this;
-                let stock = this.item.getComment( 'stock' );
-
                 let v = false;
-                _.forEach( this.valencesExcludingStock, function ( valence ) {
-                    let currentComment = me.item.getComment( valence );
-                    if ( currentComment.isTextBasedOnStock( stock.text ) ) v = true;
-                } );
+
+                if( !_.isUndefined(this.item)) {
+                    let stock = this.item.getComment( 'stock' );
+                    _.forEach( this.valencesExcludingStock, function ( valence ) {
+                        let currentComment = me.item.getComment( valence );
+                        if ( currentComment.isTextBasedOnStock( stock.text ) ) v = true;
+                    } );
+                }
                 return v;
             },
 
