@@ -343,3 +343,9 @@ Route::resource('dev/tags', 'Tags\TagsController');
 Route::get('dev/time/exam/{exam}/student/{student}', 'Time\TimeController@show');
 Route::post('dev/time/exam/{exam}/student/{student}', 'Time\TimeController@update');
 Route::get('dev/time/exam/{exam}', 'Time\TimeController@getGradingTimes');
+
+
+/* =============================
+        TEMP -- none of these should work on any production server
+   ============================= */
+Route::get('dev/temp/canvas', 'Roster\CanvasImportController@dev');
