@@ -79,7 +79,18 @@
 
             /**
              * Retrieves a json of students from
-             * the canvas api
+             * the canvas api via the gradeomatic server
+             * The json looks like;
+             *  {"id":12345,
+             *  "name":"Jane Jill Smith",
+             *  "created_at":"2018-05-09T02:11:22-07:00",
+             *  "sortable_name":"Smith Jill, Jane",
+             *  "short_name":"Jane Jill Smith",
+             *  "sis_user_id":"1234567",
+             *  "integration_id":null,
+             *  "login_id":"ca123456",
+             *  "email":"jane.smith.816@my.csun.edu"
+             *  }
              */
             queryCanvas: function () {
                 let me = this;
@@ -112,6 +123,7 @@
                                 let n = _.split( r.sortable_name, ',' );
                                 s.lastName = n[ 0 ];
                                 s.firstName = n[ 1 ];
+                                s.email = r.email;
                                 me.$store.dispatch( aTypes.handleNewStudentStorageAndAssociation, s );
                             } );
 
