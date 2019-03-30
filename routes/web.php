@@ -348,4 +348,3 @@ Route::get('dev/time/exam/{exam}', 'Time\TimeController@getGradingTimes');
 /* =============================
         TEMP -- none of these should work on any production server
    ============================= */
-Route::get('dev/temp/canvas', 'Roster\CanvasImportController@dev');
