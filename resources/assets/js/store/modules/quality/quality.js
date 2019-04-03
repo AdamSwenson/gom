@@ -97,12 +97,13 @@ const actions = {
         return new Promise( function ( resolve, reject ) {
             let p = getQCData( exam );
             p.then( function ( data ) {
+                window.console.log( 'quality', 'loadQC', 100, data);
                 let processed = [];
                 _.forEach( data, function ( d ) {
                     processed.push( QCDatum.factory( { ...d } ) );
                 } );
                 commit( 'overwriteQuality', Payload.factory( { obj: processed , mutateSilently: true} ) );
-                resolve();
+                resolve(getters.getByGradedOrder);
             } )
         } );
     }

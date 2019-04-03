@@ -38,7 +38,7 @@
         data: function () {
             return {
 
-                 options : {
+                options: {
                     title: "Scores by order graded",
                     height: 600,
                     bar: { groupWidth: "90%" },
@@ -53,6 +53,7 @@
             preparedData: function () {
                 var scoreTime = [];
                 if ( _.isUndefined( this.qcData ) || _.isNull( this.qcData ) ) return scoreTime;
+                if ( this.qcData.length === 0 ) return scoreTime;
 
                 for (var i = 0; i < this.qcData.length; i++) {
                     scoreTime.push( [

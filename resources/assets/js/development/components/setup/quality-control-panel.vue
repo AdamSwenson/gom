@@ -2,81 +2,81 @@
 
     <div class="quality-control-panel">
         <div class="box">
-        <div class="top-area ">
-            <p class="title">
-                <span class="icon"><i class="fa fa-rocket" aria-hidden="true"></i></span>
-                Quality Control
-            </p>
+            <div class="top-area ">
+                <p class="title">
+                    <span class="icon"><i class="fa fa-rocket" aria-hidden="true"></i></span>
+                    Quality Control
+                </p>
 
-            <p class="subtitle">
-                Catch grading errors before your students do
-            </p>
+                <p class="subtitle">
+                    Catch grading errors before your students do
+                </p>
 
-            <h4>Please note: The tools on this page are still under development. </h4>
-        </div>
+                <h4>Please note: The tools on this page are still under development. </h4>
+            </div>
 
-        <div class="tile is-ancestor">
+            <div class="tile is-ancestor">
 
-            <div class="tile is-parent is-vertical">
+                <div class="tile is-parent is-vertical">
 
-                <div class="tile is-child">
+                    <div class="tile is-child">
 
-                    <div class="tile is-parent">
+                        <div class="tile is-parent">
 
-                        <div class="tile is-child box">
+                            <div class="tile is-child box">
 
-                            <div class="intro-text has-text-justified">
-                                <p>Grading is boring and hard. Mistakes are both inevitable and consequential. A
-                                    struggling
-                                    student who
-                                    gets
-                                    a D instead of the C she deserves might lose financial aid and drop out of
-                                    college. At
-                                    the same
-                                    time, it
-                                    is difficult to do any real quality control without expending an unreasonable
-                                    amount of
-                                    time and
-                                    effort.</p>
-                                <p>We are working on algorithms to better identify potential grading errors. In the
-                                    meantime, here are
-                                    some
-                                    representations of your grading process which can help you visually identify
-                                    potential
-                                    problems. Use
-                                    them to identify exams to quickly glance over and double-check your work.</p>
-                                <p>Clicking on exams in the following charts adds them to the list of exams on the
-                                    right. </p>
+                                <div class="intro-text has-text-justified">
+                                    <p>Grading is boring and hard. Mistakes are both inevitable and consequential. A
+                                        struggling
+                                        student who
+                                        gets
+                                        a D instead of the C she deserves might lose financial aid and drop out of
+                                        college. At
+                                        the same
+                                        time, it
+                                        is difficult to do any real quality control without expending an unreasonable
+                                        amount of
+                                        time and
+                                        effort.</p>
+                                    <p>We are working on algorithms to better identify potential grading errors. In the
+                                        meantime, here are
+                                        some
+                                        representations of your grading process which can help you visually identify
+                                        potential
+                                        problems. Use
+                                        them to identify exams to quickly glance over and double-check your work.</p>
+                                    <p>Clicking on exams in the following charts adds them to the list of exams on the
+                                        right. </p>
+                                </div>
+
                             </div>
 
-                        </div>
-
-                        <div class="tile is-child box">
-                            <revisit-list :to-revisit="toRevisit"></revisit-list>
+                            <div class="tile is-child box">
+                                <revisit-list :to-revisit="toRevisit"></revisit-list>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="tile is-child box">
-                    <grade-order-chart :qc-data="qcData"
-                                       v-on:chart-clicked="chartClickHandler"
-                    ></grade-order-chart>
-                </div>
+                    <div class="tile is-child box">
+                        <grade-order-chart :qc-data="qcData"
+                                           v-on:chart-clicked="chartClickHandler"
+                        ></grade-order-chart>
+                    </div>
 
-                <div class="tile is-child box">
-                    <grading-time-hist :qc-data="qcData"
-                                       v-on:chart-clicked="chartClickHandler"
-                    ></grading-time-hist>
-                </div>
+                    <div class="tile is-child box">
+                        <grading-time-hist :qc-data="qcData"
+                                           v-on:chart-clicked="chartClickHandler"
+                        ></grading-time-hist>
+                    </div>
 
-                <div class="tile is-child box">
-                    <time-score-scatter :qc-data="qcData"
-                                        v-on:chart-clicked="chartClickHandler"
-                    ></time-score-scatter>
-                </div>
+                    <div class="tile is-child box">
+                        <time-score-scatter :qc-data="qcData"
+                                            v-on:chart-clicked="chartClickHandler"
+                        ></time-score-scatter>
+                    </div>
 
+                </div>
             </div>
-        </div>
 
         </div>
     </div>
@@ -96,13 +96,10 @@
     score distrubution
      */
 
-    import { GoogleCharts } from 'google-charts';
     import GradeOrderChart from "./quality/grade-order-chart";
     import GradingTimeHist from "./quality/grading-time-hist";
     import TimeScoreScatter from "./quality/time-score-scatter";
     import RevisitList from "./quality/revisit-list";
-
-    import { getQCData } from "../../../api/requests/qualityRequests";
 
     export default {
 
@@ -126,20 +123,31 @@
 
         asyncComputed: {
 
-            qcData: function () {
-                let me = this;
+            qcData: {
+                get: function () {
+                    let me = this;
+                    return new Promise( function ( resolve, reject ) {
+                        //If already loaded, use it or wait for it to be ready
+                        let g = me.$store.getters.getByGradedOrder;
+                        if ( !_.isUndefined( g ) && g.length > 0 ) {
+                            return resolve( g );
+                        }
+                        // else {
+                        //     if(_.isUndefined(me.exam)) {
+                        //
+                        //         //otherwise, fetch it from the server
+                        //         let p2 = me.$store.dispatch( 'loadQCDataFromServer', me.exam );
+                        //         return p2.then( function ( data ) {
+                        //             return resolve( data );
+                        //             // return me.$store.getters.getByGradedOrder;
+                        //         } );
+                        //     }
+                        // }
 
-                //If already loaded, use it
-                let g = this.$store.getters.getByGradedOrder;
-                if ( !_.isUndefined( g ) && g.length > 0 ) return g;
-
-                //otherwise, fetch it from the server
-                let p2 = me.$store.dispatch( 'loadQCDataFromServer', this.exam );
-                return p2.then( function () {
-                    return me.$store.getters.getByGradedOrder;
-                } );
-
-            },
+                    } );
+                },
+                default: []
+            }
 
         },
 
@@ -191,6 +199,8 @@
         },
 
         mounted: function () {
+            let me = this;
+            me.$store.dispatch( 'loadQCDataFromServer', me.exam );
         }
     }
 </script>
