@@ -2,20 +2,8 @@
 
 namespace App\Http\Controllers\Quality;
 
-use App\Http\Controllers\Controller;
-use App\Repositories\Time\IGradingStatsRepository;
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
-
-use App\Events\ExamReleasedEvent;
 use App\Exam;
-use App\Jobs\Feedback\BuildFeedbackAllStudents;
-use App\Jobs\Feedback\BuildFeedbackOneStudent;
-use App\Jobs\Feedback\NotifyAllStudents;
-use App\Jobs\Feedback\NotifySingleStudent;
-use App\Repositories\Score\IScoreStatisticsRepository;
-use App\Student;
+use App\Http\Controllers\Controller;
 use App\Repositories\Element\ICommentRepository;
 use App\Repositories\Element\IElementAssignmentRepository;
 use App\Repositories\Exam\IExamRepository;
@@ -24,9 +12,9 @@ use App\Repositories\Feedback\IFeedbackBuilder;
 use App\Repositories\Question\IQuestionAssignmentRepository;
 use App\Repositories\Score\IElementScoreRepository;
 use App\Repositories\Score\IQuestionScoreRepository;
+use App\Repositories\Score\IScoreStatisticsRepository;
 use App\Repositories\Student\IStudentRepository;
-
-use Illuminate\Support\Facades\Auth;
+use App\Repositories\Time\IGradingStatsRepository;
 
 /**
  * Class QualityControlController
@@ -102,6 +90,7 @@ class QualityControlController extends Controller
      * Returns the page with quality control tools for the given exam
      * @param Exam $exam
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function index( Exam $exam )
     {
@@ -153,20 +142,29 @@ class QualityControlController extends Controller
         $students = collect($exam->getAllAssociatedStudents())->unique('id');
 
         foreach ( $students as $student ) {
-            $gt = $student->getGradingTimeOnExam($exam);
-//$kumiIds = collect($student->kumis()->where('exam_id', $exam)->get())->pluck('id');
+            try {
+                $gt = $student->getGradingTimeOnExam($exam);
 
-            $out[] = [
-                'totalScore' => $student->getTotalScoreOnExam($exam),
-                'gradingTime' => $gt->seconds,
-                'gradedOrder' => '',
-                'gradedDatetime' => $gt->updated_at,
-                'studentId' => $student->id,
-                'examId' => $exam->id,
-                'kumiIds' => []
-            ];
-
+                // Added the isset check in GOM-415
+                if ( isset($gt) ) {
+                // NB, this was for the older version and will not
+                // work for 0.2.0
+                //if ($student->hasBeenGraded($exam->id)){
+                    $out[] = [
+                        'totalScore' => $student->getTotalScoreOnExam($exam),
+                        'gradingTime' => $gt->seconds,
+                        'gradedOrder' => '',
+                        'gradedDatetime' => $gt->updated_at,
+                        'studentId' => $student->id,
+                        'examId' => $exam->id,
+                        'kumiIds' => []
+                    ];
+                }
+            } catch (\Exception $e) {
+//                var_dump($e);
+            }
         }
+
         return $out;
 
     }
