@@ -123,31 +123,43 @@
 
         asyncComputed: {
 
-            qcData: {
-                get: function () {
+            qcData: function () {
+                if ( !_.isUndefined( this.exam ) && this.exam.id !== -1 ) {
                     let me = this;
-                    return new Promise( function ( resolve, reject ) {
-                        //If already loaded, use it or wait for it to be ready
-                        let g = me.$store.getters.getByGradedOrder;
-                        if ( !_.isUndefined( g ) && g.length > 0 ) {
-                            return resolve( g );
-                        }
-                        // else {
-                        //     if(_.isUndefined(me.exam)) {
-                        //
-                        //         //otherwise, fetch it from the server
-                        //         let p2 = me.$store.dispatch( 'loadQCDataFromServer', me.exam );
-                        //         return p2.then( function ( data ) {
-                        //             return resolve( data );
-                        //             // return me.$store.getters.getByGradedOrder;
-                        //         } );
-                        //     }
-                        // }
+                    let p = me.$store.dispatch( 'loadQCDataFromServer', me.exam );
+                    return p.then( function ( data ) {
+                        return data;
+                      } );
 
-                    } );
-                },
-                default: []
+                }
+
+                // return [];
             }
+            //     get: function () {
+            //         let me = this;
+            //         return new Promise( function ( resolve, reject ) {
+            //             //If already loaded, use it or wait for it to be ready
+            //             let g = me.$store.getters.getByGradedOrder;
+            //             if ( !_.isUndefined( g ) && g.length > 0 ) {
+            //                 return resolve( g );
+            //             }
+            //             // else {
+            //             //     if(_.isUndefined(me.exam)) {
+            //             //
+            //             //         //otherwise, fetch it from the server
+            //             //         let p2 = me.$store.dispatch( 'loadQCDataFromServer', me.exam );
+            //             //         return p2.then( function ( data ) {
+            //             //             return resolve( data );
+            //             //             // return me.$store.getters.getByGradedOrder;
+            //             //         } );
+            //             //     }
+            //             // }
+            //
+            //         } );
+            //     },
+            //     watch: ['exam'],
+            //     default: []
+            // }
 
         },
 
@@ -200,7 +212,9 @@
 
         mounted: function () {
             let me = this;
-            me.$store.dispatch( 'loadQCDataFromServer', me.exam );
+            this.$nextTick( function () {
+                // me.$store.dispatch( 'loadQCDataFromServer', me.exam );
+            } );
         }
     }
 </script>
