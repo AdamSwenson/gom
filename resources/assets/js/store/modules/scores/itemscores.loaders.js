@@ -72,7 +72,7 @@ module.exports = {
             return new Promise( function ( resolve, reject ) {
 
                 let { exam, scoreData } = obj;
-                window.console.log( 'itemscores.loaders', 'scoreData', 75, scoreData );
+                // window.console.log( 'itemscores.loaders', 'scoreData', 75, scoreData );
 
                 _.forEach( scoreData, function ( d ) {
                     let item = getters[ gTypes.getItemById ]( d.item_id );
@@ -85,7 +85,7 @@ module.exports = {
                     //there will be no corresponding item.
                     if (! _.isUndefined(item)) {
 
-                        window.console.log( 'itemscores.loaders processAndStoreLoadedScores', 'item id:', d.item_id, 'score:', score, item, student );
+                        // window.console.log( 'itemscores.loaders processAndStoreLoadedScores', 'item id:', d.item_id, 'score:', score, item, student );
                         //record the score (this will initialize the object too)
                         commit( ngmTypes.updateScore, PayloadScore.factory( {
                             exam: exam,
