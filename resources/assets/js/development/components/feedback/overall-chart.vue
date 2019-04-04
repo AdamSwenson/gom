@@ -15,17 +15,11 @@
 <script>
     import * as nggTypes from '../../../store/new-grading-getter-types';
     import * as gTypes from '../../../store/getter-types';
-
-    // import ItemStat from '../../../models/ItemStat';
-
-    import {
-        getItemScoreSummaryForExam,
-        getItemSummaryStats,
-        getTotalScoreSummaryStats
-    } from '../../../api/requests/statsRequests';
-
+    import { getTotalScoreSummaryStats } from '../../../api/requests/statsRequests';
     // import feedbackMixin from './feedback.mixin';
     import { GoogleCharts } from 'google-charts';
+
+    // import ItemStat from '../../../models/ItemStat';
 
     export default {
         // mixins: [ feedbackMixin ],
@@ -52,11 +46,16 @@
 
         asyncComputed: {
             totalScoreStats: function () {
-                if ( !_.isUndefined( this.exam ) && !_.isNull( this.exam ) ) {
-                    let p = getTotalScoreSummaryStats( this.exam );
-                    return p.then( function ( data ) {
-                        return data;
-                    } );
+                //check if we don't need to do this (i.e., if we're on the static student
+                //feedback page)
+                if ( _.isUndefined( this.staticClassAverage ) ) {
+                    if ( !_.isUndefined( this.exam ) && !_.isNull( this.exam ) ) {
+                        window.console.log( 'overall-chart', 'totalScoreStats', 56, );
+                        let p = getTotalScoreSummaryStats( this.exam );
+                        return p.then( function ( data ) {
+                            return data;
+                        } );
+                    }
                 }
             }
         },
@@ -118,7 +117,7 @@
 
             staticClassAverage: function () {
                 let el = document.getElementById( 'averageTotalScore' );
-                if(!_.isUndefined(el) && !_.isNull(el)) return el.getAttribute( 'data' );
+                if ( !_.isUndefined( el ) && !_.isNull( el ) ) return el.getAttribute( 'data' );
             }
 
             // title: function(){}
@@ -131,9 +130,9 @@
                     //todo dev this was disabled for hotfixf18e2
 
                     //Load the charts library with a callback
-                    // GoogleCharts.load( (function () {
-                    //     return me.draw
-                    // })() );
+                    GoogleCharts.load( (function () {
+                        return me.draw
+                    })() );
                 } );
             },
 
