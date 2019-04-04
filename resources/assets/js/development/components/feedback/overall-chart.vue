@@ -130,9 +130,9 @@
                     //todo dev this was disabled for hotfixf18e2
 
                     //Load the charts library with a callback
-                    // GoogleCharts.load( (function () {
-                    //     return me.draw
-                    // })() );
+                    GoogleCharts.load( (function () {
+                        return me.draw
+                    })() );
                 } );
             },
 
