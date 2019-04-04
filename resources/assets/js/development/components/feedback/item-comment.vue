@@ -1,5 +1,6 @@
 <template>
     <div class="item-comment">
+        <p v-model="text"></p>
         <p v-for="t in childTextParagraphs" class="item-comment-para">
             {{t}}
         </p>
