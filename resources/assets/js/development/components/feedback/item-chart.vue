@@ -1,5 +1,8 @@
 <template>
-    <div class="item-chart">
+    <!--v-show="show"-->
+    <div
+
+         class="item-chart">
         <div class="box">
             <!--{{score}}-->
             <!--mean : {{ itemStats ? itemStats.mean : '-' }}-->
@@ -33,6 +36,7 @@
 
         data: function () {
             return {
+                show: false,
 
                 defaults: {
                     options: {
@@ -67,6 +71,8 @@
                             return me.draw
                         })() );
                     } );
+                    me.show = true;
+                    me.$emit('show-area')
                 }
             },
 
@@ -185,7 +191,13 @@
                     let s = ItemStat.factory( data );
                     return s;
                 } );
-            }
+            },
+
+
+            // show: function(){
+            //     return this.preparedData.length > 0 ; //! _.isUndefined(this.score);
+            // }
+
         },
 
         computed: {
