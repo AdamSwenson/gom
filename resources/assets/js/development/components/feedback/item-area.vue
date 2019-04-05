@@ -1,5 +1,6 @@
 <template>
     <div class="item-area box"
+         v-show="show"
     >
         <h4 class="title is-4">{{ name }}</h4>
 
