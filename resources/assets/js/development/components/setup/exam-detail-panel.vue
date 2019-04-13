@@ -6,12 +6,16 @@
             <div class="tile is-vertical">
                 <div class="tile is-parent">
 
-
                     <div class="tile is-parent">
-<div class="tile is-child">
-    <exam-release-control :exam="exam"></exam-release-control>
 
-</div>
+                        <div class="tile is-child">
+                            <exam-release-control :exam="exam"></exam-release-control>
+
+                            <create-access-codes-button :exam="exam"></create-access-codes-button>
+
+                            <send-notification-email-control :exam="exam"></send-notification-email-control>
+                        </div>
+
                         <div class="tile is-child">
 
                             <year-input :exam="exam"></year-input>
@@ -29,24 +33,25 @@
                             <description-input :exam="exam"></description-input>
 
                         </div>
+
                     </div>
                 </div>
 
-                    <div id="exam-stats"
-                         class="tile is-parent"
-                    >
+                <div id="exam-stats"
+                     class="tile is-parent"
+                >
 
-                        <div class="tile is-child ">
-                            <exam-properties :exam="exam"></exam-properties>
-                        </div>
+                    <div class="tile is-child ">
+                        <exam-properties :exam="exam"></exam-properties>
+                    </div>
 
-                        <div class="countBox tile is-child ">
-                            <exam-counts :exam="exam"></exam-counts>
-                        </div>
+                    <div class="countBox tile is-child ">
+                        <exam-counts :exam="exam"></exam-counts>
+                    </div>
 
-                        <div class="timeBox tile is-child ">
-                            <time-stats :exam="item"></time-stats>
-                        </div>
+                    <div class="timeBox tile is-child ">
+                        <time-stats :exam="item"></time-stats>
+                    </div>
 
 
                 </div>
@@ -69,13 +74,7 @@
 
 <script>
 
-    import * as aTypes from '../../../store/action-types';
-    import * as mTypes from '../../../store/mutation-types';
     import * as gTypes from '../../../store/getter-types';
-
-    import Payload from '../../../models/Payload'
-
-    import timeRequests from '../../../api/requests/timeRequests';
     import loadingIndicator from '../helpers/loading-indicator.vue';
     import timeStats from '../stats/time-stats.vue'
     import statsSummary from '../stats/summary-stats-display.vue'
@@ -88,15 +87,19 @@
     import FamilyInput from "./detail/family-input.vue";
     import DescriptionInput from "./detail/description-input.vue";
     import PublicNameInput from "./detail/public-name-input.vue";
-    import ExamReleaseControl from "./controls/exam-release-control";
+    import ExamReleaseControl from "./accesscontrols/exam-release-control";
+    import CreateAccessCodesButton from "./accesscontrols/create-access-codes-button";
+    import SendNotificationEmailControl from "./accesscontrols/send-notification-email-control";
 
     export default {
         components: {
+            CreateAccessCodesButton,
             ExamReleaseControl,
             PublicNameInput,
             DescriptionInput,
             FamilyInput,
             InputAndSelector,
+            SendNotificationEmailControl,
             'exam-counts': examCounts,
             'exam-properties': examProperties,
             'loading-indicator': loadingIndicator,
@@ -152,6 +155,7 @@
 
         events: {},
 
-        mounted: function () {},
+        mounted: function () {
+        },
     };
 </script>

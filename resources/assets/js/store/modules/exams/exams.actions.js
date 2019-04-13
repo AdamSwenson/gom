@@ -5,13 +5,11 @@
 
 import * as mTypes from '../../mutation-types'
 import * as aTypes from '../../action-types'
-import * as gTypes from '../../getter-types'
-import * as ngmTypes from '../../new-grading-mutation-types';
 
 import Exam from '../../../models/Exam'
 import Payload from '../../../models/Payload'
 
-import { loadExam, releaseExamToStudents, revokeExamAccess } from '../../../api/requests/examRequests';
+import { releaseExamToStudents, revokeExamAccess } from '../../../api/requests/examRequests';
 
 
 module.exports = {
@@ -79,15 +77,18 @@ module.exports = {
      * @param payload
      */
     [ aTypes.grantExamAccess ]: ( { state, rootState, commit }, payload ) => {
-        let exam = payload.obj;
-        let p = releaseExamToStudents( exam );
+        return new Promise( function ( resolve, reject ) {
+            let exam = payload.obj;
+            let p = releaseExamToStudents( exam );
 
-        p.then( ( exam ) => {
-            //change the released property of the exam
-            //once it is successful
-            payload.updateProp = 'released';
-            payload.updateVal = true;
-            commit( mTypes.updateExam, payload );
+            p.then( ( exam ) => {
+                //change the released property of the exam
+                //once it is successful
+                payload.updateProp = 'released';
+                payload.updateVal = true;
+                commit( mTypes.updateExam, payload );
+                resolve();
+            } );
         } );
     },
 
