@@ -1,5 +1,7 @@
 <template>
-    <div class="item-area box">
+    <div class="item-area box"
+         v-show="show"
+    >
         <h4 class="title is-4">{{ name }}</h4>
 
         <!--<div class="columns">-->
@@ -17,6 +19,7 @@
                         :item="item"
                         :exam="exam"
                         :student="student"
+                v-on:show-area="toggleVisibility"
                 ></item-chart>
 
                 <!--<div v-for="e in elements">-->
@@ -55,6 +58,7 @@
 
         data: function () {
             return {
+                show : false,
                 defaults: {}
             }
         },
@@ -82,11 +86,18 @@
 
         },
 
-        methods: {},
+        methods: {
+            toggleVisibility : function () {
+                this.show = true; //! this.show;
+                window.console.log( 'item-area', 'toggleVisibility', 95, this.show );
+            }
+        },
 
         directives: {},
 
-        events: {},
+        events: {
+
+        },
 
         mounted: function () {
         }
