@@ -59,7 +59,7 @@
         computed: {
 
             letterGrade: function () {
-                return this.grade ? this.grade.displayValue : '';
+                return !_.isUndefined(this.grade) ? this.grade.displayValue : '';
             },
 
             /**
@@ -68,16 +68,19 @@
              */
             minScore: {
                 get: function () {
-                    return this.grade ? this.formatForDisplay(this.grade.minScore) : '';
+                    return !_.isUndefined(this.grade) ? this.formatForDisplay(this.grade.minScore) : '';
                 },
 
                 set: function ( v ) {
                     let pl = Payload.factory( {
                         obj: this.grade,
+                        //these will be used by the mutation, though not the
+                        //request to the server which just sends the object
                         updateProp: 'minScore',
                         updateVal: Number.parseFloat(v)
                     } );
-                    this.$store.commit( mTypes.updateGradeCutoffs, pl );
+                    this.$store.dispatch(aTypes.updateCutoff, pl);
+                    // this.$store.commit( mTypes.updateGradeCutoffs, pl );
                 }
             },
 

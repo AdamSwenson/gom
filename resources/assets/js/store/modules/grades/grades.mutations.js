@@ -8,7 +8,7 @@ import { updateInconsistentList, sortTotalScores } from "./grades.helpers";
 
 module.exports ={
     /**
-     * Updates a property of a grade assignment object.
+     * Updates a stored grade assignment with an altered object
      * Also calls for a consistency check
      *
      * @param state
@@ -16,8 +16,13 @@ module.exports ={
      */
     [ mTypes.updateGradeCutoffs ]: ( state, payload ) => {
         Payload.checkIfPayload( payload );
-        Vue.set( payload.obj, payload.updateProp, payload.updateVal );
+        window.console.log( 'grades.mutations', '', 19, state.gradeAssignments);
+        // let s = state.gradeAssignments;
+        // [payload.obj.displayValue] = payload.obj;
+        Vue.set( state.gradeAssignments[payload.obj.displayValue], payload.updateProp, payload.updateVal);
 
+        // Vue.set( state, 'gradeAssignments', s);
+        window.console.log( 'grades.mutations', 's', 23, state.gradeAssignments);
         updateInconsistentList( state );
     },
 

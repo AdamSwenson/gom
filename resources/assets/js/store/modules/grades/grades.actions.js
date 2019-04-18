@@ -1,5 +1,6 @@
 import * as aTypes from "../../action-types";
-import { getGradeAssignments } from "../../../api/requests/gradeAssignmentRequests";
+import * as mTypes from "../../mutation-types";
+import { getGradeAssignments, updateGradeAssignment } from "../../../api/requests/gradeAssignmentRequests";
 import GradeAssignment from "../../../models/GradeAssignment";
 import Payload from "../../../models/Payload";
 
@@ -65,21 +66,19 @@ module.exports = {
         } );
     },
 
-    /*
     [ aTypes.updateCutoff ]: ( { state, dispatch, commit, getters }, payload ) => {
-       // NEITHER USED NOR FUNCTIONAL; HERE IN CASE WE NEED IT IN FUTURE
+        //NB, there is no check which
+        //validates that adding this value won't mess
+        //up the proper ordering of the scores. We send the
+        //request to the server and then update the inconsistent list after
+        //the mutation has happened. This may be a problem....
+        // window.console.log( 'grades.actions', aTypes.updateCutoff, 75, payload );
+        // send the change to the server
+        updateGradeAssignment( payload ).then( function () {
+                //Call the mutation
+                commit( mTypes.updateGradeCutoffs, payload );
+            } );
 
-        //validate that adding this value won't mess
-        //up the proper ordering of the scores
-
-        if ( validateOrderingChange( payload ) ) {
-            //Call the mutation
-            commit( mTypes.updateGradeCutoffs, payload );
-
-        } else {
-            //error handling
-        }
     }
-*/
 
 };

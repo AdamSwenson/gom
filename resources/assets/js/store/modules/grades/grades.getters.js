@@ -48,7 +48,10 @@ module.exports = {
     [ gTypes.getGradeFrequencies ]: ( state, getters, rootState ) => {
         //sort them in descending order so that we can
         //use the minimum scores as cut offs
-        let assignments = sortGradeAssignments( state.gradeAssignments, false );
+        // if ( _.isUndefined(getters[gTypes.getGradeAssignments])) return [];
+
+        let assignments = sortGradeAssignments(  getters[ gTypes.getGradeAssignments ], false );
+        // let assignments = sortGradeAssignments( state.gradeAssignments, false );
 
         let gradeFrequency = {};
 
