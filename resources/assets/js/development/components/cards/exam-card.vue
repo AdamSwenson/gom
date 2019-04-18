@@ -64,6 +64,7 @@
                         <public-indicator
                                 :serial-number="serialNumber">
                         </public-indicator>
+
                     </div>
 
 

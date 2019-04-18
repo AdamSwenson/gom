@@ -9,6 +9,8 @@ use App\Question;
 use App\QuestionAssignment;
 use App\Student;
 use App\User;
+use PHPUnit\Framework\MockObject\MockObject;
+
 
 class TestCase extends Illuminate\Foundation\Testing\TestCase
 {
@@ -49,13 +51,15 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
     /**
      * Creates a mock object and overrides the service container
-     * @param $class
-     * @return \Mockery\MockInterface
+     * This was updated 12/17/2018 as part of GOM-397, because
+     * was giving error due to not being compatible with PHPUnit declaration
+     * @param $originalClassName
+     * @return MockObject
      */
-    public function createMock($class)
+    protected function createMock( $originalClassName ): MockObject
     {
-        $mock = \Mockery::mock($class);
-        $this->registerMock($class, $mock);
+        $mock = \Mockery::mock($originalClassName);
+        $this->registerMock($originalClassName, $mock);
 
         return $mock;
     }
@@ -65,7 +69,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
      * @param $className
      * @param $mockObject
      */
-    public function registerMock($className, $mockObject)
+    public function registerMock( $className, $mockObject )
     {
         $this->app->instance($className, $mockObject);
     }
@@ -90,7 +94,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
      * @param $questionNumber
      * @return QuestionAssignment
      */
-    public function makeQuestionAssignment($exam, $question, $questionNumber)
+    public function makeQuestionAssignment( $exam, $question, $questionNumber )
     {
         $qa = new QuestionAssignment();
         $qa->exam_id = $exam->id;
@@ -112,13 +116,12 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
      * @param $numberQuestions
      * @return array Keys: examId, questionIds (array)
      */
-    public function makeExamWAssignedQuestions($numberQuestions)
+    public function makeExamWAssignedQuestions( $numberQuestions )
     {
         $questionIds = [];
         $questions = [];
         $exam = factory(Exam::class)->create();
-        for ( $i = 1; $i <= $numberQuestions; $i++ )
-        {
+        for ( $i = 1; $i <= $numberQuestions; $i++ ) {
             $question = factory(Question::class)->create();
             $question->setQuestionNumber($exam->id, $i);
             $questions[] = $question;
@@ -127,9 +130,9 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
         return [
             'questionIds' => $questionIds,
-            'questions'   => $questions,
-            'examId'      => $exam->id,
-            'exam1'        => $exam,
+            'questions' => $questions,
+            'examId' => $exam->id,
+            'exam1' => $exam,
         ];
     }
 
@@ -151,27 +154,24 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
      * @param int $numberStudents
      * @return array
      */
-    public function setupExamWithStudents($exam = false, $kumi = false, $numberStudents = 5)
+    public function setupExamWithStudents( $exam = false, $kumi = false, $numberStudents = 5 )
     {
         $studentIds = [];
 
-        if ( ! $exam )
-        {
+        if ( !$exam ) {
             $exam = factory(Exam::class)->create();
         }
-        if ( ! $kumi )
-        {
+        if ( !$kumi ) {
             $kumi = factory(Kumi::class)->create();
             //add the kumi to the exam1 if not associated
             $kumi->exams()->attach($exam);
         }
-        
+
         //create students and put in expected order
         $students = factory(Student::class, $numberStudents)->create();
         $students = $students->sortBy('last_name');
 
-        foreach ( $students as $item )
-        {
+        foreach ( $students as $item ) {
             $kumi->students()->attach($item);
             $studentIds[] = $item->id;
         }
@@ -182,9 +182,9 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
         $this->students = $students;
 
         return [
-            'exam1'       => $exam,
-            'kumi'       => $kumi,
-            'students'   => $students,
+            'exam1' => $exam,
+            'kumi' => $kumi,
+            'students' => $students,
             'studentIds' => $studentIds,
         ];
     }
@@ -205,29 +205,25 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
      * @param bool $questionNumber
      * @return array
      */
-    public function makeElementAssignmentsForQuestion($numberElements, $exam = false, $question = false, $questionNumber = false)
+    public function makeElementAssignmentsForQuestion( $numberElements, $exam = false, $question = false, $questionNumber = false )
     {
         $elements = [];
         $elementIds = [];
         $elementAssignments = [];
 
-        if ( ! $exam )
-        {
+        if ( !$exam ) {
             $exam = factory(Exam::class)->create();
         }
-        if ( ! $question )
-        {
+        if ( !$question ) {
             $question = factory(Question::class)->create();
         }
-        if ( ! $questionNumber )
-        {
+        if ( !$questionNumber ) {
             $questionNumber = Faker\Factory::create()->randomDigitNotNull;
             $this->makeQuestionAssignment($exam, $question, $questionNumber);
 
         }
-        
-        for ( $i = 1; $i <= $numberElements; $i++ )
-        {
+
+        for ( $i = 1; $i <= $numberElements; $i++ ) {
             $e = factory(Element::class)->create();
             $ea = new ElementAssignment();
             $ea->exam()->associate($exam);
@@ -242,12 +238,12 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
         }
 
         return [
-            'exam1'               => $exam,
-            'question'           => $question,
-            'elements'           => $elements,
-            'elementIds'         => $elementIds,
+            'exam1' => $exam,
+            'question' => $question,
+            'elements' => $elements,
+            'elementIds' => $elementIds,
             'elementAssignments' => $elementAssignments,
-            'questionNumber'     => $questionNumber,
+            'questionNumber' => $questionNumber,
         ];
     }
 

@@ -97,7 +97,7 @@
              */
             staticLetterGrade: function () {
                 let el = document.getElementById( 'letterGrade' );
-                if(! _.isNull(el)) return  el.getAttribute( 'data' );
+                if(! _.isNull(el)) return el.getAttribute( 'data' );
             },
 
             /**
@@ -106,7 +106,7 @@
              */
             staticTotalScore: function () {
                 let el = document.getElementById( 'totalScore' );
-                if(! _.isNull(el)) return  el.getAttribute( 'data' );
+                if(!_.isNull(el)) return el.getAttribute( 'data' );
             }
 
         },

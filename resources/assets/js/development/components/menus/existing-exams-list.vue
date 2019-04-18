@@ -37,10 +37,11 @@
 
 
         <div class="panel-block">
-            <button class="button is-primary is-outlined is-fullwidth"
-                    v-on:click="handleNew">
-                {{ newButtonLabel }}
-            </button>
+            <create-exam-button styling-override="is-primary is-outlined is-fullwidth"></create-exam-button>
+            <!--<button class="button is-primary is-outlined is-fullwidth"-->
+                    <!--v-on:click="handleNew">-->
+                <!--{{ newButtonLabel }}-->
+            <!--</button>-->
         </div>
     </div>
 </template>
@@ -59,13 +60,14 @@
 
     import {Routes} from '../../../api/apiSettings';
     import api from '../../../api/requests/examRequests';
+    import CreateExamButton from "../top-nav/create-exam-button";
 
     export default{
 
         props: ['hiddenExams', 'selectedExams'],
 
 
-        components: {},
+        components: { CreateExamButton },
 
         data: function () {
             return {

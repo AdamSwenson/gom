@@ -33,17 +33,23 @@ class NewFeedbackController extends Controller
      * @var INewFeedbackRepository
      */
     private $feedbackRepository;
+    /**
+     * @var IAccessKeyRepository
+     */
+    private $accessKeyRepository;
 
     /**
      * NewFeedbackController constructor.
      * @param ITotalScoreRepository $totalScoreRepository
      * @param INewFeedbackRepository $feedbackBuilder
+     * @param IAccessKeyRepository $accessKeyRepository
      */
-    public function __construct( ITotalScoreRepository $totalScoreRepository, INewFeedbackRepository $feedbackBuilder)
+    public function __construct( ITotalScoreRepository $totalScoreRepository, INewFeedbackRepository $feedbackBuilder , IAccessKeyRepository $accessKeyRepository)
     {
         $this->studentGradeRepository = new StudentGradeRepositoryNew();
         $this->totalScoreRepository = $totalScoreRepository;
         $this->feedbackRepository = $feedbackBuilder;
+        $this->accessKeyRepository = $accessKeyRepository;
     }
 
 //    protected function buildDataOutput(Exam $exam, Student $student){
@@ -139,7 +145,8 @@ class NewFeedbackController extends Controller
 
     }
 
-    public function showPublicFeedback($accessKey){
+    public function showPublicFeedback( $accessKey )
+    {
         $f = Feedback::where('access_key', $accessKey)->first();
 //        $out = $this->feedbackRepository->buildDataOutput($exam, $student);
 
@@ -151,27 +158,59 @@ class NewFeedbackController extends Controller
 
 
     /**
+     * Releases feedback to students
      * Creates an entry in the feedback table identified with
      * a unique access key for every student
      *
      * @param Exam $exam
      * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function create( Exam $exam){
-//        return $exam->roster()->students()->get();
+    public function create( Exam $exam )
+    {
 
 //        dispatch(new NewBuildFeedbackAllStudents($exam));
-//
-//        $keyRepo = app()->make(IAccessKeyRepository::class);
-//
+
         $rosterKumi = $exam->roster();
         $students = $rosterKumi->students()->get();
         foreach ( $students as $student ) {
-                $this->feedbackRepository->buildFeedback($exam, $student);
-//           }
+            $this->feedbackRepository->buildFeedback($exam, $student);
         }
-//
+
+        //set the exam to released
+        if ( ! $exam->isReleased() )
+        {
+            $exam->releaseExam();
+        }
+
+        //distribute access keys to all students
+        //todo make sure this works with new version
+//        $job = (new NotifyAllStudents($exam))->onQueue('emails');
+//        $this->dispatch($job);
+
         return $this->sendAjaxSuccess();
 
+    }
+
+    /**
+     * Revokes access from students
+     * @param Exam $exam
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function destroy( Exam $exam )
+    {
+
+        $keys = $this->accessKeyRepository->getAccessKeysForExam($exam->getId());
+        if ( ! empty($keys) )
+        {
+            foreach ( $keys as $key )
+            {
+                $this->accessKeyRepository->removeAccessKey($key->getKey());
+            }
+        }
+
+        //set exam to unreleased
+        $exam->hideExam();
+
+        return $this->sendAjaxSuccess();
     }
 }

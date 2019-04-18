@@ -29,7 +29,11 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(DuskServiceProvider::class);
         }
 
-        $this->app->alias('bugsnag.logger', \Illuminate\Contracts\Logging\Log::class);
-        $this->app->alias('bugsnag.logger', \Psr\Log\LoggerInterface::class);
+        //limit the use of bugsnag to production
+        if ( $this->app->environment('production') ) {
+
+            $this->app->alias('bugsnag.logger', \Illuminate\Contracts\Logging\Log::class);
+            $this->app->alias('bugsnag.logger', \Psr\Log\LoggerInterface::class);
+        }
     }
 }

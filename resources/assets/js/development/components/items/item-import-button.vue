@@ -38,6 +38,7 @@
 
         data: function () {
             return {
+                identifier: 'item-import-button',
                 properties : {
                     buttonText:'Import',
                     icon: 'fa fa-mail-forward',
@@ -48,12 +49,11 @@
                 },
 
                 showModal: false,
-
-
             }
         },
 
-        computed: {},
+        computed: {
+        },
 
         methods: {
             handleClick: function () {
@@ -63,8 +63,9 @@
 
             handleSelection: function ( itemObject ) {
                 //when an item is selected, dispatch the actions to add it
-                window.console.log( 'item-import-button', 'handleSelection', 55, itemObject );
-                this.$store.dispatch( 'importItem', { parent: this.parentSerialNumber, obj: itemObject } );
+                let payload = { parent: this.parent, obj: itemObject };
+                window.console.log( 'item-import-button', 'handleSelection', 55, itemObject, payload );
+                this.$store.dispatch( 'importItem', payload );
             },
 
             toggleModal: function () {

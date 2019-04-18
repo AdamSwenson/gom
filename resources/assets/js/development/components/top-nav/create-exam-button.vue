@@ -1,5 +1,6 @@
 <template>
-    <a class="button create-exam-button is-primary is-outlined"
+    <a class="button create-exam-button "
+       v-bind:class="styling"
        v-on:click="handleClick"
     >
         <span class="icon is-small">
@@ -18,7 +19,7 @@
 
     export default {
 
-        props: [ ],
+        props: [ 'stylingOverride' ],
 
         components: {},
 
@@ -32,7 +33,14 @@
         computed: {
             route: function () {
                 return window.routeRoot + '/' + Routes.commonBaseRoute;
+                },
+
+            styling: function(){
+                if(!_.isUndefined(this.stylingOverride) && !_.isNull(this.stylingOverride)){
+                    return this.stylingOverride;
                 }
+                return ' is-primary is-outlined '
+            }
         },
 
         methods: {

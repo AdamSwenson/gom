@@ -1,6 +1,6 @@
 <template>
     <div id="questionPanel"
-         class=" question-panel box">
+         class=" question-panel ">
         <div class="tile is-ancestor">
             <div class="tile is-parent is-vertical ">
 

@@ -122,7 +122,7 @@ Route::get('report/{exam}/feedback/all', 'Report\ReportController@showFeedbackFo
 // email a student with their feedback link
 Route::post('report/{exam}/students/{student}', 'Report\ReportController@notifyStudent');
 // releases {exam} to all students
-Route::post('report/{exam}/release', 'Report\ReportController@releaseExam');
+Route::post('report/{exam}/release', 'Report\ReportController@grantExamAccess');
 // delete student access and set to unreleased
 Route::post('report/{exam}/unrelease', 'Report\ReportController@unreleaseExam');
 
@@ -202,7 +202,9 @@ Route::get('dev/exam/{exam}', 'Exam\ExamResourceController@show');
 /* =============================
         NEW FEEDBACK
    ============================= */
-Route::get('dev/feedbackmake/{exam}', 'Feedback\NewFeedbackController@create');
+Route::post('dev/studentaccess/{exam}', 'Feedback\NewFeedbackController@create');
+Route::delete('dev/studentaccess/{exam}', 'Feedback\NewFeedbackController@destroy');
+
 Route::get('dev/feedback/{exam}/{student}', 'Feedback\NewFeedbackController@show');
 Route::get('dev/studentview/feedback/{accesskey}', 'Feedback\PublicFeedbackControllerNew@show');
 
@@ -341,3 +343,8 @@ Route::resource('dev/tags', 'Tags\TagsController');
 Route::get('dev/time/exam/{exam}/student/{student}', 'Time\TimeController@show');
 Route::post('dev/time/exam/{exam}/student/{student}', 'Time\TimeController@update');
 Route::get('dev/time/exam/{exam}', 'Time\TimeController@getGradingTimes');
+
+
+/* =============================
+        TEMP -- none of these should work on any production server
+   ============================= */

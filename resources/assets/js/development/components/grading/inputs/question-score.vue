@@ -7,7 +7,7 @@
         <label class="label questionScoreLabel"></label>
 
         <p class="control">
-            <input v-model="score" lazy
+            <input v-model="score"
                    class="input has-text-right questionScore"
                    type="number"
                    v-bind:min="minScore"
@@ -19,6 +19,8 @@
         <p class="control">
             <a class="button is-static" title="The max possible score">/ {{ maxScore }}</a>
         </p>
+
+        <slot name="input-button"></slot>
 
     </div>
 </template>

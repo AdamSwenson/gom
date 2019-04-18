@@ -151,7 +151,7 @@ $actions_requiring_authentication = [
     'ReportController@showStudents',
     'ReportController@showStudentFeedback',
     'ReportController@notifyStudent',
-    'ReportController@releaseExam',
+    'ReportController@grantExamAccess',
     'ReportController@unreleaseExam',
     'ReportController@index',
     'ReportController@showQualityControl',

@@ -89,10 +89,14 @@
                 let me = this;
                 let s = [];
 // //
-                let itemChildren = this.$store.getters.getItemChildren( this.item );
-                if ( _.isUndefined( itemChildren ) || _.isNull( itemChildren ) || itemChildren.length === 0 ) return s;
-                // let p = me.$store.dispatch( 'loadItemScoreSummaryForExamFromPageJson', { exam: me.exam } );
-                // p.then( function () {
+                //check if we don't need to do this (i.e., if we're on the static student
+                //feedback page)
+                // if ( _.isUndefined( this.childItemStatsObjects )) {
+
+                    let itemChildren = this.$store.getters.getItemChildren( this.item );
+                    if ( _.isUndefined( itemChildren ) || _.isNull( itemChildren ) || itemChildren.length === 0 ) return s;
+                    // let p = me.$store.dispatch( 'loadItemScoreSummaryForExamFromPageJson', { exam: me.exam } );
+                    // p.then( function () {
 // //     _.forEach(this.itemChildren, function(item){
 // //         s.push( me.$store.getters.getItemStatsForExam( { exam: me.exam, item: item } ) );
 // //
@@ -108,7 +112,8 @@
 //                 //
 //                 } );
 //
-                return s;
+                    return s;
+                // }
             },
 
             childItemScoreObjects: function () {
@@ -170,6 +175,9 @@
             },
 
             historicalStats: function () {
+                //don't query the server if we're on the static student feedback page
+                if(! _.isUndefined(window.isStatic) && window.isStatic) return [];
+
                 let p2 = getItemSummaryStats( this.item );
                 p2.then( function ( data ) {
                     let s = ItemStat.factory( data );
@@ -227,14 +235,14 @@
         mounted: function () {
 
             // var me = this;
-            this.$nextTick( function () {
+            // this.$nextTick( function () {
 
             // }
             //     //Load the charts library with a callback
             //     GoogleCharts.load( (function () {
             //         return me.draw
             //     })() );
-            } );
+            // } );
 
         }
     }

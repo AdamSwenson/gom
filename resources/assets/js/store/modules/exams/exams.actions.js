@@ -5,13 +5,11 @@
 
 import * as mTypes from '../../mutation-types'
 import * as aTypes from '../../action-types'
-import * as gTypes from '../../getter-types'
-import * as ngmTypes from '../../new-grading-mutation-types';
 
 import Exam from '../../../models/Exam'
 import Payload from '../../../models/Payload'
 
-import {loadExam  } from '../../../api/requests/examRequests';
+import { releaseExamToStudents, revokeExamAccess } from '../../../api/requests/examRequests';
 
 
 module.exports = {
@@ -57,7 +55,7 @@ module.exports = {
      * @param rootState
      * @param payload
      */
-    [ aTypes.loadExams ]: ( state, rootState, payload ) => {
+    [ aTypes.loadExams ]: ( { state, rootState }, payload ) => {
         //check if payload has correct structure
         //todo
 
@@ -70,6 +68,45 @@ module.exports = {
             //add to exams and add index mapping
             [ aTypes.addNewExam ]( state, rootState, record );
         }
-    }
+    },
+
+    /**
+     * Grants students access to their feedback and grade
+     * @param state
+     * @param rootState
+     * @param payload
+     */
+    [ aTypes.grantExamAccess ]: ( { state, rootState, commit }, payload ) => {
+        return new Promise( function ( resolve, reject ) {
+            let exam = payload.obj;
+            let p = releaseExamToStudents( exam );
+
+            p.then( ( exam ) => {
+                //change the released property of the exam
+                //once it is successful
+                payload.updateProp = 'released';
+                payload.updateVal = true;
+                commit( mTypes.updateExam, payload );
+                resolve();
+            } );
+        } );
+    },
+
+    /**
+     * Removes all student access to their feedback and grades
+     */
+    [ aTypes.revokeExamAccess ]: ( { state, rootState, commit }, payload ) => {
+        let exam = payload.obj;
+        let p = revokeExamAccess( payload.obj );
+
+        p.then( ( exam ) => {
+            //change the released property of the exam
+            //once it is successful
+            payload.updateProp = 'released';
+            payload.updateVal = false;
+            commit( mTypes.updateExam, payload );
+        } );
+    },
+
 
 };

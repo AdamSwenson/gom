@@ -20992,7 +20992,7 @@ new Vue({
     events: {
         'exam-release-event': function examReleaseEvent(examId) {
             window.console.log('examButtons', 'caught exam-release-event', examId);
-            this.releaseExam(examId);
+            this.grantExamAccess(examId);
         },
 
         'exam-hide-event': function examHideEvent(examId) {

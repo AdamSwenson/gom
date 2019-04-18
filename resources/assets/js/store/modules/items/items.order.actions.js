@@ -8,10 +8,8 @@ import * as aTypes from '../../action-types'
 import * as gTypes from '../../getter-types'
 
 import Payload from '../../../models/Payload'
-import Item from '../../../models/Item'
-import Exam from '../../../models/Exam'
 import Node from '../../../models/Node'
-import { traverseDF, traverseBF, getSerialNumber } from '../../../models/NodeTools'
+import { getSerialNumber } from '../../../models/NodeTools'
 
 import { updateItemsOrderRequest } from '../../../api/requests/itemRequests';
 
@@ -28,19 +26,26 @@ module.exports = {
      */
     [ aTypes.addItemToOrder ]: ( { state, dispatch, commit, getters }, payload ) => {
         return new Promise( function ( resolve, reject ) {
+            let parentNode, parentSerialNumber;
             // window.console.log( 'items.order.actions', aTypes.addItemToOrder, 31, payload );
 
             let { obj, parent, index, mutateSilently } = payload;
             let exam = getters[ gTypes.getActiveExam ];
 
-            //Sort out whether obj and parent are nodes or items
+            //Sort out whether parent is a node or item and get what we need
+            if ( parent instanceof Node ) {
+                parentNode = parent;
+                parentSerialNumber = parent.data;
+            } else {
+                //if its not a number, it's probably an item
+                parentSerialNumber = _.isNumber( parent ) ? parent : getSerialNumber( parent );
+                parentNode = getters[ gTypes.getItemNodeFromOrder ]( parentSerialNumber );
+            }
+
+            //sort out the same for the new item
             let toAddSerialNumber = _.isNumber( obj ) ? obj : obj.serialNumber;
-            let parentSerialNumber = _.isNumber( parent ) ? parent : getSerialNumber( parent );
-
-            // window.console.log( 'items.order.actions', 'psn', 39,payload, parent, parentSerialNumber );
-
             let newNode = new Node( toAddSerialNumber, parentSerialNumber );
-            let parentNode = getters[ gTypes.getItemNodeFromOrder ]( parentSerialNumber );
+
             // window.console.log( 'items.order.actions', 'n', 39, newNode, parentNode );
 
             let pl = Payload.factory( {
@@ -49,14 +54,16 @@ module.exports = {
                 index: index,
                 mutateSilently: mutateSilently
             } );
+
             // window.console.log( 'items.order.actions', 'pl', 47, pl );
 
             //push it into local ordering
             commit( mTypes.insertNodeIntoOrder, pl );
 
-            let ordering = getters.getOrderForSync;
-
             //send to server
+            //nb, the item needs to have been added to the list of items
+            //before we do this. Failing to do that caused GOM-409
+            let ordering = getters.getOrderForSync;
             updateItemsOrderRequest( exam, ordering ).then( function () {
                 //todo add error handling.
 
@@ -65,6 +72,7 @@ module.exports = {
             } );
             resolve();
         } );
+
     },
 
 
@@ -77,11 +85,25 @@ module.exports = {
      * The item and all associated score data remain intact.
      */
     [ aTypes.removeItemFromOrder ]: ( { state, dispatch, commit, getters }, payload ) => {
-        let serialNumber = payload.obj.serialNumber;
-        let toRemove = getters[ gTypes.getItemNodeFromOrder ]( serialNumber );
-        let parent = getters[ gTypes.getItemNodeFromOrder ]( toRemove.parent );
-        let pl = Payload.factory( { obj: toRemove, parent: parent } );
-        commit( mTypes.removeNodeFromOrder, pl );
+        return new Promise( function ( resolve, reject ) {
+
+            let serialNumber = payload.obj.serialNumber;
+            let toRemove = getters[ gTypes.getItemNodeFromOrder ]( serialNumber );
+            let parent = getters[ gTypes.getItemNodeFromOrder ]( toRemove.parent );
+            let pl = Payload.factory( { obj: toRemove, parent: parent } );
+            commit( mTypes.removeNodeFromOrder, pl );
+
+            let ordering = getters.getOrderForSync;
+            let exam = getters[ gTypes.getActiveExam ];
+
+            //send to server
+            updateItemsOrderRequest( exam, ordering )
+                .then( function () {
+                    //todo as above, this is the appropriate place. However, it kills tests and there is no error handling.
+                    //resolve();
+                } );
+            resolve();
+        } );
     },
 
     /**

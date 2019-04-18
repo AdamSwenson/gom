@@ -29,10 +29,10 @@ export const loadStockComments = 'loadStockComments'
 
 //exams
 export const addExam = 'addExam';
-
 export const addIndexMapping = 'addIndexMapping';
 export const loadExams = 'loadExams';
-
+export const setExam = 'setExam';
+export const updateExam = 'updateExam';
 
 
 //kumi
@@ -65,8 +65,6 @@ export const deleteStudent = 'deleteStudent';
 export const updateStudentInRoster = 'updateStudentInRoster';
 
 
-
-export const setExam = 'setExam';
 
 
 //items

@@ -19,13 +19,17 @@
             <p class="control">
                 <textarea
                         class="textarea comment-text"
-                        rows="4"
+                        v-bind:rows="numRows"
                         v-bind:placeholder="placeholder"
-                        v-model.lazy="commentText"></textarea>
+                        v-model="commentText"></textarea>
             </p>
+            <!--<p class="help">{{numCharacters}}</p>-->
+
             <p v-if=" isOverwriteHelpMessageVisible "
                class="help is-danger"
-            >Changes to the stock text will be used to create rough drafts of the text for the other comments. If you have already customized any of these, these changes will replace any customizations you've made. If you don't want either of these things to happen, un-check the box below.</p>
+            >Changes to the stock text will be used to create rough drafts of the text for the other comments. If you
+                have already customized any of these, these changes will replace any customizations you've made. If you
+                don't want either of these things to happen, un-check the box below.</p>
         </div>
 
         <valence-buttons
@@ -39,10 +43,21 @@
             <!-- Left side -->
             <div class="level-left">
                 <div class="level-item">
-                    <label class="checkbox">
-                        <input type="checkbox" class="prepopulationControl" v-model="shouldPrePopulate">
-                        {{ syncControlLabel }}
-                    </label>
+                    <!--<label class="checkbox">-->
+                    <div class="field">
+                        <label class="label">{{ syncControlLabel }} </label>
+                        <p class="control">
+                            <a id="prepopulationControl"
+                               class="button is-outlined is-primary"
+                               v-on:click="handlePopulateClick"
+                            >Create comments from stock</a>
+                            <!--<input type="checkbox" class="prepopulationControl" v-model="shouldPrePopulate">-->
+                            <!--{{ syncControlLabel }}                            -->
+                        </p>
+                        <!--<p class="help"></p>-->
+                    </div>
+
+                    <!--</label>-->
                 </div>
                 <div class="level-item">
                     <info-button :help-text="helpText.prePopulation"></info-button>
@@ -73,6 +88,8 @@
      * Created by adam on 2/19/17.
      */
     export default {
+        name: 'comment-setup-panel',
+
         components: {
             valenceButtons, // 'valence-buttons': valenceButtons,
         },
@@ -81,17 +98,10 @@
 
         data: function () {
             return {
-//                serialNumber: function () {
-//                    if(!_.isUndefined(this.dataSerialNumber)) return this.dataSerialNumber
-//                    return this.$parent.serialNumber;
-//
-////                    return this.parentSerialNumber;
-//                },
+
                 serialNumber: _.toInteger( this.$route.params.serialNumber ),
 
-//                serialNumber: !_.isUndefined(this.dataSerialNumber) ? this.dataSerialNumber : _.toInteger( this.$route.params.serialNumber ),
                 active: this.serialNumber,
-
 
                 identifier: 'comment-setup-panel',
 
@@ -105,9 +115,7 @@
                 },
 
                 /** Which valence is currently displayed */
-                displayed:
-                    'stock',
-
+                displayed: 'stock',
 
                 /** The instructional help text for the overall panel */
                 helpText: {
@@ -125,19 +133,23 @@
                     </div> `
                 },
 
-
                 placeholders:
                     {
                         //These are for the text entry textarea
                         exam: "Set up a global comment on the exam as a whole",
                         item:
                             "Explain in detail what needed to be done in order to fully complete this task. This will form the basis for the response seen by the student.",
-                    }
-                ,
+                    },
 
+                rows : {
+                    // isMaximized : false,
+                    maximizeAtChars: 200,
+                    minimized: 4,
+                    maximized: 8
+                },
 
                 /** Whether to pre-populate the comments */
-                shouldPrePopulate: true,
+                shouldPrePopulate: false,
 
             };
         },
@@ -148,8 +160,8 @@
              * Whether all comments for the item lack
              * values for their text property
              */
-            isEveryCommentEmpty: function (  ) {
-                if(_.isUndefined(this.item)) return true;
+            isEveryCommentEmpty: function () {
+                if ( _.isUndefined( this.item ) ) return true;
 
                 return this.item.isEveryCommentEmpty;
             },
@@ -178,8 +190,7 @@
                             return comment.text;
                         }
                     }
-                }
-                ,
+                },
 
                 set: function ( v ) {
 //                    window.console.log( 'comment-setup-panel', 'set', 97, this.serialNumber, this.item, v );
@@ -203,8 +214,7 @@
             displayedValence: {
                 get: function () {
                     return this.displayed;
-                }
-                ,
+                },
 
                 set: function ( newValence ) {
                     if ( newValence ) {
@@ -257,13 +267,13 @@
                 return false;
             },
 
-            isOverwriteHelpMessageVisible: function (  ) {
-              //This only displays when we are working on stock
-                if(this.displayed !== 'stock') return false;
+            isOverwriteHelpMessageVisible: function () {
+                //This only displays when we are working on stock
+                if ( this.displayed !== 'stock' ) return false;
                 //if nothing has been set, the info dialog is assumed to be enough
-                if(this.isEveryCommentEmpty) return false;
+                if ( this.isEveryCommentEmpty ) return false;
 
-                if(this.shouldPrePopulate) return true;
+                if ( this.shouldPrePopulate ) return true;
 
 
             },
@@ -276,6 +286,25 @@
                 if ( this.isExam ) return this.labels.exam;
                 return this.labels.item;
             },
+
+            numCharacters: function(){
+                if(!_.isUndefined(this.commentText) && !_.isNull(this.commentText)){
+                    return this.commentText.length;
+                }
+                return 0;
+            },
+
+            /**
+             * How many rows of the text area to display
+             */
+            numRows: function () {
+                // return this.rows.isMaximized ? this.rows.maximized : this.rows.minimized;
+                if(this.numCharacters < this.rows.maximizeAtChars) {
+                    return this.rows.minimized;
+                }
+                return this.rows.maximized;
+            },
+
 
             panelId: function () {
                 return this.identifier + '-' + this.serialNumber;
@@ -315,6 +344,13 @@
             }
         },
 
+        // watch: {
+        //   commentText: function(v){
+        //       window.console.log( 'comment-setup-panel', 'commentText', 349, v);
+        //   }
+        // },
+
+
         methods: {
 
             /**
@@ -328,13 +364,50 @@
                 }
             },
 
+            /**
+             * When the user clicks the button, this fires the prepopulate command.
+             * It has a bunch of extra stuff because this used to default to doing it
+             * automatically. But that created the danger of wiping out the user's work,
+             * This was changed from a checkbox with GOM-380
+             */
+            handlePopulateClick: function () {
+                //change the prepopulate control value
+                this.shouldPrePopulate = true;
+
+                //we need to briefly switch back and forth between
+                //the stock and the current displayed valence so that
+                //the currently displayed valence will have its text updated.
+                //Hopefully the user won't notice the change, but vue doesn't seem
+                //to let us update live.
+                //So we grab the current valence in order to change back to it
+                //once we've done the population.
+                let d = this.displayed;
+                this.changeDisplayedValence( 'stock' );
+
+                //grab the stock comment
+                if ( typeof this.item !== 'undefined' ) {
+                    let comment = this.item.getComment( 'stock' );
+                    if ( typeof comment !== 'undefined' ) {
+                        //fire the method which handles the population
+                        //using the stock comment text
+                        this.prePopulateComments( comment.text );
+                    }
+                }
+
+                //Change back to the valence that we were looking at
+                this.changeDisplayedValence( d );
+
+                //reset the control value, so won't continue doing it
+                this.shouldPrePopulate = false;
+            },
+
 
             /**
              * Takes the stock comment and creates rough drafts
              * of the valenced comments for the user to work from.
              */
             prePopulateComments: function ( stock ) {
-                if( ! this.shouldPrePopulate ) return false;
+                if ( !this.shouldPrePopulate ) return false;
 
                 var me = this;
 

@@ -149,7 +149,8 @@
         data: function () {
             return {
                 examId: window.examId,
-
+loading: true,
+                loaded: false,
                 defaults: {},
             };
         },
@@ -171,7 +172,7 @@
             /**
              * The children of the item
              */
-            items: {
+            items_a: {
                 get() {
                     let me = this;
                     if ( _.isUndefined( me.exam ) || _.isNull( me.exam ) || _.isUndefined( me.exam.serialNumber ) ) return [];
@@ -181,18 +182,31 @@
                         // let p = this.$store.dispatch( 'loadItemsFromServer', this.exam.id );
                         // return p.then( function () {
                         let c = me.$store.getters.getItemChildren( me.exam );
+                        me.loaded = true;
                         return !_.isUndefined( c ) ? c : [];
 
                     } );
                 },
                 // default() {
-                //     return [];
+                //     return false;
                 // }
             },
         },
 
 
         computed: {
+            items: function(){
+                if (this.loaded) {
+                        let me = this;
+                        // let p = this.$store.dispatch( 'loadItemsFromServer', this.exam.id );
+                        // return p.then( function () {
+                        let c = me.$store.getters.getItemChildren( me.exam );
+                        return !_.isUndefined( c ) ? c : [];
+                }
+                else{
+                    return [];
+                }
+            },
 
             examSerialNumber: function () {
                 return !_.isNull( this.exam ) ? this.exam.serialNumber : null;

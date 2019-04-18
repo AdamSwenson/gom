@@ -47,12 +47,17 @@ export const Routes = {
         return GRADING_BASE_ROUTE + '/' + examId;
     },
 
-    // ------------------------- Kumi
+    // ------------------ Student access to feedback
+    studentAccess: ( exam ) => {
+        return 'dev/studentaccess/' + exam.id;
+    },
+
+// ------------------------- Kumi
     associateKumi: ( kumi, exam ) => {
         return KUMI_BASE_ROUTE + '/' + kumi.id + 'exam/' + exam.id + '/new';
     },
     disassociateKumi: ( kumi, exam ) => {
-        return KUMI_BASE_ROUTE +  '/' + kumi.id + '/exam/' + exam.id;
+        return KUMI_BASE_ROUTE + '/' + kumi.id + '/exam/' + exam.id;
     },
     createKumi: () => {
         return KUMI_BASE_ROUTE;
@@ -226,9 +231,9 @@ export const BusinessLinks = [
 ];
 
 export const SettingsLinks = [
-    { text: 'Grading page settings', type: 'grade', route: '/preferences/grade'  },
-    { text: 'Setup page settings', type: 'setup', route: '/preferences/setup'  },
-    { text: 'User settings', type: 'user', route: '/preferences/user'  },
+    { text: 'Grading page settings', type: 'grade', route: '/preferences/grade' },
+    { text: 'Setup page settings', type: 'setup', route: '/preferences/setup' },
+    { text: 'User settings', type: 'user', route: '/preferences/user' },
 ];
 
 // `transformRequest` allows changes to the request data before it is sent to the server

@@ -33,6 +33,7 @@ module.exports = {
      * @param payload
      */
     [ mTypes.insertNodeIntoOrder ]: ( state, payload ) => {
+
         let obj, parent, index;
         // window.console.log( 'items.order.mutations', 'insertNodeIntoOrder', 21, payload );
         try {
@@ -47,7 +48,7 @@ module.exports = {
             obj = payload.obj;
             parent = payload.parent;
         }
-
+        // window.console.log( 'items.order.mutations', '', 50, obj, parent );
         //Set the index if it was provided
         if(!_.isUndefined(payload.index)) index = payload.index;
 
@@ -64,7 +65,6 @@ module.exports = {
             parent.children.push( obj );
         }
       },
-
 
     [ mTypes.removeNodeFromOrder ]: ( state, payload ) => {
         // window.console.log( 'items.order.mutations', 'removenode', 57, payload );

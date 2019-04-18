@@ -72,30 +72,38 @@ module.exports = {
             return new Promise( function ( resolve, reject ) {
 
                 let { exam, scoreData } = obj;
+                window.console.log( 'itemscores.loaders', 'scoreData', 75, scoreData );
 
                 _.forEach( scoreData, function ( d ) {
                     let item = getters[ gTypes.getItemById ]( d.item_id );
                     let student = getters.getStudentFromRosterById( d.student_id );
                     let score = parseFloat( d.score );
 
-                    // window.console.log( 'itemscores.loaders', 'dd', 81, d.item_id, item, student);
-                    //record the score (this will initialize the object too)
-                    commit( ngmTypes.updateScore, PayloadScore.factory( {
-                        exam: exam,
-                        item: item,
-                        student: student,
-                        score: score,
-                        mutateSilently: true
-                    } ) );
+                    //Identified under GOM-417
+                    //this takes care of what happens if an item is removed from the exam
+                    //but we don't totally delete it. The score will remain in the db and thus load, but
+                    //there will be no corresponding item.
+                    if (! _.isUndefined(item)) {
 
-                    //record the comment text
-                    commit( ngmTypes.updateText, PayloadScore.factory( {
-                        exam: exam,
-                        item: item,
-                        student: student,
-                        text: d.comment_text,
-                        mutateSilently: true
-                    } ) );
+                        window.console.log( 'itemscores.loaders processAndStoreLoadedScores', 'item id:', d.item_id, 'score:', score, item, student );
+                        //record the score (this will initialize the object too)
+                        commit( ngmTypes.updateScore, PayloadScore.factory( {
+                            exam: exam,
+                            item: item,
+                            student: student,
+                            score: score,
+                            mutateSilently: true
+                        } ) );
+
+                        //record the comment text
+                        commit( ngmTypes.updateText, PayloadScore.factory( {
+                            exam: exam,
+                            item: item,
+                            student: student,
+                            text: d.comment_text,
+                            mutateSilently: true
+                        } ) );
+                    }
                 } );
                 resolve();
 

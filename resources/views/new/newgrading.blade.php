@@ -5,7 +5,7 @@
 
 @section('pageCss')
     {{--This needs to be here until GOM-372 is fixed--}}
-    <link href="{{ asset('css/grade-package-required-until-gom-372-is-fixed.css') }}" rel="stylesheet" type="text/css">
+{{--    <link href="{{ asset('css/grade-package-required-until-gom-372-is-fixed.css') }}" rel="stylesheet" type="text/css">--}}
 @endsection
 
 @section('pageJs')

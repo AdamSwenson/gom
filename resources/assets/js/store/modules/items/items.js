@@ -9,20 +9,16 @@ import * as gTypes from '../../getter-types'
 
 import Payload from '../../../models/Payload'
 import Item from '../../../models/Item'
-import Exam from '../../../models/Exam'
 import Node from '../../../models/Node'
-import { traverseDF, traverseBF, getNode } from '../../../models/NodeTools'
 
 import JsonReaders from '../../utlities/JsonReaders'
-import { initializeItemsWithExam } from '../../utlities/itemHelpers';
 import { createItemRequest, updateItemRequest } from '../../../api/requests/itemRequests';
-
-const Vue = require( 'vue' );
-const _ = window._ = require( 'lodash' );
-
 import Objects from './items.obj';
 import Orderings from './items.order';
 import Loaders from './items.loaders';
+
+const Vue = require( 'vue' );
+const _ = window._ = require( 'lodash' );
 
 const REQUEST_VERSION = 1;
 
@@ -322,14 +318,23 @@ const actions = {
             let pl = Payload.factory( { parent: parent, obj: obj } );
             // window.console.log( 'items', 'cloneItem payload', 234, pl);
 
-            dispatch( aTypes.addItemToOrder, pl ).then( function () {
+            let p = new Promise( function ( resolve, reject ) {
+                //wrapping in promise may not be necessary. Did in the
+                //process of fixing GOM-409
+
                 //the item will not have been stored in the regular items array
                 //instead it is loaded asynchronously.
                 //So we need to push it into the main array
                 pl.mutateSilently = true;
                 commit( mTypes.addNewItem, pl );
+                resolve();
             } );
 
+            p.then( function () {
+                dispatch( aTypes.addItemToOrder, pl ).then( function () {
+                    resolve();
+                } );
+            } )
 
         } );
     },

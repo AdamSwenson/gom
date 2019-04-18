@@ -3,8 +3,14 @@
         <div class="navbar-brand">
             <!-- navbar items, navbar burger... -->
 
-            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" v-on:click="toggleNavMenu"
-               v-bind:class="burgerActiveClass">
+            <a role="button"
+               class="navbar-burger"
+               aria-label="menu"
+               aria-expanded="false"
+               v-on:click="toggleNavMenu"
+               v-bind:class="burgerActiveClass"
+            >
+                <!--These empty tags are required by bulma-->
                 <span aria-hidden="true"></span>
                 <span aria-hidden="true"></span>
                 <span aria-hidden="true"></span>
@@ -35,10 +41,6 @@
                     </div>
                 </div>
                 <div class="navbar-item">
-                    <!--<div class="buttons">-->
-                    <!--</div>-->
-
-                    <!--<div class="navbar-item">-->
                     <backup-button :exam="exam"></backup-button>
                 </div>
 
@@ -52,70 +54,12 @@
 
             </div>
         </div>
-        <!--</div>-->
-        <!--</div>-->
-
 
     </nav>
-
-    <!--<div class="top-navbar exam-selection-bar">-->
-    <!--<nav class="level is-mobile">-->
-    <!--&lt;!&ndash; Left side &ndash;&gt;-->
-    <!--<div class="level-left">-->
-
-    <!--<div class="level-item">-->
-    <!--<slot name="level-left"></slot>-->
-    <!--</div>-->
-    <!--</div>-->
-
-    <!--&lt;!&ndash; Right side &ndash;&gt;-->
-    <!--<div class="level-right">-->
-    <!--<div class="level-item has-text-centered">-->
-    <!--<create-exam-button></create-exam-button>-->
-    <!--</div>-->
-
-    <!--<div class="level-item has-text-centered">-->
-    <!--<select-exam-button></select-exam-button>-->
-    <!--</div>-->
-
-    <!--<div class="level-item has-text-centered">-->
-    <!--<grade-exam-button-->
-    <!--v-if="pageType === 'setup'"-->
-    <!--:exam="exam"-->
-    <!--&gt;</grade-exam-button>-->
-
-    <!--<manage-exam-button-->
-    <!--v-if="pageType === 'grade'"-->
-    <!--:exam="exam"-->
-    <!--&gt;</manage-exam-button>-->
-
-    <!--</div>-->
-
-    <!--<div class="level-item has-text-centered">-->
-    <!--<settings-button-menu></settings-button-menu>-->
-    <!--</div>-->
-
-    <!--<div class="level-item has-text-centered">-->
-    <!--<backup-button :exam="exam"></backup-button>-->
-    <!--</div>-->
-
-
-    <!--<div class="level-item has-text-centered">-->
-    <!--<logout-button></logout-button>-->
-    <!--</div>-->
-
-
-    <!--</div>-->
-
-    <!--</nav>-->
-
-    <!--</div>-->
-
 
 </template>
 
 <style lang="scss">
-    @import '../../../../sass/development/custom-bulma';
 
     .top-navbar {
         /*.exam-selection-bar {*/
@@ -128,12 +72,7 @@
         .navbar-burger {
             color: #DDDDDD;
         }
-        /*.level-left {*/
-        /*p {*/
-        /*color: #DDDDDD;*/
-        /*margin-left: 1em;*/
-        /*}*/
-        /*}*/
+
     }
 </style>
 
@@ -142,8 +81,6 @@
 
     import gradeButton from './grade-exam-button.vue';
     import examSelectionModal from './exam-selection-modal.vue';
-    import { Routes } from '../../../api/apiSettings';
-    import * as gTypes from '../../../store/getter-types';
     import CreateExamButton from "./create-exam-button";
     import SelectExamButton from "./select-exam-button";
     import ManageExamButton from "./manage-exam-button";
@@ -185,6 +122,7 @@
 
         methods: {
             toggleNavMenu: function () {
+                // window.console.log( 'top-navbar', 'toggleNavMenu', 190, this.showMenu);
                 this.showMenu = !this.showMenu;
             }
         },

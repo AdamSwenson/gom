@@ -57,7 +57,7 @@ test('managerScripts.js | processClick released button in unreleased state', fun
 test('managerScripts.js | processClick released button in released (checked) state', function(){
     expect(1);
     var result = processClick($("#9released"), 'release');
-    equal('releaseExam', result.task);
+    equal('grantExamAccess', result.task);
 });
 
 test('managerScripts.js | processClick locked button in locked (checked) state', function(){
