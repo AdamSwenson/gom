@@ -132,10 +132,13 @@
 
             gradesAjax: function () {
                 let me = this;
-                let p = this.$store.dispatch( aTypes.loadGradeAssignmentsFromServer, this.exam );
-                return p.then( function () {
-                    return me.$store.getters.getGradeAssignments;
-                } );
+                if (!_.isUndefined(this.exam)) {
+
+                    let p = this.$store.dispatch( aTypes.loadGradeAssignmentsFromServer, this.exam );
+                    return p.then( function () {
+                        return me.$store.getters.getGradeAssignments;
+                    } );
+                }
                 // let p = requests.getGradeAssignments( this.exam );
                 // p.then( function ( data ) {
                 //     let p2 = me.$store.dispatch( aTypes.loadGradeAssignmentsFromServerData, data );

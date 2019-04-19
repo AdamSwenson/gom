@@ -5,7 +5,8 @@
         <th>{{ letterGrade }}</th>
 
         <td>
-            <cutoff-entry :grade="grade"></cutoff-entry>
+            <cutoff-entry :grade="grade"
+                          v-on:cutoff-change="handleChange"></cutoff-entry>
         </td>
 
         <td>
@@ -23,10 +24,7 @@
 
 <script>
 
-    import * as aTypes from '../../../../store/action-types';
-    import * as mTypes from '../../../../store/mutation-types';
     import * as gTypes from '../../../../store/getter-types';
-    import Payload from '../../../../models/Payload';
 
     import cutoffEntry from './cutoff-field.vue';
 
@@ -46,14 +44,15 @@
             }
         },
 
+        watch: {},
+
+        asyncComputed: {
+        },
+
         computed: {
             styling: function () {
                 if ( this.isInconsistent ) return 'is-selected';
                 return '';
-            },
-
-            freqs: function () {
-                return this.$store.getters[ gTypes.getGradeFrequencies ];
             },
 
             /**
@@ -62,13 +61,13 @@
              */
             isInconsistent: function () {
                 let inconsistentList = this.$store.getters[ gTypes.getInconsistentCutOffs ];
-                if ( ! _.isUndefined(inconsistentList) && inconsistentList.indexOf( this.grade ) >= 0 ) return true;
+                if ( !_.isUndefined( inconsistentList ) && inconsistentList.indexOf( this.grade ) >= 0 ) return true;
 
                 return false;
             },
 
             letterGrade: function () {
-                return ! _.isUndefined(this.grade) ? this.grade.displayValue : '';
+                return !_.isUndefined( this.grade ) ? this.grade.displayValue : '';
             },
 
             /**
@@ -76,14 +75,22 @@
              * the present grade on the current assignment scheme
              */
             gradeFrequency: function () {
-                if ( _.isUndefined( this.grade ) || _.isUndefined( this.freqs ) ) return false;
-
-                return this.freqs[ this.letterGrade ];
-            }
+                let me = this;
+                    let f = me.$store.getters[ gTypes.getGradeFrequencies ];
+                    return f[ me.letterGrade ];
+               }
 
         },
 
-        methods: {},
+        methods: {
+            handleChange: function () {
+                // let freqs = this.$store.getters[ gTypes.getGradeFrequencies ];
+                // this._gradeFrequency = freqs[ this.letterGrade ];
+                // window.console.log( 'assignment-table-row', 'handleChange', 102, this._gradeFrequency, freqs );
+                // //notify parent
+                this.$emit( 'cutoff-change' );
+            }
+        },
 
         directives: {},
 

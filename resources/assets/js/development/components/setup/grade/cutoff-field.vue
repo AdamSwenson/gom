@@ -72,6 +72,7 @@
                 },
 
                 set: function ( v ) {
+                    let me = this;
                     let pl = Payload.factory( {
                         obj: this.grade,
                         //these will be used by the mutation, though not the
@@ -79,8 +80,9 @@
                         updateProp: 'minScore',
                         updateVal: Number.parseFloat(v)
                     } );
-                    this.$store.dispatch(aTypes.updateCutoff, pl);
-                    // this.$store.commit( mTypes.updateGradeCutoffs, pl );
+                    this.$store.dispatch(aTypes.updateCutoff, pl).then(function(){
+                        me.$emit('cutoff-change');
+                    });
                 }
             },
 

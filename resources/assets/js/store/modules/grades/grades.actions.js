@@ -74,10 +74,14 @@ module.exports = {
         //the mutation has happened. This may be a problem....
         // window.console.log( 'grades.actions', aTypes.updateCutoff, 75, payload );
         // send the change to the server
-        updateGradeAssignment( payload ).then( function () {
-                //Call the mutation
-                commit( mTypes.updateGradeCutoffs, payload );
-            } );
+        return new Promise(function ( resolve, reject) {
+           updateGradeAssignment( payload ).then( function () {
+               //Call the mutation
+               commit( mTypes.updateGradeCutoffs, payload );
+               resolve();
+           } );
+       });
+
 
     }
 
