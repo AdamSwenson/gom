@@ -260,7 +260,7 @@ export default function ( store ) {
 
             // ******************** Grades
             case mTypes.updateGradeCutoffs:
-                updateGradeAssignment( store, payload.exam, payload.obj );
+                // updateGradeAssignment( store, payload.exam, payload.obj );
                 break;
 
 

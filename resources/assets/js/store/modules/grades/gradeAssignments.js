@@ -38,6 +38,14 @@ const state = {
     gradeValues: [],
 
     /**
+     * Holds the count of each grade with the GradeAssignment.displayValue
+     * as keys.
+     * This had to be moved here so it could be updated with every mutation
+     * rather than doing it via getter which wasn't responding to changes.
+     */
+    gradeFrequencies : {},
+
+    /**
      * The list of inconsistent grade assignments are kept here
      *
      */

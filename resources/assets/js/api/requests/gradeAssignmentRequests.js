@@ -54,17 +54,15 @@ module.exports = {
     },
 
     /**
-     * Gets all item scores for the exam without identifying
-     * student information
-     * @param exam
+     * Sends a grade assignment object to the server when there's been a change
      * @returns {Promise.<T>|*}
+     * @param payload
      */
-    updateGradeAssignment: ( store, exam, letterGrade ) => {
-        let to = 'dev/grade-assignment/' + letterGrade.id;
-
+    updateGradeAssignment: (payload ) => {
+        let to = 'dev/grade-assignment/' + payload.obj.id;
         let out = {
             requestVersion: REQUEST_VERSION,
-            min_score : letterGrade.minScore
+            min_score : payload.updateVal
         };
 
         return window.axios

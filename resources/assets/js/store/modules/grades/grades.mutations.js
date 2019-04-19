@@ -1,14 +1,12 @@
 import * as mTypes from "../../mutation-types";
 import Payload from "../../../models/Payload";
+import Vue from 'vue';
+import { sortTotalScores, updateFrequencies, updateGradeValues, updateInconsistentList } from "./grades.helpers";
 // import Vue from "../../../../../../../../Library/Preferences/PhpStorm2018.1/javascript/extLibs/http_github.com_DefinitelyTyped_DefinitelyTyped_raw_master_vue_vue";
 
-
-import Vue from 'vue';
-import { updateInconsistentList, sortTotalScores } from "./grades.helpers";
-
-module.exports ={
+module.exports = {
     /**
-     * Updates a property of a grade assignment object.
+     * Updates a stored grade assignment with an altered object
      * Also calls for a consistency check
      *
      * @param state
@@ -16,9 +14,10 @@ module.exports ={
      */
     [ mTypes.updateGradeCutoffs ]: ( state, payload ) => {
         Payload.checkIfPayload( payload );
-        Vue.set( payload.obj, payload.updateProp, payload.updateVal );
-
+        Vue.set( state.gradeAssignments[ payload.obj.displayValue ], payload.updateProp, payload.updateVal );
         updateInconsistentList( state );
+        updateFrequencies( state );
+        updateGradeValues( state );
     },
 
     /**
@@ -37,7 +36,8 @@ module.exports ={
     replaceGradeAssignments: ( state, payload ) => {
         Vue.set( state, 'gradeAssignments', payload.obj );
         updateInconsistentList( state );
-
+        updateFrequencies( state );
+        updateGradeValues( state );
     },
 
     /**

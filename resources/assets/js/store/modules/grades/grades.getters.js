@@ -46,35 +46,7 @@ module.exports = {
      * @returns {{}}
      */
     [ gTypes.getGradeFrequencies ]: ( state, getters, rootState ) => {
-        //sort them in descending order so that we can
-        //use the minimum scores as cut offs
-        let assignments = sortGradeAssignments( state.gradeAssignments, false );
-
-        let gradeFrequency = {};
-
-        // calculate frequency that each letter grade appears.
-        _.forEach( state.totalScores, function ( score ) {
-            // window.console.log( 'gradeAssignments', 'assignment length', 175, assignments.length, assignments );
-            for (var j = 0; j < assignments.length; j++) {
-                let assign = assignments[ j ];
-
-                //set the count at zero for a grade
-                //if it hasn't been initialized already
-                if ( !_.has( gradeFrequency, assign.displayValue ) ) {
-                    gradeFrequency[ assign.displayValue ] = 0
-                }
-
-                if ( score >= assign.minScore ) {
-                    //if the score clears the cut off, increment the count
-                    gradeFrequency[ assign.displayValue ]++;
-
-                    //once we've recorded it, we skip to the next score
-                    break;
-                }
-            }
-        } );
-
-        return gradeFrequency;
+        return state.gradeFrequencies;
 
     },
 
@@ -98,26 +70,27 @@ module.exports = {
      * @param rootState
      */
     [ gTypes.getListOfGradeValues ]: ( state, getters, rootState ) => {
-        return (function ( state ) {
-            let list = [];
-            let assignments = sortGradeAssignments( state.gradeAssignments, false );
-
-            _.forEach( state.totalScores, function ( score ) {
-                for (var j = 0; j < assignments.length; j++) {
-                    let assign = assignments[ j ];
-
-                    if ( score >= assign.minScore ) {
-                        //if the score clears the cut off,
-                        // add the calc value to the list
-                        list.push( assign.calcValue );
-                        //once we've recorded it, we skip to the next score
-                        break;
-                    }
-                }
-            } );
-
-            return list;
-        })( state );
+        return state.gradeValues;
+        // return (function ( state ) {
+        //     let list = [];
+        //     let assignments = sortGradeAssignments( state.gradeAssignments, false );
+        //
+        //     _.forEach( state.totalScores, function ( score ) {
+        //         for (var j = 0; j < assignments.length; j++) {
+        //             let assign = assignments[ j ];
+        //
+        //             if ( score >= assign.minScore ) {
+        //                 //if the score clears the cut off,
+        //                 // add the calc value to the list
+        //                 list.push( assign.calcValue );
+        //                 //once we've recorded it, we skip to the next score
+        //                 break;
+        //             }
+        //         }
+        //     } );
+        //
+        //     return list;
+        // })( state );
 
     },
 
