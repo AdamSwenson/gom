@@ -48,10 +48,10 @@ class ExamResourceController extends Controller
     /**
      * Create a new exam
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store( Request $request )
     {
         //
     }
@@ -61,10 +61,10 @@ class ExamResourceController extends Controller
      * This seems weird but the route will
      * include the exam's id, thus this is the way
      * we get the full object from the server
-     * @param  \App\Exam  $exam
+     * @param  \App\Exam $exam
      * @return \Illuminate\Http\Response
      */
-    public function show(Exam $exam)
+    public function show( Exam $exam )
     {
         return $exam;
     }
@@ -72,10 +72,10 @@ class ExamResourceController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Exam  $exam
+     * @param  \App\Exam $exam
      * @return \Illuminate\Http\Response
      */
-    public function edit(Exam $exam)
+    public function edit( Exam $exam )
     {
         //
     }
@@ -83,17 +83,18 @@ class ExamResourceController extends Controller
     /**
      * Update the specified exam in storage.
      * Receives PUT
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Exam  $exam
+     * @param  \Illuminate\Http\Request $request
+     * @param  \App\Exam $exam
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Exam $exam)
+    public function update( Request $request, Exam $exam )
     {
-$updatable = ['name', 'publicName', 'term', 'year'];
+        $updatable = ['name', 'publicName', 'term', 'year'];
 
         //update its properties
         $exam->update(
             [
+                'custom_max_score' => $request->input('customMaxScore'),
                 'description' => $request->input('description'),
                 'family' => $request->input('family'),
                 'name' => $request->input('name'),
@@ -106,16 +107,15 @@ $updatable = ['name', 'publicName', 'term', 'year'];
         //return $this->itemRepository->handleStoreAndUpdate($request);
 
 
-
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Exam  $exam
+     * @param  \App\Exam $exam
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Exam $exam)
+    public function destroy( Exam $exam )
     {
         //
     }

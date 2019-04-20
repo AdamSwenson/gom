@@ -13,11 +13,12 @@ export default class Exam extends Item {
      */
     constructor( ...params ) {
         super();
-       Comment.initializeComments(this);
+        Comment.initializeComments( this );
+
         /**
          * The db identifier of the model
          */
-     //   this.id = -1;
+        //   this.id = -1;
 
 
         /**
@@ -88,7 +89,7 @@ export default class Exam extends Item {
             'totalGradingSeconds',
             'family',
             'year'
-        ].concat(super.fillableProps);
+        ].concat( super.fillableProps );
     };
 
 
@@ -141,7 +142,7 @@ export default class Exam extends Item {
      * The estimated amount of seconds required to
      * finish grading all student exams
      */
-    get estimatedGradingTimeRemaining(){
+    get estimatedGradingTimeRemaining() {
         return this.numberRemaining * this.averageGradingSeconds;
 
         if ( _.isInteger( this.averageGradingSeconds ) && _.isInteger( this.numberRemaining ) ) {
@@ -163,7 +164,7 @@ export default class Exam extends Item {
         return this.id === -1;
     }
 
-    isExam(){
+    isExam() {
         return true;
     }
 
@@ -192,7 +193,7 @@ export default class Exam extends Item {
 
     static get aliasMap() {
         return {
-            public_name : 'publicName',
+            public_name: 'publicName',
             custom_max_score: 'customMaxScore'
             // examId: 'id',
             // examIndex: 'index'
@@ -205,7 +206,7 @@ export default class Exam extends Item {
         let exam = new Exam();
         // we will still return an empty exam if there
         // were no parameters
-        return this.fillObject(exam, params, Exam.aliasMap);
+        return this.fillObject( exam, params, Exam.aliasMap );
     }
 
 

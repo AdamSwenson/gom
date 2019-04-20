@@ -1,7 +1,7 @@
 <template>
     <div class="exam-release-control">
         <div class="field">
-            <label class="label">{{options.label}}</label>
+            <!--<label class="label">{{options.label}}</label>-->
             <div class="control">
                 <exam-release-button :exam="exam"></exam-release-button>
             </div>
