@@ -54,17 +54,17 @@ class CommentController extends Controller
      * @param IItemCommentRepository $commentRepository
      */
     public function __construct(
-        IExamRepository $examDao,
-        IStudentRepository $studentDao,
-        IItemRepository $itemRepository,
-        IItemCommentRepository $commentRepository
+//        IExamRepository $examDao,
+//        IStudentRepository $studentDao,
+//        IItemRepository $itemRepository,
+//        IItemCommentRepository $commentRepository
     )
     {
         $this->middleware('auth');
-        $this->examDao = $examDao;
-        $this->itemRepository = $itemRepository;
-        $this->commentRepository = $commentRepository;
-        $this->studentDao = $studentDao;
+//        $this->examDao = $examDao;
+//        $this->itemRepository = $itemRepository;
+//        $this->commentRepository = $commentRepository;
+//        $this->studentDao = $studentDao;
     }
 
 
@@ -102,7 +102,15 @@ class CommentController extends Controller
 
                 //update it
                 if(isset($incomingComment['text'])){
-                    $comment->update(['body' => $incomingComment['text']]);
+                    /*
+                     * Some fields should be reset to null if the existing value
+                     * is deleted on the client. However, the incoming
+                     * request will have an empty string. This casts
+                     * such strings to null. See GOM-394
+                     */
+                    $text = empty($incomingComment['text']) ? null : $incomingComment['text'];
+
+                    $comment->update(['body' => $text]);
                 }
 
             }
@@ -125,5 +133,8 @@ class CommentController extends Controller
     {
         return $item->comments()->all();
     }
+
+
+
 
 }
