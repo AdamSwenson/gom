@@ -92,6 +92,10 @@ export default class Exam extends Item {
         ].concat( super.fillableProps );
     };
 
+    // set customMaxScore(v){
+        // window.console.log( 'Exam', 'customMaxScore', 96, v);
+        // this.customMaxScore = v;
+    // }
 
     /* *************************** Id *************** */
     /**

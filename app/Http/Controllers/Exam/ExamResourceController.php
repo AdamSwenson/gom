@@ -16,10 +16,34 @@ use Illuminate\Http\Request;
 class ExamResourceController extends Controller
 {
 
+    public $updatable = [
+        'customMaxScore',
+        'description',
+        'family',
+        'name',
+        'publicName',
+        'term',
+        'year'
+    ];
+
 
     public function __construct()
     {
         $this->middleware('auth');
+    }
+
+    /**
+     * Some fields should be reset to null if the existing value
+     * is deleted on the client. However, the incoming
+     * request will have an empty string. This casts
+     * such strings to null
+     *
+     * @param $incoming
+     * @return |null
+     */
+    public function castEmptyToNull( $incoming )
+    {
+        return empty($incoming) ? null : $incoming;
     }
 
 
@@ -89,20 +113,23 @@ class ExamResourceController extends Controller
      */
     public function update( Request $request, Exam $exam )
     {
-        $updatable = ['name', 'publicName', 'term', 'year'];
 
-        //update its properties
-        $exam->update(
-            [
-                'custom_max_score' => $request->input('customMaxScore'),
-                'description' => $request->input('description'),
-                'family' => $request->input('family'),
-                'name' => $request->input('name'),
-                'public_name' => $request->input('publicName'),
-                'term' => $request->input('term'),
-                'year' => $request->input('year'),
-            ]);
+        $this->handleUpdate($request, $exam);
+
         return $exam;
+
+//
+//        //update its properties
+//        $exam->update(
+//            [
+//                'custom_max_score' => $this->castEmptyToNull($request->input('customMaxScore')),
+//                'description' => $request->input('description'),
+//                'family' => $request->input('family'),
+//                'name' => $request->input('name'),
+//                'public_name' => $request->input('publicName'),
+//                'term' => $request->input('term'),
+//                'year' => $request->input('year'),
+//            ]);
 
         //return $this->itemRepository->handleStoreAndUpdate($request);
 
@@ -118,5 +145,31 @@ class ExamResourceController extends Controller
     public function destroy( Exam $exam )
     {
         //
+    }
+
+    /**
+     * Utility function for making changes
+     * to the Exam object's properties
+     *
+     * @param Request $request
+     * @param Exam $exam
+     */
+    public function handleUpdate( Request $request, Exam $exam)
+    {
+        $toUpdate = [];
+
+        foreach ( $this->updatable as $f ) {
+            //We can't use $request->has($f) to check if the field is included
+            //since it returns false on an empty string.
+            //We would not update the field in the db.
+            //Thus, we need to manually reset the empty string to null
+            //so that we don't have empty strings laying around,
+            //screwing up tests for whether the value is set.
+            $toUpdate[snake_case($f)] = $this->castEmptyToNull($request->input($f));
+        }
+
+        $exam->update($toUpdate);
+
+        return $exam;
     }
 }
