@@ -33,21 +33,6 @@ class ExamResourceController extends Controller
     }
 
     /**
-     * Some fields should be reset to null if the existing value
-     * is deleted on the client. However, the incoming
-     * request will have an empty string. This casts
-     * such strings to null
-     *
-     * @param $incoming
-     * @return |null
-     */
-    public function castEmptyToNull( $incoming )
-    {
-        return empty($incoming) ? null : $incoming;
-    }
-
-
-    /**
      * Return all of the user's exams
      *
      * @return \Illuminate\Http\Response
@@ -57,27 +42,6 @@ class ExamResourceController extends Controller
         //todo add connection to item
         return Exam::all();
         //todo make sure limited by base model
-    }
-
-//    /**
-//     * Show the form for creating a new resource.
-//     *
-//     * @return \Illuminate\Http\Response
-//     */
-//    public function create()
-//    {
-//        //
-//    }
-
-    /**
-     * Create a new exam
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store( Request $request )
-    {
-        //
     }
 
     /**
@@ -93,16 +57,6 @@ class ExamResourceController extends Controller
         return $exam;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Exam $exam
-     * @return \Illuminate\Http\Response
-     */
-    public function edit( Exam $exam )
-    {
-        //
-    }
 
     /**
      * Update the specified exam in storage.
@@ -118,34 +72,22 @@ class ExamResourceController extends Controller
 
         return $exam;
 
-//
-//        //update its properties
-//        $exam->update(
-//            [
-//                'custom_max_score' => $this->castEmptyToNull($request->input('customMaxScore')),
-//                'description' => $request->input('description'),
-//                'family' => $request->input('family'),
-//                'name' => $request->input('name'),
-//                'public_name' => $request->input('publicName'),
-//                'term' => $request->input('term'),
-//                'year' => $request->input('year'),
-//            ]);
-
-        //return $this->itemRepository->handleStoreAndUpdate($request);
-
-
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Some fields should be reset to null if the existing value
+     * is deleted on the client. However, the incoming
+     * request will have an empty string. This casts
+     * such strings to null
      *
-     * @param  \App\Exam $exam
-     * @return \Illuminate\Http\Response
+     * @param $incoming
+     * @return |null
      */
-    public function destroy( Exam $exam )
+    public function castEmptyToNull( $incoming )
     {
-        //
+        return empty($incoming) ? null : $incoming;
     }
+
 
     /**
      * Utility function for making changes
@@ -153,8 +95,9 @@ class ExamResourceController extends Controller
      *
      * @param Request $request
      * @param Exam $exam
+     * @return Exam
      */
-    public function handleUpdate( Request $request, Exam $exam)
+    public function handleUpdate( Request $request, Exam $exam )
     {
         $toUpdate = [];
 
@@ -172,4 +115,48 @@ class ExamResourceController extends Controller
 
         return $exam;
     }
+
+//    /**
+//     * Show the form for editing the specified resource.
+//     *
+//     * @param  \App\Exam $exam
+//     * @return \Illuminate\Http\Response
+//     */
+//    public function edit( Exam $exam )
+//    {
+//        //
+//    }
+//    /**
+//     * Remove the specified resource from storage.
+//     *
+//     * @param  \App\Exam $exam
+//     * @return \Illuminate\Http\Response
+//     */
+//    public function destroy( Exam $exam )
+//    {
+//        //
+//    }
+//
+
+//    /**
+//     * Show the form for creating a new resource.
+//     *
+//     * @return \Illuminate\Http\Response
+//     */
+//    public function create()
+//    {
+//        //
+//    }
+
+//    /**
+//     * Create a new exam
+//     *
+//     * @param  \Illuminate\Http\Request $request
+//     * @return \Illuminate\Http\Response
+//     */
+//    public function store( Request $request )
+//    {
+//        //
+//    }
+
 }
