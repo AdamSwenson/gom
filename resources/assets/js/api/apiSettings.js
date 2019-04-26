@@ -137,6 +137,9 @@ export const Routes = {
     getItemScoreRequest: ( item ) => {
         return SCORE_BASE_ROUTE + 'item/' + item.id;
     },
+    assignDefaultCommentsToGradedItemsRequest: (exam)=>{
+      return SCORE_BASE_ROUTE + '/' + exam.id;
+    },
 
     // ------------------------- Students
     anonymizeStudents: ( exam ) => {

@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Item;
 
+use App\Exam;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ItemScoreRequest;
 use App\Item;
-use App\Exam;
-use App\Student;
 use App\Models\NewGom\ItemScore;
+use App\Repositories\Item\IItemCommentRepository;
+use App\Student;
 use Illuminate\Http\Request;
 
 /**
@@ -76,7 +77,7 @@ class ItemScoreController extends Controller
         //from different requests. So, we need to be careful
         //not to inadvertently overwrite the score on a comment request
         //or vice-versa.
-        if ( $request->has('score'))  {
+        if ( $request->has('score') ) {
             $score->score = $request->input('score');
         }
         if ( $request->has('commentText') ) {
@@ -103,13 +104,14 @@ class ItemScoreController extends Controller
      * @param Student $student
      * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function resetScore(Exam $exam, Item $item, Student $student){
+    public function resetScore( Exam $exam, Item $item, Student $student )
+    {
         $score = ItemScore::where('exam_id', $exam->id)
             ->where('item_id', $item->id)
             ->where('student_id', $student->id)
             ->first();
 
-            $score->score = null;
+        $score->score = null;
 
         //and finally save
         $score->save();
@@ -127,13 +129,14 @@ class ItemScoreController extends Controller
      * @param Student $student
      * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function resetComment(Exam $exam, Item $item, Student $student){
+    public function resetComment( Exam $exam, Item $item, Student $student )
+    {
         $score = ItemScore::where('exam_id', $exam->id)
             ->where('item_id', $item->id)
             ->where('student_id', $student->id)
             ->first();
 
-        if($score){
+        if ( $score ) {
             $score->comment_text = null;
 
             //and finally save
@@ -215,6 +218,26 @@ class ItemScoreController extends Controller
     public function studentScores( Student $student )
     {
         return ItemScore::where('student_id', $student->id)->get();
+    }
+
+
+    /**
+     * @param Exam $exam
+     */
+    public function assignCommentsToScores( Exam $exam )
+    {
+        try {
+            $repo = app()->make(IItemCommentRepository::class);
+            $repo->assignDefaultCommentsToGradedItems($exam);
+            return $this->sendAjaxFailure();
+
+            return $this->sendAjaxSuccess();
+        } catch (Exception $e) {
+            return $this->sendAjaxFailure();
+        }
+
+//        dispatch(new AssignDefaultCommentsToScores($exam));
+
     }
 
 

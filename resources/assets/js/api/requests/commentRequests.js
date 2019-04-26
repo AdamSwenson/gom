@@ -27,7 +27,7 @@ module.exports = {
      * @param store
      * @param item
      */
-    updateComment: ( item ) => {
+    updateComment: ( item, overWriteDefaults=false ) => {
         window.console.log( 'apiPlugin-commentRequests', 'updateComment', 8 );
         let out = {
             requestVersion: REQUEST_VERSION
@@ -40,6 +40,10 @@ module.exports = {
             out.itemId = item.id;
             out.comments = item.comments;
 
+            if(overWriteDefaults) {
+                out.overwriteDefaults = true;
+            }
+
             //put/patch
             window.axios
                 .post( Routes.updateComment(item), out )
@@ -50,6 +54,13 @@ module.exports = {
                     errorHandling( error );
                 } );
         }
-    }
+    },
+
+    assignDefaultCommentsToGradedItems: (exam) =>{
+        //Update the item_scores table for the exam, adding
+//default comments to any scored item which lacks a comment
+        return window.axios.put(Routes.assignDefaultCommentsToGradedItemsRequest(exam));
+}
+
 
 }

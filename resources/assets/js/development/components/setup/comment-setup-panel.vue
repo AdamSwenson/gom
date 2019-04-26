@@ -62,6 +62,20 @@
                 <div class="level-item">
                     <info-button :help-text="helpText.prePopulation"></info-button>
                 </div>
+                <div class="level-right">
+                    <div class="field">
+                        <label class="label">{{ syncControlLabel }} </label>
+                        <p class="control">
+                            <a id="overwriteGraded"
+                               class="button is-outlined is-primary"
+                               v-on:click="handleOverwriteGradedClick"
+                            >Overwrite default comments on graded exams</a>
+                            <!--<input type="checkbox" class="prepopulationControl" v-model="shouldPrePopulate">-->
+                            <!--{{ syncControlLabel }}                            -->
+                        </p>
+                        <!--<p class="help"></p>-->
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -133,6 +147,8 @@
                     </div> `
                 },
 
+                overwriteDefaults: true,
+
                 placeholders:
                     {
                         //These are for the text entry textarea
@@ -194,13 +210,16 @@
 
                 set: function ( v ) {
 //                    window.console.log( 'comment-setup-panel', 'set', 97, this.serialNumber, this.item, v );
-                    let pl = Payload.factory( {
-                        obj: this.item,
-                        updateValence: this.displayed,
-                        updateVal: v
-                    } );
 
-                    this.$store.commit( mTypes.updateComment, pl );
+                    this.updateComment(this.displayed, v);
+                    // let pl = Payload.factory( {
+                    //     obj: this.item,
+                    //     updateValence: this.displayed,
+                    //     updateVal: v,
+                    //     options: {overwriteDefaults: true}
+                    // } );
+                    //
+                    // this.$store.commit( mTypes.updateComment, pl );
 
                     //If the user indicated that they want to prepopulate
                     //the other comments from stock and if the valence was stock
@@ -401,6 +420,10 @@
                 this.shouldPrePopulate = false;
             },
 
+            handleOverwriteGradedClick: function(){
+              this.overwriteDefaults = ! this.overwriteDefaults;
+                window.console.log( 'comment-setup-panel', 'handleOverwriteGradedClick', 425, this.overwriteDefaults);
+            },
 
             /**
              * Takes the stock comment and creates rough drafts
@@ -429,13 +452,36 @@
                     let text = Comment.makePrePopulatedContent( comment.valence, stock );
 
                     //save the new comment text for the valence
-                    let pl = Payload.factory( {
-                        obj: me.item,
-                        updateValence: comment.valence,
-                        updateVal: text
-                    } );
-                    me.$store.commit( mTypes.updateComment, pl );
+                    me.updateComment(comment.valence, text);
+                    // let pl = Payload.factory( {
+                    //     obj: me.item,
+                    //     updateValence: comment.valence,
+                    //     updateVal: text
+                    // } );
+                    // me.$store.commit( mTypes.updateComment, pl );
                 } );
+            },
+
+            /**
+             * Utility function to centralize calling
+             * the mutation to update the comment text since
+             * two methods call it.
+             *
+             * @param valence
+             * @param val
+             */
+            updateComment: function( valence, val){
+                let pl = Payload.factory( {
+                    obj: this.item,
+                    updateValence: valence,
+                    updateVal: val,
+                } );
+
+                if(this.overwriteDefaults){
+                    pl.options = {overwriteDefaults: true}
+                }
+
+                this.$store.commit( mTypes.updateComment, pl );
             }
 
         },

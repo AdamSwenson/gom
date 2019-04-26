@@ -14,7 +14,7 @@
                     buttonText: 'Email access codes to students',
                     icon: "",
                     identifyingClass: '',
-                    linkClass: '',
+                    linkClass: 'is-disabled',
                     linkTitle: '',
                     screenReaderText: '',
                 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Item\ItemCommentRequest;
 use App\Item;
 use App\ItemComment;
+use App\Jobs\Comments\AssignDefaultCommentsToScores;
 use App\Models\NewGom\ItemScore;
 use App\Repositories\Exam\IExamRepository;
 use App\Repositories\Item\IItemCommentRepository;

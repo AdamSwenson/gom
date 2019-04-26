@@ -6,7 +6,7 @@
             <div class="tile is-vertical">
                 <div class="tile is-parent is-warning">
 
-                    <div class="tile is-child student-access-management is-danger">
+                    <div class="tile is-child student-access-management ">
 
                         <p class="subtitle">Manage student access</p>
 
@@ -16,7 +16,14 @@
 
                         <send-notification-email-control :exam="exam"></send-notification-email-control>
 
+                        <p class="subtitle">Other actions</p>
+
+                        <div class="tile is-child comment-assignment">
+                            <assign-comments-to-graded-button :exam="exam"></assign-comments-to-graded-button>
+                        </div>
+
                     </div>
+
 
                     <!--<div class="tile is-parent">-->
 
@@ -101,9 +108,11 @@
     import CreateAccessCodesButton from "./accesscontrols/create-access-codes-button";
     import SendNotificationEmailControl from "./accesscontrols/send-notification-email-control";
     import CustomMaxScoreInput from "./detail/custom-max-score-input";
+import AssignCommentsToGradedButton from "./detail/assign-comments-to-graded-button";
 
     export default {
         components: {
+            AssignCommentsToGradedButton,
             CustomMaxScoreInput,
             // CustomMaxScoreInput,
             CreateAccessCodesButton,
