@@ -147,6 +147,9 @@ class ItemScoreController extends Controller
     }
 
     /**
+     * THIS SEEMS TO BE UNUSED AND TO HAVE BEEN REPLACED
+     * BY SAVE SCORES
+     *
      * Create a new store object or update an existing one
      * @param ItemScoreRequest $request
      * @return ItemScore
