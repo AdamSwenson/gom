@@ -222,14 +222,16 @@ class ItemScoreController extends Controller
 
 
     /**
+     * Handles the request to assign default comments to
+     * graded items
      * @param Exam $exam
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function assignCommentsToScores( Exam $exam )
     {
         try {
             $repo = app()->make(IItemCommentRepository::class);
             $repo->assignDefaultCommentsToGradedItems($exam);
-            return $this->sendAjaxFailure();
 
             return $this->sendAjaxSuccess();
         } catch (Exception $e) {

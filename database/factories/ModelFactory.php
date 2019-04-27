@@ -368,8 +368,8 @@ $factory->define(App\Models\NewGom\ItemScore::class, function ( Faker\Generator 
         'item_id' => $item,
         'exam_id' => $exam,
         'student_id' => $student,
-        'comment_text' => $faker->words,
-        'score' => $faker->randomNumber()
+        'comment_text' => $faker->sentence,
+        'score' => $faker->randomNumber(3)
     ];
 });
 

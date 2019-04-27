@@ -147,7 +147,10 @@
                     </div> `
                 },
 
-                overwriteDefaults: true,
+                /** Whether to replace the default text in graded student comments with
+                 * the new default text
+                 * */
+                overwriteDefaults: false,
 
                 placeholders:
                     {

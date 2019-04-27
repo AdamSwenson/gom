@@ -44,47 +44,43 @@ class ItemScoreControllerTest extends \TestCase
     }
 
 
-    public function loadIdentifiers( ItemScoreRequest $request )
+//    public function loadIdentifiers( ItemScoreRequest $request )
+//    {
+//        $this->exam = Exam::find($request->examId);
+//        $this->item = Item::find($request->itemId);
+//        $this->student = Student($request->studentId);
+////todo add error handling here so this kills it if there's a missing value
+//    }
+
+
+    /** @test*/
+    public function store( )
     {
-        $this->exam = Exam::find($request->examId);
-        $this->item = Item::find($request->itemId);
-        $this->student = Student($request->studentId);
-//todo add error handling here so this kills it if there's a missing value
-    }
-
-
-    /**
-     * Create a new store object or update an existing one
-     * @param ItemScoreRequest $request
-     * @return ItemScore
-     */
-    public function store( ItemScoreRequest $request )
-    {
-        $this->loadIdentifiers($request);
-        //if no exception, we assume everything is set
-        $score = ItemScore::where('exam_id', $this->exam->id)
-            ->where('student_id', $this->student->id)
-            ->where('item_id', $this->item->id)
-            ->first();
-
-        if ( !isset($score) ) {
-            //doing this explicitly since
-            //there's some problem when try the
-            //eloquent way
-            $score = new ItemScore();
-            $score->exam_id = $this->exam->id;
-            $score->item_id = $this->item->id;
-            $score->student_id = $this->student->id;
-        }
-
-        //Now, whether old or new, we set the data
-        //properties
-        $score->score = $request->input('score');
-        $score->comment_text = $request->input('commentText');
-        //and finally save
-        $score->save();
-
-        return $score;
+//        $this->loadIdentifiers($request);
+//        //if no exception, we assume everything is set
+//        $score = ItemScore::where('exam_id', $this->exam->id)
+//            ->where('student_id', $this->student->id)
+//            ->where('item_id', $this->item->id)
+//            ->first();
+//
+//        if ( !isset($score) ) {
+//            //doing this explicitly since
+//            //there's some problem when try the
+//            //eloquent way
+//            $score = new ItemScore();
+//            $score->exam_id = $this->exam->id;
+//            $score->item_id = $this->item->id;
+//            $score->student_id = $this->student->id;
+//        }
+//
+//        //Now, whether old or new, we set the data
+//        //properties
+//        $score->score = $request->input('score');
+//        $score->comment_text = $request->input('commentText');
+//        //and finally save
+//        $score->save();
+//
+//        return $score;
 
     }
 
@@ -111,6 +107,13 @@ class ItemScoreControllerTest extends \TestCase
         $response->assertStatus(200);
 
         foreach($expectedScores as $score){
+            $response->assertJsonFragment(['comment_text' => $score->comment_text,
+                'item_id' => $score->item_id,
+                'exam_id' => $score->exam_id,
+                'student_id' => $score->student_id,
+                'score' => $score->score,
+                'id' => $score->id
+            ]);
 //            $response->assertJsonFragment($score->toArray());
         }
 
@@ -133,7 +136,7 @@ class ItemScoreControllerTest extends \TestCase
             $expectedScores[] = $score;
         }
 
-        $route = self::$baseRoute . '/exam1/' . $this->exam->id;
+        $route = self::$baseRoute . '/exam/' . $this->exam->id;
         $response = $this->get($route);
 
         //check
@@ -141,6 +144,13 @@ class ItemScoreControllerTest extends \TestCase
         $response->assertStatus(200);
 
         foreach($expectedScores as $score){
+            $response->assertJsonFragment(['comment_text' => $score->comment_text,
+                'item_id' => $score->item_id,
+                'exam_id' => $score->exam_id,
+                'student_id' => $score->student_id,
+                'score' => $score->score,
+                'id' => $score->id
+            ]);
 //            $response->assertJsonFragment($score->toArray());
         }
 
@@ -174,7 +184,13 @@ class ItemScoreControllerTest extends \TestCase
         $response->assertStatus(200);
 
         foreach($expectedScores as $score){
-//            $response->assertJsonFragment($score->toArray());
+            $response->assertJsonFragment(['comment_text' => $score->comment_text,
+                'item_id' => $score->item_id,
+                'exam_id' => $score->exam_id,
+                'student_id' => $score->student_id,
+                'score' => $score->score,
+                'id' => $score->id
+            ]);
         }
     }
 
