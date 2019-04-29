@@ -12,7 +12,9 @@ namespace App\Http\Controllers\Item;
 use App\Exam;
 use App\Item;
 use App\Models\NewGom\ItemScore;
+use App\Repositories\Item\IItemCommentRepository;
 use App\Student;
+use Mockery;
 
 class ItemScoreControllerTest extends \TestCase
 {
@@ -44,6 +46,12 @@ class ItemScoreControllerTest extends \TestCase
         $this->items = factory(Item::class, $this->numberItems)->create();
         $this->students = factory(Student::class, $this->numberStudents)->create();
 
+    }
+
+
+    public function tearDown()
+    {
+        Mockery::close();
     }
 
 
@@ -124,6 +132,83 @@ class ItemScoreControllerTest extends \TestCase
         $this->assertEquals($payload['commentText'], $score->comment_text);
         $this->assertEquals($payload['score'], $score->score);
     }
+
+    /** @test */
+    public function saveScoreUpdateComment()
+    {
+        //We want to check that the score is untouched
+        //prep
+        $item = factory(Item::class)->create();
+        $student = $this->students[0];
+        $score = factory(ItemScore::class)->make(); //not using create so won't freak out on missing foreign keys
+        $score->exam()->associate($this->exam);
+        $score->item()->associate($item->id);
+        $score->student()->associate($student->id);
+        //now that everyone is associated, we can save the score
+        $score->save();
+
+        $payload = ['examId' => $this->exam->id,
+            'itemId' => $item->id,
+            'studentId' => $student->id,
+            'commentText' => $this->faker->word(),
+            '_token' => csrf_token()
+        ];
+
+
+        $route = self::$baseRoute . '/' . $this->exam->id . '/' . $item->id . '/' . $student->id;
+        $response = $this->json('POST', $route, $payload);
+
+        //check
+        $this->assertNotEmpty($response);
+        $response->assertStatus(200);
+
+        $s2 = ItemScore::where('exam_id', $this->exam->id)
+            ->where('item_id', $item->id)
+            ->where('student_id', $student->id)
+            ->first();
+
+        $this->assertEquals($payload['commentText'], $s2->comment_text, "Comment updated");
+        $this->assertEquals($score->score, $s2->score, "Still has original score");
+    }
+
+    /** @test */
+    public function saveScoreUpdateScore()
+    {
+        //We want to check that the comment is untouched
+        //prep
+        $item = factory(Item::class)->create();
+        $student = $this->students[0];
+        $score = factory(ItemScore::class)->make(); //not using create so won't freak out on missing foreign keys
+        $score->exam()->associate($this->exam);
+        $score->item()->associate($item->id);
+        $score->student()->associate($student->id);
+        //now that everyone is associated, we can save the score
+        $score->save();
+
+        $payload = ['examId' => $this->exam->id,
+            'itemId' => $item->id,
+            'studentId' => $student->id,
+            'score' => $this->faker->randomNumber(4),
+            '_token' => csrf_token()
+        ];
+
+
+        $route = self::$baseRoute . '/' . $this->exam->id . '/' . $item->id . '/' . $student->id;
+        $response = $this->json('POST', $route, $payload);
+
+        //check
+        $this->assertNotEmpty($response);
+        $response->assertStatus(200);
+
+        $s2 = ItemScore::where('exam_id', $this->exam->id)
+            ->where('item_id', $item->id)
+            ->where('student_id', $student->id)
+            ->first();
+
+        $this->assertEquals($score->comment_text, $s2->comment_text, "Comment still original ");
+        $this->assertEquals($payload['score'], $s2->score, "Score updated");
+    }
+
 
     /** @test */
     public function resetComment()
@@ -255,11 +340,7 @@ class ItemScoreControllerTest extends \TestCase
                 'score' => $score->score,
                 'id' => $score->id
             ]);
-//            $response->assertJsonFragment($score->toArray());
         }
-
-
-//        return ItemScore::where('exam_id', $exam1->id)->get();
     }
 
     /** @test */
@@ -296,6 +377,21 @@ class ItemScoreControllerTest extends \TestCase
                 'id' => $score->id
             ]);
         }
+    }
+    
+    /** @test */
+    public function assignCommentsToScoresCallsRepo(){
+        $repo = $this->makeMockObject(IItemCommentRepository::class);
+        $repo->shouldReceive('assignDefaultCommentsToGradedItems'); //->with($this->exam);
+
+        //call
+        $route = self::$baseRoute . '/' . $this->exam->id;
+        $response = $this->put($route);
+
+        //check
+        $this->assertNotEmpty($response);
+        $response->assertStatus(200);
+
     }
 
 

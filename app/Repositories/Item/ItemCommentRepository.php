@@ -9,7 +9,6 @@
 namespace App\Repositories\Item;
 
 
-use App\Comment;
 use App\Exam;
 use App\ItemComment;
 use App\Models\NewGom\ItemScore;
@@ -25,11 +24,11 @@ use App\Models\NewGom\ItemScore;
 class ItemCommentRepository implements IItemCommentRepository
 {
     static public $assignmentCriteria = [
-            Comment::VALENCE_ABSENT => 0.25,
-            Comment::VALENCE_POOR => 4.0,
-            Comment::VALENCE_OK => 6.9,
-            Comment::VALENCE_EXCELLENT => 10.0
-        ];
+        ItemComment::VALENCE_ABSENT => 0.25,
+        ItemComment::VALENCE_BOTTOM => 4.0,
+        ItemComment::VALENCE_MIDDLE => 6.9,
+        ItemComment::VALENCE_TOP => 10.0
+    ];
 //        Comment::VALENCE_ABSENT => [
 //            'minScore' => 0,
 //            'maxScore' => 0.25
@@ -57,14 +56,14 @@ class ItemCommentRepository implements IItemCommentRepository
      * @return mixed
      * @throws \Exception
      */
-    public function getCommentForScore($itemId, $score, $criteria=false)
+    public function getCommentForScore( $itemId, $score, $criteria = false )
     {
         $valence = $this->chooseValenceByScore($score, $criteria);
         return $this->getCommentForValence($itemId, $valence);
     }
 
 
-    public function getCommentForValence($itemId, $valence)
+    public function getCommentForValence( $itemId, $valence )
     {
         $comment = ItemComment::where('valence', $valence)
             ->where('item_id', $itemId)
@@ -80,13 +79,11 @@ class ItemCommentRepository implements IItemCommentRepository
      * @return int|string
      * @throws \Exception
      */
-    public function chooseValenceByScore($score, $criteria=false)
+    public function chooseValenceByScore( $score, $criteria = false )
     {
         $criteria = $criteria ? $criteria : self::$assignmentCriteria;
-        foreach($criteria as $k => $v)
-        {
-            if($score <= $v)
-//            if($score <= $v['maxScore'])
+        foreach ( $criteria as $k => $v ) {
+            if ( $score <= $v ) //            if($score <= $v['maxScore'])
             {
                 return $k;
             }
@@ -94,19 +91,20 @@ class ItemCommentRepository implements IItemCommentRepository
         throw new \Exception('score out of range');
     }
 
-    public function makeCutoffsFromMaxScore($maxScore){
+    public function makeCutoffsFromMaxScore( $maxScore )
+    {
         $cutoffs = [];
         //we subtract 1 to deal with the missing valence since it is
         //really 3 valences that we need to split the scores between
-        $interval = floor($maxScore / (sizeof(Comment::$valences) - 1));
+        $interval = floor($maxScore / (sizeof(ItemComment::$valences) - 1));
 
-        foreach(collect(Comment::$valences)->reverse() as $valence){
-                $cutoffs[$valence] = $maxScore;
-                $maxScore = $maxScore - $interval;
+        foreach ( collect(ItemComment::$valences)->reverse() as $valence ) {
+            $cutoffs[$valence] = $maxScore;
+            $maxScore = $maxScore - $interval;
         }
 
         //Update the value of the missing valence
-            $cutoffs[Comment::VALENCE_ABSENT] = 0;
+        $cutoffs[ItemComment::VALENCE_ABSENT] = 0;
 
         //We created the array in the reverse order
         //so flip the result back around
@@ -115,7 +113,19 @@ class ItemCommentRepository implements IItemCommentRepository
 
     }
 
-    public function assignDefaultCommentsToGradedItems(Exam $exam)
+    /**
+     * Go through all the graded items and assign the default
+     * comment appropriate to the score when there is no comment
+     * present.
+     *
+     * This is generally used when the comment set up is completed
+     * after the grading has begun / been done.
+     *
+     * @param Exam $exam
+     * @return mixed|void
+     * @throws \Exception
+     */
+    public function assignDefaultCommentsToGradedItems( Exam $exam )
     {
         $items = $exam->getItems();
 
@@ -134,8 +144,11 @@ class ItemCommentRepository implements IItemCommentRepository
             foreach ( $itemScores as $itemScore ) {
                 //find the appropriate default comment
                 $comment = $this->getCommentForScore($item->id, $itemScore->score, $criteria);
-                //set it on the item score object
-                $itemScore->comment_text = $comment;
+                if(isset($comment)) {
+                    //set it on the item score object
+                    $itemScore->comment_text = $comment->body;
+                    $itemScore->save();
+                }
             }
 
         }

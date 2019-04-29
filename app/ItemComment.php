@@ -39,6 +39,10 @@ class ItemComment extends BaseModel
         self::VALENCE_TOP
     ];
 
+    public static $valenceTexts = [
+        'stock', 'absent', 'poor', 'good', 'excellent'
+    ];
+
     /**
      * The attributes that should be mutated to dates.
      *
@@ -48,9 +52,6 @@ class ItemComment extends BaseModel
 
     protected $guarded = ['user_id', 'id'];
 
-    public static $valenceTexts = [
-         'stock', 'absent', 'poor', 'good', 'excellent'
-    ];
 
     protected $fillable = ['item_id', 'valence', 'body'];
 
@@ -203,14 +204,14 @@ class ItemComment extends BaseModel
     {
         return $this->belongsTo(User::class);
     }
-//
-//    /**
-//     * Association with item.
-//     *
-//     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-//     */
-//    public function item()
-//    {
-//        return $this->belongsTo(Item::class);
-//    }
+
+    /**
+     * Association with item.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function item()
+    {
+        return $this->belongsTo(Item::class);
+    }
 }
