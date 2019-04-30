@@ -63,18 +63,23 @@
                     <info-button :help-text="helpText.prePopulation"></info-button>
                 </div>
                 <div class="level-right">
-                    <div class="field">
-                        <label class="label">{{ syncControlLabel }} </label>
-                        <p class="control">
-                            <a id="overwriteGraded"
-                               class="button is-outlined is-primary"
-                               v-on:click="handleOverwriteGradedClick"
-                            >Overwrite default comments on graded exams</a>
-                            <!--<input type="checkbox" class="prepopulationControl" v-model="shouldPrePopulate">-->
-                            <!--{{ syncControlLabel }}                            -->
-                        </p>
-                        <!--<p class="help"></p>-->
-                    </div>
+                    <update-graded-comments-button
+                            v-on:toggled="handleOverwriteGradedClick"
+                            :is-active="overwriteDefaults"
+                    ></update-graded-comments-button>
+
+<!--                    <div class="field">-->
+<!--                        <label class="label">{{ updateGraded }} </label>-->
+<!--                        <p class="control">-->
+<!--                            <a id="overwriteGraded"-->
+<!--                               class="button is-outlined is-primary"-->
+<!--                               v-on:click="handleOverwriteGradedClick"-->
+<!--                            >Overwrite default comments on graded exams</a>-->
+<!--                            &lt;!&ndash;<input type="checkbox" class="prepopulationControl" v-model="shouldPrePopulate">&ndash;&gt;-->
+<!--                            &lt;!&ndash;{{ syncControlLabel }}                            &ndash;&gt;-->
+<!--                        </p>-->
+<!--                        &lt;!&ndash;<p class="help"></p>&ndash;&gt;-->
+<!--                    </div>-->
                 </div>
             </div>
         </div>
@@ -96,6 +101,7 @@
     import * as aTypes from '../../../store/action-types';
     import * as gTypes from '../../../store/getter-types';
     import valenceButtons from './comment/valence-buttons.vue'
+    import UpdateGradedCommentsButton from "./comment/update-graded-comments-button";
 
     /**
      * The comment details setup area
@@ -105,6 +111,7 @@
         name: 'comment-setup-panel',
 
         components: {
+            UpdateGradedCommentsButton,
             valenceButtons, // 'valence-buttons': valenceButtons,
         },
 
@@ -125,7 +132,8 @@
                     syncControl: {
                         noChanges: 'Use stock to create rough drafts of other comments',
                         changes: 'Overwrite existing comments with rough drafts from stock'
-                    }
+                    },
+                    // updateGraded: "Update graded exam comments"
                 },
 
                 /** Which valence is currently displayed */
@@ -174,6 +182,9 @@
         },
 
         computed: {
+            exam: function () {
+                return this.$store.getters[ gTypes.getActiveExam ];
+            },
 
             /**
              * Whether all comments for the item lack
@@ -481,7 +492,7 @@
                 } );
 
                 if(this.overwriteDefaults){
-                    pl.options = {overwriteDefaults: true}
+                    pl.options = {overwriteDefaults: true, examId : this.exam.id}
                 }
 
                 this.$store.commit( mTypes.updateComment, pl );

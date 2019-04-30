@@ -27,7 +27,7 @@ module.exports = {
      * @param store
      * @param item
      */
-    updateComment: ( item, overWriteDefaults=false ) => {
+    updateComment: ( item, overWriteDefaults=false, examId=false ) => {
         window.console.log( 'apiPlugin-commentRequests', 'updateComment', 8 );
         let out = {
             requestVersion: REQUEST_VERSION
@@ -40,12 +40,16 @@ module.exports = {
             out.itemId = item.id;
             out.comments = item.comments;
 
-            if(overWriteDefaults) {
+            //This tells the server to update the text of
+            //default (i.e., non-custom) comments assigned
+            //to graded students
+            if(overWriteDefaults && examId) {
                 out.overwriteDefaults = true;
+                out.examId = examId;
             }
 
             //put/patch
-            window.axios
+            return window.axios
                 .post( Routes.updateComment(item), out )
                 .then( ( response ) => {
                     // handleResponse( store, item, response );

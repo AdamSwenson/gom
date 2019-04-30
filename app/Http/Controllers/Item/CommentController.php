@@ -117,7 +117,7 @@ class CommentController extends Controller
                     //enabled.
                     if($request->has('overwriteDefaults') && $request->has('examId')){
                         $exam = Exam::where('id', $request->input('examId'))->first();
-//                        $this->handleUpdateDefaults($exam, $comment, $text);
+                        $this->handleUpdateDefaults($exam, $comment, $text);
 
                     }
 
