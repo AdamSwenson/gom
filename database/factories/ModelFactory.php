@@ -14,6 +14,8 @@
 use App\AccessKey;
 use App\Exam;
 use App\Grade;
+use App\Item;
+use App\ItemComment;
 use App\Models\NewGom\Note;
 use App\Models\NewGom\Tag;
 use App\Question;
@@ -370,6 +372,16 @@ $factory->define(App\Models\NewGom\ItemScore::class, function ( Faker\Generator 
         'student_id' => $student,
         'comment_text' => $faker->sentence,
         'score' => $faker->randomNumber(3)
+    ];
+});
+
+$factory->define(ItemComment::class, function(Faker\Generator $faker){
+    $item = \factory(App\Item::class)->create();
+    $valence = $faker->randomElement(ItemComment::$valenceTexts);
+    return [
+        'item_id' => $item,
+        'valence' => $valence,
+        'body' => $faker->paragraph
     ];
 });
 

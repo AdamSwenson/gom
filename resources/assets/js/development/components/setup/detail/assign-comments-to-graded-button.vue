@@ -1,13 +1,10 @@
-<style>
-
-</style>
 <script>
     import { assignDefaultCommentsToGradedItems } from '../../../../api/requests/commentRequests';
     import buttonBase from '../../input/button-base';
     import * as gTypes from '../../../../store/getter-types';
 
     export default {
-        name: 'add-child-button',
+        name: 'add-comments-to-graded-button',
 
         extends: buttonBase,
 
@@ -37,24 +34,6 @@
                     screenReaderText: 'Assigns default comments to exams which have already been graded.',
                 }
             },
-
-
-            //
-            // localLinkTitle: function () {
-            //     if ( this.isExam ) return 'Add an item to this exam';
-            //     return 'Add a new item as a child of this item';
-            // },
-            //
-            //
-            // localButtonText: function () {
-            //     if ( this.isExam ) return 'Add Item';
-            //     return 'Add Child';
-            // },
-            //
-            // localScreenReaderText: function () {
-            //     if ( this.isVisible ) return 'Click to add an item to this exam';
-            //     return 'Click to add a child to this item';
-            // },
 
         },
 
@@ -86,15 +65,8 @@
                     window.console.log( 'assign-comments-to-graded-button', 'error', 73, );
                     me.handleError();
                 } );
-
-
             },
 
-            /**
-             * This sends the actual request(s)
-             */
-            sendRequest: function () {
-            }
         },
 
     }

@@ -63,7 +63,7 @@ class CommentControllerTest extends \TestCase
 
         //check
         $comments = $item->comments;
-        $comments =  collect($comments);
+        $comments = collect($comments);
         foreach ( $testComments as $t ) {
             $valence = $t[0];
             $testText = $t[1]['text'];
@@ -97,7 +97,7 @@ class CommentControllerTest extends \TestCase
         $response->assertStatus(200);
 
         $comments = $item->comments;
-        $comments =  collect($comments);
+        $comments = collect($comments);
         foreach ( $testComments as $t ) {
             $valence = $t[0];
             $testText = $t[1]['text'];
@@ -109,20 +109,17 @@ class CommentControllerTest extends \TestCase
     }
 
     /** @test */
-    public function store_withOverwiteDefaults()
+    public function store_withOverwriteDefaults()
     {
         $testComments = []; //stands in for the comments array in the incoming item
         foreach ( ItemComment::$valenceTexts as $valence ) {
             $testComments[] = [$valence, ["text" => Factory::create()->sentence, "valence" => $valence]];
         }
         $item = factory(Item::class)->create();
-        $item->save();
-
         $exam = \factory(Exam::class)->create();
         //create item scores
-        $itemScore = new ItemScore();
-        $itemScore->item()->associate($item);
-        $itemScore->exam()->associate($exam);
+        $itemScore = \factory(ItemScore::class)->create(['item_id' => $item,
+            'exam_id' => $exam]);
 
         $data = [
             'item' => $item,
@@ -139,7 +136,7 @@ class CommentControllerTest extends \TestCase
         $response->assertStatus(200);
 
         $comments = $item->comments;
-        $comments =  collect($comments);
+        $comments = collect($comments);
         foreach ( $testComments as $t ) {
             $valence = $t[0];
             $testText = $t[1]['text'];
@@ -150,25 +147,42 @@ class CommentControllerTest extends \TestCase
 
     }
 
-    public function handleUpdateDefaults_noChange(){
+    /** @test */
+    public function handleUpdateDefaults_noChange()
+    {
+        $exam = \factory(Exam::class)->create();
+        $comment = \factory(ItemComment::class)->create();
+        $expected = $comment->body;
+
+        //call
+        $this->object->handleUpdateDefaults($exam, $comment, $comment->body);
 
         //check
-        //no comments changed
-
-        //ensure no
+        $this->assertEquals($expected, $comment->body, "Comment text not updated");
     }
 
-    public function handleUpdateDefaults_oneValenceChange(){
-//ensure all other valences are intact
-
+    /** @test */
+    public function handleUpdateDefaults_onlyChangesCommentsOnCurrentExam()
+    {
         //ensure comments on scores in other exams with the same
         //item have not been affected
+        $item = \factory(Item::class)->create();
+        $exam1 = \factory(Exam::class)->create();
+        $exam2 = \factory(Exam::class)->create();
+        $comment = \factory(ItemComment::class)->create(['item_id' => $item]);
+        $newText = $this->faker->paragraph();
+
+        $unchangedScore = \factory(ItemScore::class)->create(['item_id' => $item, 'exam_id' => $exam1, 'comment_text' => $comment->body]);
+        $scoreToChange = \factory(ItemScore::class)->create(['item_id' => $item, 'exam_id' => $exam2, 'comment_text' => $comment->body]);
+
+        //call
+        $this->object->handleUpdateDefaults($exam2, $comment, $newText);
+
+        //check
+        $s1 = ItemScore::where('id', $unchangedScore->id)->first();
+        $this->assertEquals($comment->body, $s1->comment_text, "Comment text on other exams not updated");
+        $s2 = ItemScore::where('id', $scoreToChange->id)->first();
+        $this->assertEquals($newText, $s2->comment_text, "Comment text on current exam was updated");
     }
-
-
-    public function handleUpdateDefaults_multiValenceChange(){
-
-    }
-
 
 }

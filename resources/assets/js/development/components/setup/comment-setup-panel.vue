@@ -23,13 +23,14 @@
                         v-bind:placeholder="placeholder"
                         v-model="commentText"></textarea>
             </p>
+
             <!--<p class="help">{{numCharacters}}</p>-->
 
             <p v-if=" isOverwriteHelpMessageVisible "
-               class="help is-danger"
-            >Changes to the stock text will be used to create rough drafts of the text for the other comments. If you
-                have already customized any of these, these changes will replace any customizations you've made. If you
-                don't want either of these things to happen, un-check the box below.</p>
+               class="help is-danger"></p>
+<!--            >Changes to the stock text will be used to create rough drafts of the text for the other comments. If you-->
+<!--                have already customized any of these, these changes will replace any customizations you've made. If you-->
+<!--                don't want either of these things to happen, un-check the box below.</p>-->
         </div>
 
         <valence-buttons
@@ -43,7 +44,6 @@
             <!-- Left side -->
             <div class="level-left">
                 <div class="level-item">
-                    <!--<label class="checkbox">-->
                     <div class="field">
                         <label class="label">{{ syncControlLabel }} </label>
                         <p class="control">
@@ -51,36 +51,21 @@
                                class="button is-outlined is-primary"
                                v-on:click="handlePopulateClick"
                             >Create comments from stock</a>
-                            <!--<input type="checkbox" class="prepopulationControl" v-model="shouldPrePopulate">-->
-                            <!--{{ syncControlLabel }}                            -->
                         </p>
-                        <!--<p class="help"></p>-->
                     </div>
-
-                    <!--</label>-->
                 </div>
+
                 <div class="level-item">
                     <info-button :help-text="helpText.prePopulation"></info-button>
                 </div>
+
                 <div class="level-right">
                     <update-graded-comments-button
                             v-on:toggled="handleOverwriteGradedClick"
                             :is-active="overwriteDefaults"
                     ></update-graded-comments-button>
-
-<!--                    <div class="field">-->
-<!--                        <label class="label">{{ updateGraded }} </label>-->
-<!--                        <p class="control">-->
-<!--                            <a id="overwriteGraded"-->
-<!--                               class="button is-outlined is-primary"-->
-<!--                               v-on:click="handleOverwriteGradedClick"-->
-<!--                            >Overwrite default comments on graded exams</a>-->
-<!--                            &lt;!&ndash;<input type="checkbox" class="prepopulationControl" v-model="shouldPrePopulate">&ndash;&gt;-->
-<!--                            &lt;!&ndash;{{ syncControlLabel }}                            &ndash;&gt;-->
-<!--                        </p>-->
-<!--                        &lt;!&ndash;<p class="help"></p>&ndash;&gt;-->
-<!--                    </div>-->
                 </div>
+
             </div>
         </div>
 
@@ -98,7 +83,6 @@
     import Payload from '../../../models/Payload'
     import Exam from '../../../models/Exam'
     import * as mTypes from '../../../store/mutation-types';
-    import * as aTypes from '../../../store/action-types';
     import * as gTypes from '../../../store/getter-types';
     import valenceButtons from './comment/valence-buttons.vue'
     import UpdateGradedCommentsButton from "./comment/update-graded-comments-button";
@@ -148,11 +132,13 @@
                     </div>`,
 
                     /** The help text to be displayed for the sync checkbox */
-                    prePopulation: `<div class="help">
-                    <p>If this box is checked, when you enter text into the Stock valence
-                    comments will be generated for the other valences.</p>
-                    <p>You will probably still want to further customize the text for each.</p>
-                    </div> `
+                    prePopulation: `<div class="help"><p>Changes to the stock text will be used to create rough drafts of the text for the other comments. If you have already customized any of these, these changes will replace any customizations you've made.</p><p> If you don't want either of these things to happen, do not click this!</p></div>`
+
+                    //     `<div class="help">
+                    // <p>If this box is checked, when you enter text into the Stock valence
+                    // comments will be generated for the other valences.</p>
+                    // <p>You will probably still want to further customize the text for each.</p>
+                    // </div> `
                 },
 
                 /** Whether to replace the default text in graded student comments with
@@ -168,7 +154,7 @@
                             "Explain in detail what needed to be done in order to fully complete this task. This will form the basis for the response seen by the student.",
                     },
 
-                rows : {
+                rows: {
                     // isMaximized : false,
                     maximizeAtChars: 200,
                     minimized: 4,
@@ -225,7 +211,7 @@
                 set: function ( v ) {
 //                    window.console.log( 'comment-setup-panel', 'set', 97, this.serialNumber, this.item, v );
 
-                    this.updateComment(this.displayed, v);
+                    this.updateComment( this.displayed, v );
                     // let pl = Payload.factory( {
                     //     obj: this.item,
                     //     updateValence: this.displayed,
@@ -320,8 +306,8 @@
                 return this.labels.item;
             },
 
-            numCharacters: function(){
-                if(!_.isUndefined(this.commentText) && !_.isNull(this.commentText)){
+            numCharacters: function () {
+                if ( !_.isUndefined( this.commentText ) && !_.isNull( this.commentText ) ) {
                     return this.commentText.length;
                 }
                 return 0;
@@ -332,12 +318,11 @@
              */
             numRows: function () {
                 // return this.rows.isMaximized ? this.rows.maximized : this.rows.minimized;
-                if(this.numCharacters < this.rows.maximizeAtChars) {
+                if ( this.numCharacters < this.rows.maximizeAtChars ) {
                     return this.rows.minimized;
                 }
                 return this.rows.maximized;
             },
-
 
             panelId: function () {
                 return this.identifier + '-' + this.serialNumber;
@@ -434,9 +419,8 @@
                 this.shouldPrePopulate = false;
             },
 
-            handleOverwriteGradedClick: function(){
-              this.overwriteDefaults = ! this.overwriteDefaults;
-                window.console.log( 'comment-setup-panel', 'handleOverwriteGradedClick', 425, this.overwriteDefaults);
+            handleOverwriteGradedClick: function () {
+                this.overwriteDefaults = !this.overwriteDefaults;
             },
 
             /**
@@ -466,13 +450,7 @@
                     let text = Comment.makePrePopulatedContent( comment.valence, stock );
 
                     //save the new comment text for the valence
-                    me.updateComment(comment.valence, text);
-                    // let pl = Payload.factory( {
-                    //     obj: me.item,
-                    //     updateValence: comment.valence,
-                    //     updateVal: text
-                    // } );
-                    // me.$store.commit( mTypes.updateComment, pl );
+                    me.updateComment( comment.valence, text );
                 } );
             },
 
@@ -484,15 +462,15 @@
              * @param valence
              * @param val
              */
-            updateComment: function( valence, val){
+            updateComment: function ( valence, val ) {
                 let pl = Payload.factory( {
                     obj: this.item,
                     updateValence: valence,
                     updateVal: val,
                 } );
 
-                if(this.overwriteDefaults){
-                    pl.options = {overwriteDefaults: true, examId : this.exam.id}
+                if ( this.overwriteDefaults ) {
+                    pl.options = { overwriteDefaults: true, examId: this.exam.id }
                 }
 
                 this.$store.commit( mTypes.updateComment, pl );

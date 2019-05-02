@@ -7,10 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Item\ItemCommentRequest;
 use App\Item;
 use App\ItemComment;
-use App\Jobs\Comments\AssignDefaultCommentsToScores;
 use App\Models\NewGom\ItemScore;
 use App\Repositories\Exam\IExamRepository;
-use App\Repositories\Item\IItemCommentRepository;
 use App\Repositories\Item\IItemRepository;
 use App\Repositories\Student\IStudentRepository;
 use Illuminate\Http\Request;
@@ -44,30 +42,13 @@ class CommentController extends Controller
     protected $elementAssignmentDao;
     /** @var IItemRepository */
     protected $itemRepository;
-    /**
-     * @var IItemCommentRepository
-     */
-    private $commentRepository;
 
     /**
      * CommentController constructor.
-     * @param IExamRepository $examDao
-     * @param IStudentRepository $studentDao
-     * @param IItemRepository $itemRepository
-     * @param IItemCommentRepository $commentRepository
      */
-    public function __construct(
-//        IExamRepository $examDao,
-//        IStudentRepository $studentDao,
-//        IItemRepository $itemRepository,
-//        IItemCommentRepository $commentRepository
-    )
+    public function __construct()
     {
         $this->middleware('auth');
-//        $this->examDao = $examDao;
-//        $this->itemRepository = $itemRepository;
-//        $this->commentRepository = $commentRepository;
-//        $this->studentDao = $studentDao;
     }
 
 
@@ -115,7 +96,7 @@ class CommentController extends Controller
 
                     //Check if the overwrite default flag is
                     //enabled.
-                    if($request->has('overwriteDefaults') && $request->has('examId')){
+                    if ( $request->has('overwriteDefaults') && $request->has('examId') ) {
                         $exam = Exam::where('id', $request->input('examId'))->first();
                         $this->handleUpdateDefaults($exam, $comment, $text);
 
@@ -162,7 +143,7 @@ class CommentController extends Controller
         //valences of existing comments will be included even if
         //only one has been altered. We do not want to iterate through
         //unneeded valences
-        if($oldComment->body !== $newText) {
+        if ( $oldComment->body !== $newText ) {
 
             $itemScores = ItemScore::where('exam_id', $exam->id)
                 ->where('item_id', $oldComment->item->id)
