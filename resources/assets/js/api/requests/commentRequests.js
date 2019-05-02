@@ -24,8 +24,9 @@ module.exports = {
     /**
      * This is used during the setup process to handle
      * updating the stock comments for an item
-     * @param store
      * @param item
+     * @param overWriteDefaults If true, the server will update comments on graded exams with the new text
+     * @param examId
      */
     updateComment: ( item, overWriteDefaults=false, examId=false ) => {
         window.console.log( 'apiPlugin-commentRequests', 'updateComment', 8 );

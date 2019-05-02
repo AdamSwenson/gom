@@ -1,54 +1,61 @@
 <script>
-    import buttonBase from '../../input/toggle-button-base';
-    // import toggleMixin from '../../input/toggleButtonMixin';
+    import buttonBase from '../../input/button-base';
+
+    const { updateComment } = require( "../../../../api/requests/commentRequests" );
 
     export default {
         name: "update-graded-comments-button",
         extends: buttonBase,
 
-        props: [ 'isActive' ],
+        props: [ 'item', 'exam' ],
 
         data: function () {
             return {
-                buttonId: "",
-                styling: {
-                    off: 'is-primary is-outlined',
-                    on: 'is-primary'
+                isWorking: false,
+                vars: {
+                    buttonText: {
+                        default: 'Update comments',
+                        working: '------'
+                    },
+                    icon: {
+                        default: "",
+                        working: "",
+                    }
                 },
-
-                icon: 'fa fa-list-alt',
-
-                text: {
-                    on: "Update default comments on graded exams",
-                    off: "Update default comments on graded exams",
-                },
-                srText: {
-                    on: 'Overwrite default comments on graded exams with the new text',
-                    off: ''
-                },
-
-                title: "",
             }
         },
 
         computed: {
-            buttonText: function () {
-                return this.text.on;
-            },
-            srTextDisplay: function () {
-                return this.srText.on;
-            },
-            computedStyling: function () {
-                return this.isActive ? this.styling.on : this.styling.off;
+            local: function () {
+                return {
+                    buttonText:
+                        this.isWorking ? this.vars.buttonText.working : this.vars.buttonText.default,
+                    helpText: "help",
+                    icon: 'fa fa-list-alt',
+                    identifyingClass: this.name,
+                    linkClass: 'is-warning is-outlined',
+                    linkTitle: '',
+                    labelText: "Update comments on graded exams",
+                    screenReaderText: 'Overwrite default comments on graded exams with the new text',
+                }
             }
         },
 
-
         methods: {
-            toggle: function () {
-                this.$emit( 'toggled' );
+
+
+            handleClick: function () {
+                let me = this;
+                me.isWorking = true;
+                updateComment( this.item, true, this.exam.id ).then( function () {
+                    me.isWorking = false;
+                } );
             }
-         }
+        }
 
     }
 </script>
+
+<style scoped>
+
+</style>

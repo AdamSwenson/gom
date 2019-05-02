@@ -60,9 +60,13 @@
                 </div>
 
                 <div class="level-right">
-                    <update-graded-comments-button
-                            v-on:toggled="handleOverwriteGradedClick"
-                            :is-active="overwriteDefaults"
+<!--                    <update-graded-comments-toggle-->
+<!--                            v-on:toggled="handleOverwriteGradedClick"-->
+<!--                            :is-active="overwriteDefaults"-->
+<!--                    ></update-graded-comments-toggle>-->
+
+                    <update-graded-comments-button :exam="exam"
+                                                   :item="item"
                     ></update-graded-comments-button>
                 </div>
 
@@ -86,6 +90,7 @@
     import * as gTypes from '../../../store/getter-types';
     import valenceButtons from './comment/valence-buttons.vue'
     import UpdateGradedCommentsButton from "./comment/update-graded-comments-button";
+    import UpdateGradedCommentsToggle from "./comment/update-graded-comments-toggle";
 
     /**
      * The comment details setup area
@@ -95,6 +100,7 @@
         name: 'comment-setup-panel',
 
         components: {
+            UpdateGradedCommentsToggle,
             UpdateGradedCommentsButton,
             valenceButtons, // 'valence-buttons': valenceButtons,
         },
