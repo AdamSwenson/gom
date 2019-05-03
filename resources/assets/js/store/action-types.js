@@ -52,18 +52,22 @@ export const cloneItem = 'cloneItem';
 export const deleteItem = 'deleteItem'; //destroys item in db
 export const removeItem = 'removeItem'; //disassociates it from a parent
 export const addNewItem = 'addNewItem';
+export const addOlderSibling = 'addOlderSibling';
+export const addYoungerSibling = 'addYoungerSibling';
+
+export const addItemToOrder = 'addItemToOrder';
+export const removeItemFromOrder = 'removeItemFromOrder';
+export const updateItemOrder = 'updateItemOrder';
+
 export const loadItems = 'loadItems';
 export const updateItemName = 'updateItemName';
 export const promoteItem = 'promoteItem';
 export const demoteItem = 'demoteItem';
 export const cleanupItems = 'cleanupItems';
 export const toggleItemPublic = 'toggleItemPublic';
-export const addOlderSibling = 'addOlderSibling';
-export const addYoungerSibling = 'addYoungerSibling';
+export const prePopulateComments = 'prePopulateComments';
+export const updateComment = 'updateComment';
 export const onUpdate = 'onUpdate';
-export const addItemToOrder = 'addItemToOrder';
-export const removeItemFromOrder = 'removeItemFromOrder';
-export const updateItemOrder = 'updateItemOrder';
 
 //questions
 export const loadMaxQuestionScores = 'loadMaxQuestionScores';

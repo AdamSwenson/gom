@@ -16,21 +16,16 @@
 
         <div class="field ">
             <label class="label ">{{ label }}</label>
+
             <p class="control">
                 <textarea
                         class="textarea comment-text"
                         v-bind:rows="numRows"
                         v-bind:placeholder="placeholder"
-                        v-model="commentText"></textarea>
+                        v-model="commentText"
+                ></textarea>
             </p>
 
-            <!--<p class="help">{{numCharacters}}</p>-->
-
-            <p v-if=" isOverwriteHelpMessageVisible "
-               class="help is-danger"></p>
-<!--            >Changes to the stock text will be used to create rough drafts of the text for the other comments. If you-->
-<!--                have already customized any of these, these changes will replace any customizations you've made. If you-->
-<!--                don't want either of these things to happen, un-check the box below.</p>-->
         </div>
 
         <valence-buttons
@@ -40,38 +35,24 @@
                 v-on:please-change-valence="changeDisplayedValence"
         ></valence-buttons>
 
-        <div class="level">
-            <!-- Left side -->
-            <div class="level-left">
-                <div class="level-item">
-                    <div class="field">
-                        <label class="label">{{ syncControlLabel }} </label>
-                        <p class="control">
-                            <a id="prepopulationControl"
-                               class="button is-outlined is-primary"
-                               v-on:click="handlePopulateClick"
-                            >Create comments from stock</a>
-                        </p>
-                    </div>
-                </div>
 
-                <div class="level-item">
-                    <info-button :help-text="helpText.prePopulation"></info-button>
-                </div>
-
-                <div class="level-right">
-<!--                    <update-graded-comments-toggle-->
-<!--                            v-on:toggled="handleOverwriteGradedClick"-->
-<!--                            :is-active="overwriteDefaults"-->
-<!--                    ></update-graded-comments-toggle>-->
-
-                    <update-graded-comments-button :exam="exam"
-                                                   :item="item"
-                    ></update-graded-comments-button>
-                </div>
+        <div class="columns">
+            <div class="column">
+                <prepopulate-comments-button
+                        :item="item"
+                        :haveCommentsBeenCustomized="haveCommentsBeenCustomized"
+                        v-on:please-refresh="refreshDisplay"
+                ></prepopulate-comments-button>
 
             </div>
+            <div class="column">
+                <update-graded-comments-button
+                        :exam="exam"
+                        :item="item"
+                ></update-graded-comments-button>
+            </div>
         </div>
+
 
     </div>
 
@@ -86,11 +67,12 @@
     import Comment from '../../../models/Comment'
     import Payload from '../../../models/Payload'
     import Exam from '../../../models/Exam'
-    import * as mTypes from '../../../store/mutation-types';
     import * as gTypes from '../../../store/getter-types';
+    import * as aTypes from '../../../store/action-types';
     import valenceButtons from './comment/valence-buttons.vue'
     import UpdateGradedCommentsButton from "./comment/update-graded-comments-button";
     import UpdateGradedCommentsToggle from "./comment/update-graded-comments-toggle";
+    import PrepopulateCommentsButton from "./comment/prepopulate-comments-button";
 
     /**
      * The comment details setup area
@@ -100,6 +82,7 @@
         name: 'comment-setup-panel',
 
         components: {
+            PrepopulateCommentsButton,
             UpdateGradedCommentsToggle,
             UpdateGradedCommentsButton,
             valenceButtons, // 'valence-buttons': valenceButtons,
@@ -119,11 +102,6 @@
                 labels: {
                     exam: "Set up student feedback for the exam as a whole",
                     item: "Set up student feedback for this item",
-                    syncControl: {
-                        noChanges: 'Use stock to create rough drafts of other comments',
-                        changes: 'Overwrite existing comments with rough drafts from stock'
-                    },
-                    // updateGraded: "Update graded exam comments"
                 },
 
                 /** Which valence is currently displayed */
@@ -136,19 +114,11 @@
                     <p>In this area, you create the feedback your students will receive for this item. </p>
                     <p>[Explanation of score levels nd valences here]</p>
                     </div>`,
-
-                    /** The help text to be displayed for the sync checkbox */
-                    prePopulation: `<div class="help"><p>Changes to the stock text will be used to create rough drafts of the text for the other comments. If you have already customized any of these, these changes will replace any customizations you've made.</p><p> If you don't want either of these things to happen, do not click this!</p></div>`
-
-                    //     `<div class="help">
-                    // <p>If this box is checked, when you enter text into the Stock valence
-                    // comments will be generated for the other valences.</p>
-                    // <p>You will probably still want to further customize the text for each.</p>
-                    // </div> `
                 },
 
                 /** Whether to replace the default text in graded student comments with
                  * the new default text
+                 * NOT CURRENTLY USED
                  * */
                 overwriteDefaults: false,
 
@@ -167,8 +137,10 @@
                     maximized: 8
                 },
 
+                styling: ''
+
                 /** Whether to pre-populate the comments */
-                shouldPrePopulate: false,
+                // shouldPrePopulate: false,
 
             };
         },
@@ -215,24 +187,9 @@
                 },
 
                 set: function ( v ) {
-//                    window.console.log( 'comment-setup-panel', 'set', 97, this.serialNumber, this.item, v );
 
                     this.updateComment( this.displayed, v );
-                    // let pl = Payload.factory( {
-                    //     obj: this.item,
-                    //     updateValence: this.displayed,
-                    //     updateVal: v,
-                    //     options: {overwriteDefaults: true}
-                    // } );
-                    //
-                    // this.$store.commit( mTypes.updateComment, pl );
 
-                    //If the user indicated that they want to prepopulate
-                    //the other comments from stock and if the valence was stock
-                    //we now set the other comments
-                    if ( this.displayed === 'stock' && this.shouldPrePopulate === true ) {
-                        this.prePopulateComments( v );
-                    }
                 }
             },
 
@@ -265,7 +222,6 @@
                 return out;
             },
 
-
             /**
              * This determines whether any of the comments have been
              * customized by the user. This is important to know so that
@@ -290,17 +246,6 @@
                 if ( this.item instanceof Exam ) return true;
                 if ( this.forExam ) return true;
                 return false;
-            },
-
-            isOverwriteHelpMessageVisible: function () {
-                //This only displays when we are working on stock
-                if ( this.displayed !== 'stock' ) return false;
-                //if nothing has been set, the info dialog is assumed to be enough
-                if ( this.isEveryCommentEmpty ) return false;
-
-                if ( this.shouldPrePopulate ) return true;
-
-
             },
 
             item: function () {
@@ -347,32 +292,15 @@
                 return this.placeholders.item;
             },
 
-            styling: function () {
-            },
-
-            /**
-             * The text displayed for the control which
-             * governs whether changes to stock overwrite
-             * existing comments.
-             */
-            syncControlLabel: function () {
-                return this.haveCommentsBeenCustomized ? this.labels.syncControl.changes : this.labels.syncControl.noChanges;
-            },
 
             valences: function () {
                 return Comment.valences;
             },
 
             valencesExcludingStock: function () {
-                return _.drop( Comment.valences );
+                return Comment.valencesExcludingStock;
             }
         },
-
-        // watch: {
-        //   commentText: function(v){
-        //       window.console.log( 'comment-setup-panel', 'commentText', 349, v);
-        //   }
-        // },
 
 
         methods: {
@@ -389,76 +317,25 @@
             },
 
             /**
-             * When the user clicks the button, this fires the prepopulate command.
-             * It has a bunch of extra stuff because this used to default to doing it
-             * automatically. But that created the danger of wiping out the user's work,
-             * This was changed from a checkbox with GOM-380
+             * After we prepopulate the comments from stock,
+             * we need to briefly switch back and forth between
+             * the stock and the current displayed valence so that
+             * the currently displayed valence will have its text updated.
+             * Hopefully the user won't notice the change, but vue doesn't seem
+             * to let us update live.
              */
-            handlePopulateClick: function () {
-                //change the prepopulate control value
-                this.shouldPrePopulate = true;
+            refreshDisplay: function () {
 
-                //we need to briefly switch back and forth between
-                //the stock and the current displayed valence so that
-                //the currently displayed valence will have its text updated.
-                //Hopefully the user won't notice the change, but vue doesn't seem
-                //to let us update live.
                 //So we grab the current valence in order to change back to it
                 //once we've done the population.
                 let d = this.displayed;
                 this.changeDisplayedValence( 'stock' );
 
-                //grab the stock comment
-                if ( typeof this.item !== 'undefined' ) {
-                    let comment = this.item.getComment( 'stock' );
-                    if ( typeof comment !== 'undefined' ) {
-                        //fire the method which handles the population
-                        //using the stock comment text
-                        this.prePopulateComments( comment.text );
-                    }
-                }
-
                 //Change back to the valence that we were looking at
                 this.changeDisplayedValence( d );
 
-                //reset the control value, so won't continue doing it
-                this.shouldPrePopulate = false;
             },
 
-            handleOverwriteGradedClick: function () {
-                this.overwriteDefaults = !this.overwriteDefaults;
-            },
-
-            /**
-             * Takes the stock comment and creates rough drafts
-             * of the valenced comments for the user to work from.
-             */
-            prePopulateComments: function ( stock ) {
-                if ( !this.shouldPrePopulate ) return false;
-
-                var me = this;
-
-                _.forEach( this.valencesExcludingStock, function ( v ) {
-                    let comment = me.item.getComment( v );
-
-//                        todo This logic could probably be improved
-                    // Skip if the comment text is already set.
-                    // We don't want to overwrite existing comments if stock is altered.
-                    // We can't judge when to overwrite the saved text with
-                    // changes from stock by checking that comment.text.length > 0
-                    // since that will stop after the first letter of stock.
-                    // Thus we instead check that it isn't longer than the current stock we
-                    // are trying to insert.
-                    if ( !_.isUndefined( comment.text ) && !_.isNull( comment.text ) && comment.text.length > stock ) return true;
-
-                    //create the new text.
-                    //nb, any enhancements to prepopulation should be done in Comment
-                    let text = Comment.makePrePopulatedContent( comment.valence, stock );
-
-                    //save the new comment text for the valence
-                    me.updateComment( comment.valence, text );
-                } );
-            },
 
             /**
              * Utility function to centralize calling
@@ -475,11 +352,13 @@
                     updateVal: val,
                 } );
 
-                if ( this.overwriteDefaults ) {
-                    pl.options = { overwriteDefaults: true, examId: this.exam.id }
-                }
-
-                this.$store.commit( mTypes.updateComment, pl );
+                // re-enable if we decide to use the update-graded-comments-toggle
+                // as created in GOM-391
+                // if ( this.overwriteDefaults ) {
+                //     pl.options = { overwriteDefaults: true, examId: this.exam.id }
+                // }
+                this.$store.dispatch( aTypes.updateComment, pl );
+                // this.$store.commit( mTypes.updateComment, pl );
             }
 
         },

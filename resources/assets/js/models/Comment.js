@@ -122,6 +122,22 @@ export default class Comment extends IModel {
         ];
     }
 
+    /**
+     * All valence names except for, duh, the stock valence
+     */
+    static get valencesExcludingStock(){
+        return _.filter(Comment.valences, (v)=>{ return v !== Comment.stockValenceName});
+    }
+
+    /**
+     * Since we might decide to call it something
+     * other than 'stock' down the road and lots of
+     * things depend on this, we define it separately.
+     */
+    static get stockValenceName(){
+        return 'stock';
+    }
+
 
     /**
      * Returns a list of fields which may
