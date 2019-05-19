@@ -8,6 +8,11 @@
      *          linkTitle: '',
      *          linkClass: '',
      *          identifyingClass: '',
+     *
+     * They may also, but do not have to, define:
+     *          labelText
+     *          helpText
+     *
      * This should be done via one of three ways:
      * (1) Define in data like this:
      *  data : function() {
@@ -48,47 +53,78 @@
 
         computed: {
             buttonText: function () {
-                if ( !_.isUndefined( this.propertyObject ) && !_.isUndefined( this.propertyObject.buttonText ) ) {
-                    return this.propertyObject.buttonText;
-                }
-                return this.local.buttonText;
+
+                return this.findValue('buttonText', '');
+                // if ( !_.isUndefined( this.propertyObject ) && !_.isUndefined( this.propertyObject.buttonText ) ) {
+                //     return this.propertyObject.buttonText;
+                // }
+                // return this.local.buttonText;
+            },
+
+            helpText: function () {
+
+                return this.findValue('helpText', false);
+                // if ( !_.isUndefined( this.propertyObject ) && !_.isUndefined( this.propertyObject.helpText ) ) {
+                //     return this.propertyObject.helpText;
+                // }
+                //
+                // return !_.isUndefined( this.local.helpText ) ? this.local.helpText : false;
             },
 
             icon: function () {
-                if ( !_.isUndefined( this.propertyObject ) && !_.isUndefined( this.propertyObject.icon ) ) {
-                    return this.propertyObject.icon;
-                }
-                return this.local.icon;
+
+                return this.findValue('icon', '');
+                // if ( !_.isUndefined( this.propertyObject ) && !_.isUndefined( this.propertyObject.icon ) ) {
+                //     return this.propertyObject.icon;
+                // }
+                // return this.local.icon;
             },
 
             identifyingClass: function () {
-                if ( !_.isUndefined( this.propertyObject ) && !_.isUndefined( this.propertyObject.identifyingClass ) ) {
-                    return this.propertyObject.identifyingClass;
-                }
-                return this.local.identifyingClass;
+
+                return this.findValue('identifyingClass', '');
+                // if ( !_.isUndefined( this.propertyObject ) && !_.isUndefined( this.propertyObject.identifyingClass ) ) {
+                //     return this.propertyObject.identifyingClass;
+                // }
+                // return this.local.identifyingClass;
             },
 
             linkClass: function () {
-                if ( !_.isUndefined( this.propertyObject ) && !_.isUndefined( this.propertyObject.linkClass ) ) {
-                    return this.propertyObject.linkClass;
-                }
-                return this.local.linkClass;
+                return this.findValue('linkClass', '');
+                // if ( !_.isUndefined( this.propertyObject ) && !_.isUndefined( this.propertyObject.linkClass ) ) {
+                //     return this.propertyObject.linkClass;
+                // }
+                // return this.local.linkClass;
 
             },
 
             linkTitle: function () {
-                if ( !_.isUndefined( this.propertyObject ) && !_.isUndefined( this.propertyObject.linkTitle ) ) {
-                    return this.propertyObject.linkTitle;
-                }
-                return this.local.linkTitle;
+
+                return this.findValue('linkTitle', '');
+                // if ( !_.isUndefined( this.propertyObject ) && !_.isUndefined( this.propertyObject.linkTitle ) ) {
+                //     return this.propertyObject.linkTitle;
+                // }
+                // return this.local.linkTitle;
 
             },
 
+            labelText: function () {
+                return this.findValue('labelText', false);
+                // if ( !_.isUndefined( this.propertyObject ) && !_.isUndefined( this.propertyObject.labelText ) ) {
+                //     return this.propertyObject.labelText;
+                // }
+                //
+                // return !_.isUndefined( this.local.labelText ) ? this.local.labelText : false;
+            },
+
+
             screenReaderText: function () {
-                if ( !_.isUndefined( this.propertyObject ) && !_.isUndefined( this.propertyObject.screenReaderText ) ) {
-                    return this.propertyObject.screenReaderText;
-                }
-                return this.local.screenReaderText;
+
+                return this.findValue('screenReaderText', '');
+                // if ( !_.isUndefined( this.propertyObject ) && !_.isUndefined( this.propertyObject.screenReaderText ) ) {
+                //     return this.propertyObject.screenReaderText;
+                // }
+                // return this.local.screenReaderText;
             },
 
             /**
@@ -121,19 +157,41 @@
         methods: {
             handleClick: function () {
 
+            },
+
+            /**
+             * The value may be defined in several places,
+             * this centralizes looking for where it is defined
+             * @param propertyName
+             * @param defaultValue
+             */
+            findValue: function ( propertyName, defaultValue ) {
+
+                if ( !_.isUndefined( this.propertyObject ) && !_.isUndefined( this.propertyObject[ propertyName ] ) ) {
+                    return this.propertyObject[ propertyName ];
+                }
+
+                if ( !_.isUndefined( this.local ) && !_.isUndefined( this.local[ propertyName ] ) ) {
+                    return this.local[ propertyName ];
+                }
+
+                return defaultValue;
             }
         }
     }
 </script>
 <template>
-    <p class="field"
-       v-bind:class="identifyingClass"
+    <div class="field"
+         v-bind:class="identifyingClass"
     >
-        <a class="button "
-           v-bind:class="linkClass"
-           v-bind:title="linkTitle"
-           v-on:click="handleClick"
-        >
+        <label class="label" v-if="labelText">{{labelText}}</label>
+
+        <p class="control">
+            <a class="button "
+               v-bind:class="linkClass"
+               v-bind:title="linkTitle"
+               v-on:click="handleClick"
+            >
             <span class="icon "
                   v-bind:class="iconSize"
             >
@@ -144,9 +202,13 @@
                 </i>
             </span>
 
-            <span v-if="buttonText.length >0">{{buttonText}}</span>
-        </a>
-    </p>
+                <span v-if="buttonText.length >0">{{buttonText}}</span>
+
+            </a>
+        </p>
+
+        <p class="help" v-if="helpText">{{helpText}}</p>
+    </div>
 
 </template>
 

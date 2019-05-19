@@ -253,8 +253,13 @@ export default function ( store ) {
 
             // ******************** Comments
             case mTypes.updateComment:
-                // window.console.log( 'apiPlugin', 'calling update comment', 140, item );
-                updateComment( item );
+                // window.console.log( 'apiPlugin', 'calling update comment', 140, item, payload );
+                // if(!_.isUndefined(payload.options) && !_.isUndefined(payload.options.overwriteDefaults && !_.isUndefined(payload.options.examId))){
+                //     updateComment(item, payload.options.overwriteDefaults, payload.options.examId);
+                //     // payload['options']['overwriteDefaults'])
+                // }else{
+                //     updateComment( item );
+                // }
                 break;
 
 

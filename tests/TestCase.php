@@ -65,6 +65,19 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
     }
 
     /**
+     * Not sure why the above create Mock is creating problems
+     * seems to be the same issue mentioned in GOM-397
+     * Thus this duplicates without overriding a parent method
+     * @param $originalClassName
+     * @return \Mockery\MockInterface
+     */
+    public function makeMockObject($originalClassName){
+        $mock = Mockery::mock($originalClassName);
+        $this->registerMock($originalClassName, $mock);
+        return $mock;
+    }
+
+    /**
      * Registers the mock object for the current instance
      * @param $className
      * @param $mockObject
@@ -182,7 +195,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
         $this->students = $students;
 
         return [
-            'exam1' => $exam,
+            'exam' => $exam,
             'kumi' => $kumi,
             'students' => $students,
             'studentIds' => $studentIds,
@@ -238,7 +251,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
         }
 
         return [
-            'exam1' => $exam,
+            'exam' => $exam,
             'question' => $question,
             'elements' => $elements,
             'elementIds' => $elementIds,

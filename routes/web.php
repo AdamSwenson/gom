@@ -284,6 +284,9 @@ Route::get('dev/scores/student/{student}', 'Item\ItemScoreController@studentScor
 Route::post('dev/scores/{exam}/{item}/{student}', 'Item\ItemScoreController@saveScore');
 Route::delete('dev/scores/{exam}/{item}/{student}/comment', 'Item\ItemScoreController@resetComment');
 Route::delete('dev/scores/{exam}/{item}/{student}', 'Item\ItemScoreController@resetScore');
+//Update the item_scores table for the exam, adding
+//default comments to any scored item which lacks a comment
+Route::put('dev/scores/{exam}', 'Item\ItemScoreController@assignCommentsToScores');
 
 
 

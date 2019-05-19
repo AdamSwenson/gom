@@ -33,7 +33,7 @@ abstract class Controller extends BaseController
      * @param null|array $otherItems Array of items to include in the response
      * @return \Illuminate\Http\JsonResponse|boolean
      */
-    public function sendAjaxFailure($message = null, $otherItems = null)
+    public function sendAjaxFailure($message = null, $otherItems = null, $responseCode=500)
     {
 //        event(new PleaseSendAjaxFail(null, $message, $otherItems));
         $sendMessage = $message ? $message : 'failure';
@@ -43,21 +43,8 @@ abstract class Controller extends BaseController
         ];
 
         $response = $this->addItemsToResponse($otherItems, $response);
-//
-//        if ( ! is_null($otherItems) && is_array($otherItems) )
-//        {
-//            foreach ( $otherItems as $k => $v )
-//            {
-//                $response[ $k ] = $v;
-//            }
-//        }
 
-        //TODO Is there a case in which we would want to send an ajax response but not in reply to an ajax request?
-//        if ( Request::ajax() )
-//        {
-            return Response::json($response);
-//        }
-//        return false;
+        return response()->json($response, $responseCode);
     }
 
     /**

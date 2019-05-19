@@ -19,7 +19,10 @@
 
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
+    /*{*/
+        /*width: 100%;*/
+    /*}*/
 
 </style>
 
@@ -49,8 +52,6 @@
                 helpText: "The year in which you're giving this",
 
                 defaults: {
-
-
                     numberYearsForward: 2,
                     numberYearsBack: 0,
                 }
@@ -65,7 +66,8 @@
             },
 
             currentYear: function () {
-                return new Date.getFullYear();
+                let d = new Date();
+                    return d.getFullYear();
             },
 
             /**
@@ -74,7 +76,7 @@
              * @returns {number[]}
              */
             years: function () {
-                return [ 2017, 2018 ];
+                // return [ 2017, 2018, 2019 ];
 
                 let yl = [];
 

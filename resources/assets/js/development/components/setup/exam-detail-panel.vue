@@ -4,42 +4,59 @@
         <div class="tile is-ancestor box">
 
             <div class="tile is-vertical">
-                <div class="tile is-parent">
+                <div class="tile is-parent is-warning">
 
-                    <div class="tile is-parent">
+                    <div class="tile is-child student-access-management ">
 
-                        <div class="tile is-child">
-                            <exam-release-control :exam="exam"></exam-release-control>
+                        <p class="subtitle">Manage student access</p>
 
-                            <create-access-codes-button :exam="exam"></create-access-codes-button>
+                        <exam-release-control :exam="exam"></exam-release-control>
 
-                            <send-notification-email-control :exam="exam"></send-notification-email-control>
-                        </div>
+                        <create-access-codes-button :exam="exam"></create-access-codes-button>
 
-                        <div class="tile is-child">
+                        <send-notification-email-control :exam="exam"></send-notification-email-control>
 
-                            <year-input :exam="exam"></year-input>
+                        <p class="subtitle">Other actions</p>
 
-                            <term-input :exam="exam"></term-input>
-
-                            <family-input :exam="exam"></family-input>
-
-                        </div>
-
-                        <div class="tile is-child">
-
-                            <public-name-input :exam="exam"></public-name-input>
-
-                            <description-input :exam="exam"></description-input>
-
+                        <div class="tile is-child comment-assignment">
+                            <assign-comments-to-graded-button :exam="exam"></assign-comments-to-graded-button>
                         </div>
 
                     </div>
+
+
+                    <!--<div class="tile is-parent">-->
+
+                    <!--<div class="tile is-child exam-properties">-->
+
+                    <!--<p class="title">Manage exam properties</p>-->
+
+                    <!--<div class="tile is-parent">-->
+
+                    <div class="tile is-child is-warning">
+
+                        <year-input :exam="exam"></year-input>
+
+                        <term-input :exam="exam"></term-input>
+
+                        <family-input :exam="exam"></family-input>
+
+                    </div>
+
+                    <div class="tile is-child is-info">
+                        <custom-max-score-input :exam="exam"></custom-max-score-input>
+
+                        <public-name-input :exam="exam"></public-name-input>
+
+                        <description-input :exam="exam"></description-input>
+
+                    </div>
+
+                    <!--</div>-->
+                    <!--</div>-->
                 </div>
 
-                <div id="exam-stats"
-                     class="tile is-parent"
-                >
+                <div id="exam-stats" class="tile is-parent exam-stats is-primary">
 
                     <div class="tile is-child ">
                         <exam-properties :exam="exam"></exam-properties>
@@ -90,9 +107,14 @@
     import ExamReleaseControl from "./accesscontrols/exam-release-control";
     import CreateAccessCodesButton from "./accesscontrols/create-access-codes-button";
     import SendNotificationEmailControl from "./accesscontrols/send-notification-email-control";
+    import CustomMaxScoreInput from "./detail/custom-max-score-input";
+import AssignCommentsToGradedButton from "./detail/assign-comments-to-graded-button";
 
     export default {
         components: {
+            AssignCommentsToGradedButton,
+            CustomMaxScoreInput,
+            // CustomMaxScoreInput,
             CreateAccessCodesButton,
             ExamReleaseControl,
             PublicNameInput,

@@ -34,15 +34,18 @@
         },
 
         computed: {
-            buttonText : function(){},
-            srTextDisplay: function(){},
-            computedStyling: function (  ) {
+            buttonText: function () {
+            },
+            srTextDisplay: function () {
+            },
+            computedStyling: function () {
                 return this.styling;
             }
         },
 
         methods: {
-            toggle: function(){}
+            toggle: function () {
+            }
         },
 
         directives: {},

@@ -11,7 +11,7 @@ use App\User;
 
 class ItemScore extends BaseModel
 {
-    protected $fillable = ['score', 'commentText'];
+    protected $fillable = ['score', 'comment_text'];
 
     protected $casts = [
         'score' => 'float'

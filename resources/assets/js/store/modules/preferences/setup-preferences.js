@@ -15,6 +15,7 @@ const state = {
 
     defaultOverallName : 'exam',
     defaultMaxScore : 100,
+    isOverwriteDefaultsOn: false
 };
 
 const mutations = {

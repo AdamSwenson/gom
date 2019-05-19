@@ -10,13 +10,16 @@ namespace App\Http\Controllers\Item;
 
 
 use App\Exam;
-use App\Http\Requests\ItemScoreRequest;
 use App\Item;
 use App\Models\NewGom\ItemScore;
+use App\Repositories\Item\IItemCommentRepository;
 use App\Student;
+use Mockery;
 
 class ItemScoreControllerTest extends \TestCase
 {
+
+
     static $baseRoute = 'dev/scores';
     public $students;
     public $numberItems;
@@ -33,7 +36,9 @@ class ItemScoreControllerTest extends \TestCase
      */
     public function setUp()
     {
+
         parent::setUp();
+
         $this->numberExams = 1;
         $this->numberItems = 2;
         $this->numberStudents = 5;
@@ -44,47 +49,227 @@ class ItemScoreControllerTest extends \TestCase
     }
 
 
-    public function loadIdentifiers( ItemScoreRequest $request )
+    public function tearDown()
     {
-        $this->exam = Exam::find($request->examId);
-        $this->item = Item::find($request->itemId);
-        $this->student = Student($request->studentId);
-//todo add error handling here so this kills it if there's a missing value
+        Mockery::close();
     }
 
 
-    /**
-     * Create a new store object or update an existing one
-     * @param ItemScoreRequest $request
-     * @return ItemScore
-     */
-    public function store( ItemScoreRequest $request )
+//    public function loadIdentifiers( ItemScoreRequest $request )
+//    {
+//        $this->exam = Exam::find($request->examId);
+//        $this->item = Item::find($request->itemId);
+//        $this->student = Student($request->studentId);
+////todo add error handling here so this kills it if there's a missing value
+//    }
+
+
+    /** @test */
+    public function saveScoreWhereBrandNew()
     {
-        $this->loadIdentifiers($request);
-        //if no exception, we assume everything is set
+        $item = factory(Item::class)->create();
+        $student = $this->students[0];
+
+        $payload = ['examId' => $this->exam->id,
+            'itemId' => $item->id,
+            'studentId' => $student->id,
+            'commentText' => 'taco',
+            'score' => $this->faker->randomNumber(4),
+            '_token' => csrf_token()
+        ];
+
+
+        $route = self::$baseRoute . '/' . $this->exam->id . '/' . $item->id . '/' . $student->id;
+        $response = $this->json('POST', $route, $payload);
+
+        //check
+        $this->assertNotEmpty($response);
+        $response->assertStatus(200);
+
         $score = ItemScore::where('exam_id', $this->exam->id)
-            ->where('student_id', $this->student->id)
-            ->where('item_id', $this->item->id)
+            ->where('item_id', $item->id)
+            ->where('student_id', $student->id)
             ->first();
 
-        if ( !isset($score) ) {
-            //doing this explicitly since
-            //there's some problem when try the
-            //eloquent way
-            $score = new ItemScore();
-            $score->exam_id = $this->exam->id;
-            $score->item_id = $this->item->id;
-            $score->student_id = $this->student->id;
-        }
+        $this->assertEquals($payload['commentText'], $score->comment_text);
+        $this->assertEquals($payload['score'], $score->score);
+    }
 
-        //Now, whether old or new, we set the data
-        //properties
-        $score->score = $request->input('score');
-        $score->comment_text = $request->input('commentText');
-        //and finally save
+    /** @test */
+    public function saveScoreWhereExisting()
+    {
+        //prep
+        $item = factory(Item::class)->create();
+        $student = $this->students[0];
+        $score = factory(ItemScore::class)->make(); //not using create so won't freak out on missing foreign keys
+        $score->exam()->associate($this->exam);
+        $score->item()->associate($item->id);
+        $score->student()->associate($student->id);
+        //now that everyone is associated, we can save the score
         $score->save();
 
-        return $score;
+        $payload = ['examId' => $this->exam->id,
+            'itemId' => $item->id,
+            'studentId' => $student->id,
+            'commentText' => $this->faker->word(),
+            'score' => $this->faker->randomNumber(4),
+            '_token' => csrf_token()
+        ];
+
+
+        $route = self::$baseRoute . '/' . $this->exam->id . '/' . $item->id . '/' . $student->id;
+        $response = $this->json('POST', $route, $payload);
+
+        //check
+        $this->assertNotEmpty($response);
+        $response->assertStatus(200);
+
+        $score = ItemScore::where('exam_id', $this->exam->id)
+            ->where('item_id', $item->id)
+            ->where('student_id', $student->id)
+            ->first();
+
+        $this->assertEquals($payload['commentText'], $score->comment_text);
+        $this->assertEquals($payload['score'], $score->score);
+    }
+
+    /** @test */
+    public function saveScoreUpdateComment()
+    {
+        //We want to check that the score is untouched
+        //prep
+        $item = factory(Item::class)->create();
+        $student = $this->students[0];
+        $score = factory(ItemScore::class)->make(); //not using create so won't freak out on missing foreign keys
+        $score->exam()->associate($this->exam);
+        $score->item()->associate($item->id);
+        $score->student()->associate($student->id);
+        //now that everyone is associated, we can save the score
+        $score->save();
+
+        $payload = ['examId' => $this->exam->id,
+            'itemId' => $item->id,
+            'studentId' => $student->id,
+            'commentText' => $this->faker->word(),
+            '_token' => csrf_token()
+        ];
+
+
+        $route = self::$baseRoute . '/' . $this->exam->id . '/' . $item->id . '/' . $student->id;
+        $response = $this->json('POST', $route, $payload);
+
+        //check
+        $this->assertNotEmpty($response);
+        $response->assertStatus(200);
+
+        $s2 = ItemScore::where('exam_id', $this->exam->id)
+            ->where('item_id', $item->id)
+            ->where('student_id', $student->id)
+            ->first();
+
+        $this->assertEquals($payload['commentText'], $s2->comment_text, "Comment updated");
+        $this->assertEquals($score->score, $s2->score, "Still has original score");
+    }
+
+    /** @test */
+    public function saveScoreUpdateScore()
+    {
+        //We want to check that the comment is untouched
+        //prep
+        $item = factory(Item::class)->create();
+        $student = $this->students[0];
+        $score = factory(ItemScore::class)->make(); //not using create so won't freak out on missing foreign keys
+        $score->exam()->associate($this->exam);
+        $score->item()->associate($item->id);
+        $score->student()->associate($student->id);
+        //now that everyone is associated, we can save the score
+        $score->save();
+
+        $payload = ['examId' => $this->exam->id,
+            'itemId' => $item->id,
+            'studentId' => $student->id,
+            'score' => $this->faker->randomNumber(4),
+            '_token' => csrf_token()
+        ];
+
+
+        $route = self::$baseRoute . '/' . $this->exam->id . '/' . $item->id . '/' . $student->id;
+        $response = $this->json('POST', $route, $payload);
+
+        //check
+        $this->assertNotEmpty($response);
+        $response->assertStatus(200);
+
+        $s2 = ItemScore::where('exam_id', $this->exam->id)
+            ->where('item_id', $item->id)
+            ->where('student_id', $student->id)
+            ->first();
+
+        $this->assertEquals($score->comment_text, $s2->comment_text, "Comment still original ");
+        $this->assertEquals($payload['score'], $s2->score, "Score updated");
+    }
+
+
+    /** @test */
+    public function resetComment()
+    {
+        $item = factory(Item::class)->create();
+        $student = $this->students[0];
+        $score = factory(ItemScore::class)->make(); //not using create so won't freak out on missing foreign keys
+        $score->exam()->associate($this->exam);
+        $score->item()->associate($item->id);
+        $score->student()->associate($student->id);
+        //now that everyone is associated, we can save the score
+        $score->save();
+
+        //call
+        $route = self::$baseRoute . '/' . $this->exam->id . '/' . $item->id . '/' . $student->id . '/comment';
+        $response = $this->json('DELETE', $route);
+
+        //check
+//        $this->assertNotEmpty($response);
+        $response->assertStatus(200);
+
+        $s2 = ItemScore::where('exam_id', $this->exam->id)
+            ->where('item_id', $item->id)
+            ->where('student_id', $student->id)
+            ->first();
+
+        $this->assertNull($s2->comment_text);
+        //check that score was untouched
+        $this->assertEquals($score->score, $s2->score);
+
+    }
+
+    /** @test */
+    public function resetScore()
+    {
+        $item = factory(Item::class)->create();
+        $student = $this->students[0];
+        $score = factory(ItemScore::class)->make(); //not using create so won't freak out on missing foreign keys
+        $origText = $score->comment_text;
+        $score->exam()->associate($this->exam);
+        $score->item()->associate($item->id);
+        $score->student()->associate($student->id);
+        //now that everyone is associated, we can save the score
+        $score->save();
+
+        //call
+        $route = self::$baseRoute . '/' . $this->exam->id . '/' . $item->id . '/' . $student->id;
+        $response = $this->json('DELETE', $route);
+
+        //check
+//        $this->assertNotEmpty($response);
+        $response->assertStatus(200);
+
+        $s2 = ItemScore::where('exam_id', $this->exam->id)
+            ->where('item_id', $item->id)
+            ->where('student_id', $student->id)
+            ->first();
+
+        $this->assertNull($s2->score);
+        //check that comment text was untouched
+        $this->assertEquals($origText, $s2->comment_text);
 
     }
 
@@ -110,7 +295,14 @@ class ItemScoreControllerTest extends \TestCase
         $this->assertNotEmpty($response);
         $response->assertStatus(200);
 
-        foreach($expectedScores as $score){
+        foreach ( $expectedScores as $score ) {
+            $response->assertJsonFragment(['comment_text' => $score->comment_text,
+                'item_id' => $score->item_id,
+                'exam_id' => $score->exam_id,
+                'student_id' => $score->student_id,
+                'score' => $score->score,
+                'id' => $score->id
+            ]);
 //            $response->assertJsonFragment($score->toArray());
         }
 
@@ -133,19 +325,22 @@ class ItemScoreControllerTest extends \TestCase
             $expectedScores[] = $score;
         }
 
-        $route = self::$baseRoute . '/exam1/' . $this->exam->id;
+        $route = self::$baseRoute . '/exam/' . $this->exam->id;
         $response = $this->get($route);
 
         //check
         $this->assertNotEmpty($response);
         $response->assertStatus(200);
 
-        foreach($expectedScores as $score){
-//            $response->assertJsonFragment($score->toArray());
+        foreach ( $expectedScores as $score ) {
+            $response->assertJsonFragment(['comment_text' => $score->comment_text,
+                'item_id' => $score->item_id,
+                'exam_id' => $score->exam_id,
+                'student_id' => $score->student_id,
+                'score' => $score->score,
+                'id' => $score->id
+            ]);
         }
-
-
-//        return ItemScore::where('exam_id', $exam1->id)->get();
     }
 
     /** @test */
@@ -173,9 +368,30 @@ class ItemScoreControllerTest extends \TestCase
         $this->assertNotEmpty($response);
         $response->assertStatus(200);
 
-        foreach($expectedScores as $score){
-//            $response->assertJsonFragment($score->toArray());
+        foreach ( $expectedScores as $score ) {
+            $response->assertJsonFragment(['comment_text' => $score->comment_text,
+                'item_id' => $score->item_id,
+                'exam_id' => $score->exam_id,
+                'student_id' => $score->student_id,
+                'score' => $score->score,
+                'id' => $score->id
+            ]);
         }
+    }
+    
+    /** @test */
+    public function assignCommentsToScoresCallsRepo(){
+        $repo = $this->makeMockObject(IItemCommentRepository::class);
+        $repo->shouldReceive('assignDefaultCommentsToGradedItems'); //->with($this->exam);
+
+        //call
+        $route = self::$baseRoute . '/' . $this->exam->id;
+        $response = $this->put($route);
+
+        //check
+        $this->assertNotEmpty($response);
+        $response->assertStatus(200);
+
     }
 
 

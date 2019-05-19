@@ -12,6 +12,30 @@ import IModel from "./IModel";
  * handle the myriad different ways objects can be identified
  */
 export default class Payload extends IModel{
+
+    /**
+     * Returns a list of strings which are property
+     * names. These fields can be filled from the input
+     * @returns {[string,string]}
+     */
+    static get fillableProps() {
+        return [
+            'array',
+            'callback',
+            'exam',
+            'kumi',
+            'id', 'index', 'num',
+            'mutateSilently',
+            'options',
+            'obj', 'objNode',
+            'parent', 'parentNode',
+            'serialNumber', 'str', 'stamp', 'student',
+            'tag', 'type',
+            'updateProp', 'updateVal',
+            'updateValence',
+        ];
+    }
+
     constructor() {
         super();
         //the object's db id
@@ -102,29 +126,6 @@ export default class Payload extends IModel{
 
     }
 
-
-    /**
-     * Returns a list of strings which are property
-     * names. These fields can be filled from the input
-     * @returns {[string,string]}
-     */
-    static get fillableProps() {
-        return [
-            'array',
-            'callback',
-            'exam',
-            'kumi',
-            'id', 'index', 'num',
-            'mutateSilently',
-            'options',
-            'obj', 'parent',
-            'objNode', 'parentNode',
-            'serialNumber', 'str', 'stamp', 'student',
-            'tag', 'type',
-            'updateProp', 'updateVal',
-            'updateValence',
-        ];
-    }
 
     get callback() {
         if ( typeof this._successCallback === 'undefined' ) {

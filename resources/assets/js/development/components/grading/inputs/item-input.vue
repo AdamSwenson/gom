@@ -10,10 +10,10 @@
                         :item="item"
                         :student="student"
                 >
-                    <!--<letter-grade-button slot="input-button"-->
-                                         <!--:item="item"-->
-                                         <!--:student="student"-->
-                    <!--&gt;</letter-grade-button>-->
+<!--                    <letter-grade-button slot="input-button"-->
+<!--                                         :item="item"-->
+<!--                                         :student="student"-->
+<!--                    ></letter-grade-button>-->
                 </question-score>
             </div>
 

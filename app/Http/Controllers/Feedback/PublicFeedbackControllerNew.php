@@ -31,7 +31,7 @@ class PublicFeedbackControllerNew extends Controller
         if($f){
             return view('new.newfeedback', $f->content);
         }else{
-            echo('uh oh');
+            echo('Something has gone wrong');
         }
 
 

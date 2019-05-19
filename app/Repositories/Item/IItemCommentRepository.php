@@ -9,6 +9,8 @@
 namespace App\Repositories\Item;
 
 
+use App\Exam;
+
 /**
  * Class ItemCommentRepository
  * This is the new version of the gom commenting
@@ -36,4 +38,10 @@ interface IItemCommentRepository
      * @throws \Exception
      */
     public function chooseValenceByScore( $score );
-}
+
+    /**
+     * @param Exam $exam
+     * @return mixed
+     */
+    public function assignDefaultCommentsToGradedItems(Exam $exam);
+    }

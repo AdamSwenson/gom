@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Item;
 
+use App\Exam;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ItemScoreRequest;
 use App\Item;
-use App\Exam;
-use App\Student;
 use App\Models\NewGom\ItemScore;
+use App\Repositories\Item\IItemCommentRepository;
+use App\Student;
 use Illuminate\Http\Request;
 
 /**
@@ -76,7 +77,7 @@ class ItemScoreController extends Controller
         //from different requests. So, we need to be careful
         //not to inadvertently overwrite the score on a comment request
         //or vice-versa.
-        if ( $request->has('score'))  {
+        if ( $request->has('score') ) {
             $score->score = $request->input('score');
         }
         if ( $request->has('commentText') ) {
@@ -103,13 +104,14 @@ class ItemScoreController extends Controller
      * @param Student $student
      * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function resetScore(Exam $exam, Item $item, Student $student){
+    public function resetScore( Exam $exam, Item $item, Student $student )
+    {
         $score = ItemScore::where('exam_id', $exam->id)
             ->where('item_id', $item->id)
             ->where('student_id', $student->id)
             ->first();
 
-            $score->score = null;
+        $score->score = null;
 
         //and finally save
         $score->save();
@@ -127,13 +129,14 @@ class ItemScoreController extends Controller
      * @param Student $student
      * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function resetComment(Exam $exam, Item $item, Student $student){
+    public function resetComment( Exam $exam, Item $item, Student $student )
+    {
         $score = ItemScore::where('exam_id', $exam->id)
             ->where('item_id', $item->id)
             ->where('student_id', $student->id)
             ->first();
 
-        if($score){
+        if ( $score ) {
             $score->comment_text = null;
 
             //and finally save
@@ -143,40 +146,6 @@ class ItemScoreController extends Controller
         return $this->sendAjaxSuccess();
     }
 
-    /**
-     * Create a new store object or update an existing one
-     * @param ItemScoreRequest $request
-     * @return ItemScore
-     */
-    public function store( ItemScoreRequest $request )
-    {
-        $this->loadIdentifiers($request);
-        //if no exception, we assume everything is set
-        $score = ItemScore::where('exam_id', $this->exam->id)
-            ->where('student_id', $this->student->id)
-            ->where('item_id', $this->item->id)
-            ->first();
-
-        if ( !isset($score) ) {
-            //doing this explicitly since
-            //there's some problem when try the
-            //eloquent way
-            $score = new ItemScore();
-            $score->exam_id = $this->exam->id;
-            $score->item_id = $this->item->id;
-            $score->student_id = $this->student->id;
-        }
-
-        //Now, whether old or new, we set the data
-        //properties
-        $score->score = $request->input('score');
-        $score->comment_text = $request->input('commentText');
-        //and finally save
-        $score->save();
-
-        return $score;
-
-    }
 
     /**
      * Gets all scores for an item, regardless of which exam the item
@@ -217,5 +186,65 @@ class ItemScoreController extends Controller
         return ItemScore::where('student_id', $student->id)->get();
     }
 
+
+    /**
+     * Handles the request to assign default comments to
+     * graded items
+     * @param Exam $exam
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function assignCommentsToScores( Exam $exam )
+    {
+        try {
+            $repo = app()->make(IItemCommentRepository::class);
+            $repo->assignDefaultCommentsToGradedItems($exam);
+
+            return $this->sendAjaxSuccess();
+        } catch (Exception $e) {
+            return $this->sendAjaxFailure();
+        }
+
+//        dispatch(new AssignDefaultCommentsToScores($exam));
+    }
+
+
+
+//    /**
+//     * THIS SEEMS TO BE UNUSED AND TO HAVE BEEN REPLACED
+//     * BY SAVE SCORES
+//     *
+//     * Create a new store object or update an existing one
+//     * @param ItemScoreRequest $request
+//     * @return ItemScore
+//     */
+//    public function store( ItemScoreRequest $request )
+//    {
+//        $this->loadIdentifiers($request);
+//        //if no exception, we assume everything is set
+//        $score = ItemScore::where('exam_id', $this->exam->id)
+//            ->where('student_id', $this->student->id)
+//            ->where('item_id', $this->item->id)
+//            ->first();
+//
+//        if ( !isset($score) ) {
+//            //doing this explicitly since
+//            //there's some problem when try the
+//            //eloquent way
+//            $score = new ItemScore();
+//            $score->exam_id = $this->exam->id;
+//            $score->item_id = $this->item->id;
+//            $score->student_id = $this->student->id;
+//        }
+//
+//        //Now, whether old or new, we set the data
+//        //properties
+//        $score->score = $request->input('score');
+//        $score->comment_text = $request->input('commentText');
+//        //and finally save
+//        $score->save();
+//
+//        return $score;
+//
+//    }
 
 }
