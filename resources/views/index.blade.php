@@ -10,11 +10,28 @@
             padding-bottom: 0;
             margin-bottom: 0;
         }
+
+        .maintenance-mode-message{
+            margin: 1%;
+            outline: #0000FF;
+            outline-style: groove;
+            padding-bottom: 17px;
+            padding-top: 3px;
+        }
     </style>
 @endsection
 
 @section('body')
     <div id="homePage" class="mainBodyLocator">
+
+        @if( isset($exception) && $exception->getStatusCode() === 503)
+            <div class="maintenance-mode-message ">
+                <div class="text-center">
+                    <h1>All access to the gradeomatic is presently disabled</h1>
+                    <h3>Please use the feedback tab to contact us if you want access</h3>
+                </div>
+            </div>
+        @endif
 
         <div class="row">
 
