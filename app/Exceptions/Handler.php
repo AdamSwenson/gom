@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Mail\errorNotification;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Auth\AuthenticationException;
@@ -9,7 +10,6 @@ use Illuminate\Contracts\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Mail;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 
 class Handler extends ExceptionHandler
@@ -20,10 +20,10 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        AuthorizationException::class,
-        HttpException::class,
+//        AuthorizationException::class,
+//        HttpException::class,
         ModelNotFoundException::class,
-        ValidationException::class,
+//        ValidationException::class,
     ];
 
     /**
@@ -63,37 +63,41 @@ class Handler extends ExceptionHandler
      */
     public function emailAboutException( Exception $e )
     {
-        $err = $e->getMessage();
-        $t = $e->getTraceAsString();
-        $f = $e->getFile();
-
-        $request = request();
-        $url = $request->fullUrl();
-        $method = $request->method();
-        $ip = $request->ip();
-        $ips = $request->ips();
-
-        $msg = <<<MSG
-$url
-
-$method
-
-$ip
-
-$ips
-
-$err
-
-$f
-
-$t
-
-MSG;
-
-        Mail::raw($msg, function ( $message ) {
-            $message->to('gradeomatic@gmail.com', 'devteam')
-                ->subject('Exception:');
-        });
+        Mail::send(new ErrorNotification($e));
+//
+//        $err = $e->getMessage();
+//        $t = $e->getTraceAsString();
+//        $f = $e->getFile();
+//        $exceptionName = get_class($e);
+//
+//        $request = request();
+//        $url = $request->fullUrl();
+//        $method = $request->method();
+//        $ip = 't';//$request->ip();
+////        $ips = 's'; //$request->ips();
+////        var_dump($e)
+//$subject = 'Exception: ' . $exceptionName;
+//        $msg = <<<MSG
+//$url
+//
+//$method
+//
+//$ip
+//
+//
+//$err
+//
+//$f
+//
+//$t
+//
+//MSG;
+//        $p = ['message' => $msg, 'subject' => $subject];
+//
+//        Mail::raw($p, function ( $payload ) {
+//            $payload['message']->to('gradeomatic@gmail.com', 'devteam')
+//                ->subject($payload['subject']);
+//        });
 
     }
 
@@ -108,10 +112,10 @@ MSG;
      */
     public function report( Exception $e )
     {
-        if ( env('APP_ENV') === 'production' ) {
-            $this->emailAboutException($e);
-            $this->notifySlackOfException($e);
-        }
+//        if ( env('APP_ENV') === 'production' ) {
+        $this->emailAboutException($e);
+        $this->notifySlackOfException($e);
+//        }
 
         return parent::report($e);
     }
