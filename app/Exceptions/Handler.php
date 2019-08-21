@@ -70,11 +70,17 @@ class Handler extends ExceptionHandler
         $request = request();
         $url = $request->fullUrl();
         $method = $request->method();
+        $ip = $request->ip();
+        $ips = $request->ips();
 
         $msg = <<<MSG
 $url
 
 $method
+
+$ip
+
+$ips
 
 $err
 
