@@ -84,6 +84,7 @@ const EMAIL_VIEW = 'emails.internal.errorNotification';
     public function build()
     {
         return $this->view(self::EMAIL_VIEW)
+            ->to(self::DESTINATION_ADDRESS)
             ->from(self::DESTINATION_ADDRESS, self::RECIPIENT)
             ->subject($this->subject);
     }
