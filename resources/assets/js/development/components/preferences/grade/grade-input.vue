@@ -48,8 +48,8 @@
                     :selected="isScoreDisplayed"
                     v-on:toggled="handleToggle('isScoreDisplayed')"
             >
-                <span slot="labelText">{{ showScores.label}}</span>
-                <span slot="helpText">{{ showScores.help }}</span>
+                <span slot="labelText">{{ showScore.label}}</span>
+                <span slot="helpText">{{ showScore.help }}</span>
 
             </preference-toggle>
 
@@ -106,7 +106,7 @@
                     help: ""
                 },
 
-                showScores: {
+                showScore: {
                     available : false,
                     label: "View numeric scores while grading",
                     help: "Sometimes, trying to assign a precise scores overly complicates the grading process. Selecting this option hides the numerical value of the score assigned. Used in conjunction with the slider, allows you to grade with something like a visual analog scale. "

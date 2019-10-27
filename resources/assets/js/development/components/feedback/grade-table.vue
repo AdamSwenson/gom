@@ -5,7 +5,7 @@
             <th>Grade</th>
             <td>{{letterGrade}}</td>
         </tr>
-        <tr>
+        <tr v-if="showScore">
             <th>Score</th>
             <td>{{totalScore}} / {{ maxPossible}}</td>
         </tr>
@@ -88,6 +88,15 @@
                 if ( this.gradeAssignmentObject ) return this.gradeAssignmentObject.displayValue;
 
                 return this.placeHolder;
+            },
+
+            /**
+             * Whether to show the field with the xxx / yyy points.
+             * If you are using a wide grade range (e.g., 400 points), students
+             * can get fixated on points when what matters is the letter grade
+             */
+            showScore: function(){
+                return false;
             },
 
 
