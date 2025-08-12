@@ -10,6 +10,7 @@ use Illuminate\Contracts\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Mail;
+use Throwable;
 
 
 class Handler extends ExceptionHandler
@@ -33,7 +34,7 @@ class Handler extends ExceptionHandler
      * @param Exception $e
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function notifySlackOfException( Exception $e )
+    public function notifySlackOfException( Throwable $e )
     {
         //See https://api.slack.com/docs/messages/builder
         //for documentation
@@ -61,7 +62,7 @@ class Handler extends ExceptionHandler
      * Send email to dev team with the stack trace, et cetera
      * @param Exception $e
      */
-    public function emailAboutException( Exception $e )
+    public function emailAboutException( Throwable $e )
     {
         Mail::send(new ErrorNotification($e));
 //
@@ -110,7 +111,7 @@ class Handler extends ExceptionHandler
      * @return void
      * @throws Exception
      */
-    public function report( Exception $e )
+    public function report( Throwable $e )
     {
 //        if ( env('APP_ENV') === 'production' ) {
         $this->emailAboutException($e);
@@ -127,7 +128,7 @@ class Handler extends ExceptionHandler
      * @param \Exception $e
      * @return \Illuminate\Http\Response
      */
-    public function render( $request, Exception $e )
+    public function render( $request, Throwable $e )
     {
         //Respond via ajax if was an ajax request
         if ( $request->ajax() ) {
