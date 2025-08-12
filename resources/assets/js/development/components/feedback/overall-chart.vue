@@ -73,6 +73,7 @@
                         minValue: 0,
                         maxValue: this.maxPossible
                     },
+                    enableInteractivity: this.showScore,
                 }
             },
 
@@ -114,6 +115,16 @@
 
                 return dt;
             },
+
+            /**
+             * Whether to show the field with the xxx / yyy points.
+             * If you are using a wide grade range (e.g., 400 points), students
+             * can get fixated on points when what matters is the letter grade
+             */
+            showScore: function(){
+                return false;
+            },
+
 
             staticClassAverage: function () {
                 let el = document.getElementById( 'averageTotalScore' );
