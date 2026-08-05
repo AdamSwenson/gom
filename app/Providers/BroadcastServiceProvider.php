@@ -14,6 +14,10 @@ class BroadcastServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if (! config('broadcasting.connections.pusher.key')) {
+            return;
+        }
+
         Broadcast::routes();
 
         /*
