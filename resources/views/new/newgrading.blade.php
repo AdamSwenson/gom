@@ -9,5 +9,5 @@
 @endsection
 
 @section('pageJs')
-    <script src="{{ asset('/js/dev/newest-grading-package.js') }}"></script>
+    @vite('resources/assets/js/development/entries/new-grading.js')
 @endsection
