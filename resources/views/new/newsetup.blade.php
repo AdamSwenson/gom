@@ -23,7 +23,7 @@ margin:0;
 
 @section('pageJs')
 
-    <script src="{{ asset('/js/dev/new-setup-package.js') }}"></script>
+    @vite('resources/assets/js/development/entries/new-setup.js')
 
 
 @endsection
