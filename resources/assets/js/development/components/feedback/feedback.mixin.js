@@ -1,6 +1,6 @@
 import * as nggTypes from '../../../store/new-grading-getter-types';
 
-module.exports = {
+export default {
     computed: {
 
         itemChildren: function () {

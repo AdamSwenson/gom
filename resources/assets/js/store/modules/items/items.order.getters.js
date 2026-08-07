@@ -16,7 +16,7 @@ import Exam from '../../../models/Exam'
 import Node from '../../../models/Node'
 import { traverseDF, traverseBF, getSerialNumber, getNode } from '../../../models/NodeTools'
 
-module.exports = {
+export default {
     getItemMap : ( state, getters ) => {
         return state.itemMap;
     },

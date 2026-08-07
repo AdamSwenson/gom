@@ -3,7 +3,7 @@ import Vue from 'vue'
 import questionPanel from './components/grading/panels/question-panel.vue';
 Vue.component( 'grading-question-panel', questionPanel );
 
-module.exports =  [
+export default [
 
 
 //grading

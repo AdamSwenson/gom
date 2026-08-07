@@ -16,7 +16,7 @@ import Payload from '../../../models/Payload';
 import * as mTypes from '../../mutation-types';
 import Student from "../../../models/Student";
 
-module.exports = {
+export default {
 
 
     state: {

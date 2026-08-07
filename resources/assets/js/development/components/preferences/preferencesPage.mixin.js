@@ -5,7 +5,7 @@ import * as ngaTypes from '../../../store/new-grading-action-types';
 
 import Routes from '../../routes.preferences';
 
-module.exports = {
+export default {
 
     computed: {
         routes: function () {

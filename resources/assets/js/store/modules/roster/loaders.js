@@ -10,7 +10,7 @@ import {
 } from '../../utlities/JsonHelpers';
 
 
-module.exports = {
+export default {
     actions: {
         /**
          * Process the result of a response where we need to

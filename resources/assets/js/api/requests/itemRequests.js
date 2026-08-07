@@ -10,7 +10,7 @@ import { holdForIdLoading } from "../apiHelpers";
  * @type {{getItemsForExam: function(*)}}
  */
 
-module.exports = {
+const itemRequests = {
 
     /**
      * Requests that the server create an item
@@ -112,3 +112,6 @@ module.exports = {
 
 
 };
+
+export default itemRequests;
+export const { createItemRequest, getItemsForExam, updateItemsOrderRequest, updateItemRequest } = itemRequests;

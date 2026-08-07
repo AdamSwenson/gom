@@ -14,6 +14,8 @@
     "bootstrap-slider": "^11.0.2",
     "bootstrap-toggle": "^2.2.2",
     "bootstrap-vue": "^2.23.1",
+    "bulma": "^0.9.4",
+    "core-js": "^3.50.0",
     "datatables.net": "^2.2.2",
     "datatables.net-bs": "^2.2.2",
     "datatables.net-buttons": "^3.2.2",
@@ -25,6 +27,7 @@
     "google-charts": "^2.0.0",
     "jquery": "^3.7.1",
     "lodash": "^4.17.21",
+    "regenerator-runtime": "^0.14.1",
     "sortablejs": "^1.15.6",
     "vue": "^2.7.16",
     "vue-async-computed": "^3.9.0",
@@ -36,7 +39,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue2": "^2.3.4",
-    "laravel-vite-plugin": "^2.0.0",
+    "laravel-vite-plugin": "^1.2.0",
     "sass": "^1.89.2",
     "vite": "^6.3.5"
   }

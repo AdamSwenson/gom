@@ -5,7 +5,7 @@ import { itemScoreGetter, create } from "./itemscores.helpers";
 import getters from "./itemscores.getters";
 import actions from "./itemscores.actions";
 
-module.exports = {
+export default {
 
     /**
      * Creates a new itemScore object for the student, item, exam combo

@@ -18,7 +18,7 @@ const route = 'dev/scores';
 /** We don't want to hit the server every second. This is how many requests to skip */
 const RECORD_EVERY = 30;
 
-module.exports = {
+const timeRequests = {
 
     /**
      * Gets all item scores for the exam with identifying
@@ -76,3 +76,6 @@ module.exports = {
     }
 
 };
+
+export default timeRequests;
+export const { getTotalGradingTime, getAllGradingTimes, getStudentGradingTime, setStudentGradingTime } = timeRequests;

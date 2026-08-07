@@ -132,7 +132,7 @@ const readinessTester = ( student, kumi, tries = 10 ) => {
     } );
 };
 
-module.exports = {
+const studentRequests = {
 
     /**
      * Sends request for all students associated with the exam
@@ -376,3 +376,5 @@ module.exports = {
             } );
     }
 };
+
+export const { loadAllStudents, loadStudentsForExam, loadStudent, updateStudent, createStudentRequest, associateStudentWithKumiRequest, disassociateStudent, anonymizeStudents, destroyStudent } = studentRequests;

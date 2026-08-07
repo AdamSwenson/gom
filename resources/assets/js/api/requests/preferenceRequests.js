@@ -30,7 +30,7 @@ let out = {
 
 const preferencesBaseRoute = 'dev/preferences/';
 
-module.exports = {
+const preferenceRequests = {
     getGradePreferences: () => {
         let route = preferencesBaseRoute + 'grade';
         return window.axios
@@ -106,4 +106,6 @@ module.exports = {
                 errorHandling( error );
             } );
     },
-}
+};
+
+export const { getGradePreferences, getSetupPreferences, getUserPreferences, setGradePreferences, setSetupPreferences, setUserPreferences } = preferenceRequests;

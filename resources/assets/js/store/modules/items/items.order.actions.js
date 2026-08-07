@@ -13,7 +13,7 @@ import { getSerialNumber } from '../../../models/NodeTools'
 
 import { updateItemsOrderRequest } from '../../../api/requests/itemRequests';
 
-module.exports = {
+export default {
 
     /**
      * Pushes an item into the itemMap

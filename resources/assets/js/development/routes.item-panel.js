@@ -16,7 +16,7 @@ Vue.component( 'panel-detail', panelItemDetail );
 Vue.component( 'panel-stats', panelStats );
 Vue.component( 'panel-tags', panelTags );
 
-module.exports = [
+export default [
 //comment setup
     {
         name: 'comments',

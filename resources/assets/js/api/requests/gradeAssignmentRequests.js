@@ -15,7 +15,7 @@ import { errorHandling } from '../responseHandlers';
 
 const route = 'dev/scores';
 
-module.exports = {
+const gradeAssignmentRequests = {
 
     /**
      * Gets all the grade assignments for the exam
@@ -75,3 +75,6 @@ module.exports = {
     },
 
 };
+
+export default gradeAssignmentRequests;
+export const { getGradeAssignments, getTotalScores, updateGradeAssignment } = gradeAssignmentRequests;

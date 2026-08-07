@@ -18,7 +18,7 @@ import { errorHandling } from '../responseHandlers';
 
 const route = 'dev/numgraded/exam/';
 
-module.exports = {
+export default {
 
     /**
      * Returns the number of students whose work has been

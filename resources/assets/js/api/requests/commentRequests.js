@@ -6,7 +6,7 @@ import { REQUEST_VERSION, Routes } from '../apiSettings';
 import { holdForIdLoading } from '../apiHelpers';
 
 
-module.exports = {
+const commentRequests = {
 
     /**
      * This is used during the setup process to handle
@@ -53,3 +53,6 @@ module.exports = {
 
 
 }
+
+export default commentRequests;
+export const { updateComment, assignDefaultCommentsToGradedItems } = commentRequests;

@@ -20,7 +20,7 @@ const makeRoute = ( exam, item, student ) => {
 };
 
 
-module.exports = {
+const scoreRequests = {
 
     /**
      * Requests that a student's score for an item be set to null
@@ -203,3 +203,6 @@ module.exports = {
             } );
     }
 };
+
+export default scoreRequests;
+export const { resetItemScoreRequest, resetCommentTextRequest, saveItemScoreRequest, saveCommentTextRequest, getAllScoresForExamRequest, getStudentScoreRequest, getItemScoreRequest } = scoreRequests;

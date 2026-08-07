@@ -165,7 +165,7 @@ const filterHeaderRows = ( students ) => {
 };
 
 
-module.exports = {
+export default {
 
 //actions
     importStudentsFromFile: ( { state, dispatch, commit, getters }, inputFile ) => {

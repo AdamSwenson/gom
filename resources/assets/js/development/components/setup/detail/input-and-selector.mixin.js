@@ -8,7 +8,7 @@ import * as ngaTypes from '../../../../store/new-grading-action-types';
 
 import Payload from '../../../../models/Payload'
 
-module.exports = {
+export default {
     watch: {
         //I have no idea why this had to be handled like this
         //rather than via computed values. Trying it any other way

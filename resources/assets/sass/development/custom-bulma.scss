@@ -1,6 +1,6 @@
 // 1. Import the initial variables
-@import "~bulma/sass/utilities/initial-variables";
-@import "~bulma/sass/utilities/functions";
+@import "bulma/sass/utilities/initial-variables";
+@import "bulma/sass/utilities/functions";
 
 // 2. Set your own initial variables
 //$navbar-background-color :  #00496C;
@@ -20,4 +20,4 @@ $border-outline-color: #990002;
 //$colors: map-merge($colors, $addColors);
 
 // 6. Import the rest of Bulma
-@import "~bulma";
+@import "bulma/bulma.sass";

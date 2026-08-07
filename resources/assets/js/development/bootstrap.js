@@ -82,4 +82,5 @@ window.axios.defaults.baseURL = routeRoot;
 //     key: 'your-pusher-key'
 // });
 
-import 'babel-polyfill'
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';

@@ -21,7 +21,7 @@ import * as aTypes from '../../action-types'
 import * as gTypes from '../../getter-types';
 
 
-module.exports = {
+export default {
 
     [ gTypes.getStudentsFromRoster ]: ( state, getters, rootState ) => {
         return state.roster;

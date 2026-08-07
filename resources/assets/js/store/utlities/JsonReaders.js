@@ -97,7 +97,7 @@ import {
 
 import { initializeItemsWithExam } from './itemHelpers';
 
-module.exports = {
+export default {
 
     mutations: {
 

@@ -29,7 +29,7 @@ import setupStructureArea from './components/preferences/setup/setup-structure.v
 Vue.component( 'setup-structure-area', setupStructureArea );
 
 
-module.exports =  [
+export default [
     // ======== User
 
     {

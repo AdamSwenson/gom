@@ -126,7 +126,7 @@
     // import ProgressDashboard from './components/dashboard.progress.component.vue'
 
     import ExamCard from './components/cards/exam-card.vue'
-    import ItemCard from './components/cards/item-card';
+    import ItemCard from './components/cards/item-card.vue';
 
 
     //navigation bars

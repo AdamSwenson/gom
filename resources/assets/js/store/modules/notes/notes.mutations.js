@@ -15,7 +15,7 @@ import Exam from '../../../models/Exam'
 import Note from '../../../models/Note'
 
 
-module.exports  = {
+export default {
     [mTypes.createNote] : ( state, payload ) => {
         if ( Payload.checkIfPayload( payload ) ) {
             let { obj, callback } = payload;

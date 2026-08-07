@@ -13,7 +13,7 @@ const Vue = require( 'vue' );
  * To maintain compatibility, indexMap holds a mapping from the old
  * ItemIndex to the database id
  */
-module.exports = {
+export default {
 
 
     /**

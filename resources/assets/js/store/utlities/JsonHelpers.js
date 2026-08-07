@@ -10,7 +10,7 @@ import { getItem, getItemFromPayload, buildPayloadFromInput } from './itemHelper
  * the page as a string
  */
 
-module.exports = {
+const JsonHelpers = {
     EXAM_JSON_NAME: 'exam',
     ITEM_ORDER_JSON_NAME: 'order',
     ITEM_OBJECT_JSON_NAME: 'items',
@@ -48,4 +48,7 @@ module.exports = {
         return j;
     }
 
-}
+};
+
+export default JsonHelpers;
+export const { EXAM_JSON_NAME, ITEM_ORDER_JSON_NAME, ITEM_OBJECT_JSON_NAME, processItemObjectsFromJson, readJsonFromPageString } = JsonHelpers;

@@ -28,7 +28,7 @@ import Loaders from './loaders';
 
 
 
-module.exports = {
+export default {
     ...StudentImporter,
 
     /**

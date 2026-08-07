@@ -14,7 +14,7 @@ import Item from '../../models/Item'
 import { errorHandling, handleResponse } from "../responseHandlers";
 
 
-module.exports = {
+const examRequests = {
 
     loadAllExams: ( store ) => {
         window.console.log( 'apiPlugin-examRequests', 'loadAllExams', 8 );
@@ -141,4 +141,7 @@ module.exports = {
 
     }
 
-}
+};
+
+export default examRequests;
+export const { loadAllExams, updateExam, loadExam, releaseExamToStudents, revokeExamAccess } = examRequests;

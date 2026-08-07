@@ -17,7 +17,7 @@ import Node from '../../../models/Node'
 
 let initialExam = new Exam();
 
-module.exports = {
+export default {
     itemMap: new Node( initialExam.serialNumber, initialExam.serialNumber ),
 
     /*

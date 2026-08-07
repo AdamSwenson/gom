@@ -6,7 +6,7 @@ import Payload from '../../../models/Payload';
 
 // import Routes from '../../routes.preferences';
 
-module.exports = {
+export default {
 
     computed: {},
 

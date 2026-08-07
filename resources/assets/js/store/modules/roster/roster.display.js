@@ -15,7 +15,7 @@ import Vue from 'vue'
 import Payload from '../../../models/Payload';
 import * as mTypes from '../../mutation-types';
 
-module.exports = {
+export default {
 
     state: {
 

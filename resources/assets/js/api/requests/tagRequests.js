@@ -92,7 +92,7 @@ const handleLoadResponse = ( store, data, itemOrExam ) => {
 };
 
 
-module.exports = {
+const tagRequests = {
 
     associateTagRequest: (  tag, object ) => {
         let out = {
@@ -338,3 +338,5 @@ module.exports = {
 
 
 };
+
+export const { associateTagRequest, disassociateTagRequest, createTagRequest, destroyTagRequest, loadAllUserTagsRequest, loadTagsForItemRequest, updateTagRequest } = tagRequests;

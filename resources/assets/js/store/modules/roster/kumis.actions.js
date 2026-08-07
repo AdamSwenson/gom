@@ -25,7 +25,7 @@ import { disassociateStudent } from "../../../api/requests/studentRequests";
 const KUMIS_JSON_NAME = 'loadedKumis';
 
 
-module.exports = {
+export default {
 
 
     /**

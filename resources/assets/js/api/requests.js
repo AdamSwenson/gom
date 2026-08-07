@@ -17,7 +17,7 @@ const checkItemForId = ( item ) => {
 };
 
 
-module.exports = {
+const requests = {
     ...examRequests,
     // ...commentRequests,
 
@@ -164,7 +164,9 @@ module.exports = {
 
 };
 
-
+export const updateItem = requests.updateItem;
+export const createItem = requests.createItemRequest;
+export const updateItemsOrder = requests.updateItemsOrderRequest;
 
 /**
  //  * Asks the server to update the order of items

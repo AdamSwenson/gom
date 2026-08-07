@@ -72,7 +72,7 @@ const handleCreateResponse = ( store, note, data ) => {
 // };
 
 
-module.exports = {
+const noteRequests = {
 
     createNoteRequest: ( store = null, note ) => {
         window.console.log( 'apiPlugin---noteRequests', 'createNoteRequest', note );
@@ -175,3 +175,5 @@ module.exports = {
 
 
 };
+
+export const { createNoteRequest, destroyNoteRequest, loadNotesForItemRequest, updateNoteRequest } = noteRequests;

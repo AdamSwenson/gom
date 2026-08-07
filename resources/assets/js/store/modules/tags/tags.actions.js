@@ -22,7 +22,7 @@ import {
     loadTagsForItemRequest,
 } from '../../../api/requests/tagRequests';
 
-module.exports = {
+export default {
     /**
      * Creates a relationship between an existing tag and existing taggable
      * object
