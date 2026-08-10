@@ -12,14 +12,14 @@ class TagTableSeeder extends BaseSeeder
     static public function populateExamAndItemsWithTags(Exam $exam, $numberTags){
 
         //create tags for exam
-        $tags = factory(Tag::class, $numberTags)->create();
+        $tags = Tag::factory()->count($numberTags)->create();
         $exam->tags()->attach($tags);
 
         //seed tag items
         $items = $exam->getItems();
 
         foreach($items as $item){
-            $item->tags()->attach(factory(tag::class, $numberTags)->create());
+            $item->tags()->attach(Tag::factory()->count($numberTags)->create());
             $item->save();
         }
     }
@@ -37,7 +37,7 @@ class TagTableSeeder extends BaseSeeder
         Auth::loginUsingId($this->userId);
         DB::table('tags')->delete();
 
-        $tags = factory(Tag::class, $numberTags)->create();
+        $tags = Tag::factory()->count($numberTags)->create();
 
         $items = Item::all();
         $exams = Exam::all();
