@@ -11,14 +11,14 @@ class NoteTableSeeder extends Seeder
     static public function populateExamAndItemsWithNotes(Exam $exam, $numberNotes){
 
         //create notes for exam
-        $notes = factory(Note::class, $numberNotes)->create();
+        $notes = Note::factory()->count($numberNotes)->create();
         $exam->notes()->attach($notes);
 
         //seed note items
         $items = $exam->getItems();
 
         foreach($items as $item){
-            $item->notes()->attach(factory(Note::class, $numberNotes)->create());
+            $item->notes()->attach(Note::factory()->count($numberNotes)->create());
             $item->save();
         }
     }
@@ -42,7 +42,7 @@ class NoteTableSeeder extends Seeder
 
         //seed note items
         foreach ( $exams->concat($items) as $item ) {
-            $note = factory(Note::class)->create();
+            $note = Note::factory()->create();
             $item->notes()->attach($note);
             $item->save();
         }
