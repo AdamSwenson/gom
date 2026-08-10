@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Student;
 
 
@@ -26,6 +27,8 @@ use App\Student;
  */
 class GradingTime extends Model
 {
+    use HasFactory;
+
     protected $fillable = ['student_id', 'exam_id'];
 
     protected $casts = [

@@ -2,10 +2,13 @@
 namespace App;
 
 use Franzose\ClosureTable\Models\Entity;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 
 class Assignment extends Entity implements AssignmentInterface
 {
+    use HasFactory;
+
     /**
      * The table associated with the model.
      *

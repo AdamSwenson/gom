@@ -12,6 +12,7 @@ namespace App;
 use App\UserOnlyJunctionScope;
 use App\UserOnlyScope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -29,6 +30,8 @@ use Illuminate\Support\Facades\DB;
  */
 class BaseModelNoUser extends Model
 {
+    use HasFactory;
+
     public function hasAttribute($attr)
     {
         return array_key_exists($attr, $this->attributes);
