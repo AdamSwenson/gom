@@ -24,7 +24,7 @@ class AssignmentsTableSeeder extends Seeder
      */
     static public function createLevel( Exam $exam, Assignment $parentAssign, $numberChildren )
     {
-        $items = factory(Item::class, $numberChildren)->create();
+        $items = Item::factory()->count($numberChildren)->create();
 
         foreach ( $items as $item ) {
             //Create the assignment for the new item
@@ -88,7 +88,7 @@ class AssignmentsTableSeeder extends Seeder
         DB::table('assignments')->delete();
 
         //create a new exam
-        $exam = factory(Exam::class)->create();
+        $exam = Exam::factory()->create();
 
         self::populateExam($exam, $this->numLevels, $this->numAtLevel);
 
