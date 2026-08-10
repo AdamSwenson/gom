@@ -49,12 +49,12 @@ class KumiAssociationsSeeder extends Seeder
     {
 
         //create some kumis and associate them with the exam
-        $kumis = factory(Kumi::class, $numberKumi)->create();
+        $kumis = Kumi::factory()->count($numberKumi)->create();
         $exam->classes()->attach($kumis);
 
         //now give each kumi some students
         foreach ( $kumis as $kumi ) {
-            $students = factory(Student::class, $studentsPerClass)->create();
+            $students = Student::factory()->count($studentsPerClass)->create();
             $kumi->students()->attach($students);
         }
     }
