@@ -17,8 +17,6 @@ use Illuminate\Database\Seeder;
  */
 class CompleteNewSetupSeeder extends Seeder
 {
-
-
     /**
      * @param $numLevels
      * @param int $numAtLevel
@@ -26,9 +24,9 @@ class CompleteNewSetupSeeder extends Seeder
      * @param $studentsPerClass
      * @return mixed
      */
-    static public function makeCompleteExam( $numLevels, $numAtLevel, $numKumi, $studentsPerClass , $numberNotes, $numberTags)
+    static public function makeCompleteExam($numLevels, $numAtLevel, $numKumi, $studentsPerClass, $numberNotes, $numberTags)
     {
-        $exam = factory(Exam::class)->create();
+        $exam = Exam::factory()->create();
 
         //add items
         AssignmentsTableSeeder::populateExam($exam, $numLevels, $numAtLevel);
@@ -53,11 +51,6 @@ class CompleteNewSetupSeeder extends Seeder
         return $exam;
     }
 
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
     }
