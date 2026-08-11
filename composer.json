@@ -13,6 +13,7 @@
         "laracasts/flash": "^3.2",
         "laravel/framework": "^13.0",
         "pda/pheanstalk": "^7.0",
+        "predis/predis": "^3.5",
         "pusher/pusher-php-server": "^7.2"
     },
     "require-dev": {
