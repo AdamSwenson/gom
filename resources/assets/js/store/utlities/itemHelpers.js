@@ -5,7 +5,7 @@ import Node from "../../models/Node";
  * Created by adam on 7/2/17.
  */
 
-module.exports = {
+const itemHelpers = {
     getItemFromPayload: ( state, payload ) => {
         return state.items[ payload.index ];
     },
@@ -71,3 +71,12 @@ module.exports = {
     }
 
 };
+
+export default itemHelpers;
+
+export const {
+    getItemFromPayload,
+    buildPayloadFromInput,
+    getItem,
+    initializeItemsWithExam,
+} = itemHelpers;

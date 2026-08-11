@@ -107,28 +107,20 @@ const kumiRequests = {
             } );
 
     },
-    //
-    // associateKumi: ( kumi, exam ) => {
-    //     // let route = 'dev/kumis/' + kumi.id + 'exam/' + exam.id + '/new';
-    //
-    //     let toSend = {
-    //         ...kumi,
-    //         ...exam,
-    //         requestVersion: REQUEST_VERSION,
-    //     };
-    //
-    //     window.axios
-    //         .post( Routes.associateKumi( kumi, exam ), toSend )
-    //         .then( ( response ) => {
-    //             // window.console.log( 'kumiRequests', 'associateKumi', 28, response );
-    //         } )
-    //         .catch( function ( error ) {
-    //             //todo add response handling
-    //             window.console.log( 'kumiRequests--associateKumi', 'ERROR', 39, error );
-    //             // errorHandling( error );
-    //         } );
-    //
-    // },
+    associateKumi: ( kumi, exam ) => {
+        let toSend = {
+            ...kumi,
+            ...exam,
+            requestVersion: REQUEST_VERSION,
+        };
+
+        return window.axios
+            .post( Routes.associateKumi( kumi, exam ), toSend )
+            .then( ( response ) => response.data )
+            .catch( function ( error ) {
+                window.console.log( 'kumiRequests--associateKumi', 'ERROR', 39, error );
+            } );
+    },
 
     /**
      * Requests the server creates a new kumi for the
@@ -213,4 +205,14 @@ const kumiRequests = {
     }
 };
 
-export const { loadKumiForExam, loadAllKumi, createKumiRequest, updateKumi, disassociateKumiAndExam, destroyKumi } = kumiRequests;
+export const {
+    loadKumiForExam,
+    loadAllKumi,
+    createKumiRequest,
+    updateKumi,
+    associateKumi,
+    disassociateKumiAndExam,
+    destroyKumi,
+} = kumiRequests;
+
+export const createKumi = createKumiRequest;

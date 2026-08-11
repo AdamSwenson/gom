@@ -66,5 +66,10 @@ export default {
 
         })( state );
 
-    }
+    },
+
+    [ gTypes.getExamBySerialNumber ]: ( state ) =>
+        ( serialNumber ) => Object.values( state.exams ).find(
+            ( exam ) => exam.serialNumber === serialNumber
+        )
 };

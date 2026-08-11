@@ -23,6 +23,9 @@ export const clearActiveStudent = 'clearActiveStudent'
 export const setActiveStudentTime = 'setActiveStudentTimeNew'
 export const startExamTimer = 'startExamTimer';
 export const stopExamTimer = 'stopExamTimer';
+// Compatibility aliases used by the legacy grading page.
+export const startTimer = startExamTimer;
+export const stopTimer = stopExamTimer;
 
 //preferences for grading
 export const toggleGradedStudentRowVisibility = 'toggleGradedStudentRowVisibility';

@@ -32,6 +32,20 @@ const JsonHelpers = {
         return items;
     },
 
+    processItemOrderFromJson: function ( state, orderData ) {
+        _.forEach( orderData, function ( d ) {
+            let item = getItem( state, d.itemId );
+
+            if ( d.parentId === null ) return true;
+
+            let parentNode = d.parentId === state.items[ 0 ].id
+                ? state.itemMap
+                : getNode( state, getItem( state, d.parentId ).serialNumber );
+
+            parentNode.children.push( new Node( item.serialNumber, parentNode.data ) );
+        } );
+    },
+
     /**
      * When the server has stored data we need as a json string
      * in the data attribute of some page element, this reads it
@@ -51,4 +65,11 @@ const JsonHelpers = {
 };
 
 export default JsonHelpers;
-export const { EXAM_JSON_NAME, ITEM_ORDER_JSON_NAME, ITEM_OBJECT_JSON_NAME, processItemObjectsFromJson, readJsonFromPageString } = JsonHelpers;
+export const {
+    EXAM_JSON_NAME,
+    ITEM_ORDER_JSON_NAME,
+    ITEM_OBJECT_JSON_NAME,
+    processItemOrderFromJson,
+    processItemObjectsFromJson,
+    readJsonFromPageString,
+} = JsonHelpers;

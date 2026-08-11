@@ -30,6 +30,7 @@ export const getNumberUngraded = 'getNumberUngraded';
 export const getExam = 'getExam'
 export const getAllExams = 'getAllExams'
 export const getActiveExamObj = 'getActiveExamObj'
+export const getExamBySerialNumber = 'getExamBySerialNumber'
 
 // ================================================================
 // ==================================== ITEMS =====================
@@ -171,5 +172,4 @@ export const getTagBySerialNumber = 'getTagBySerialNumber';
 export const getAllTags = 'getAllTags';
 export const getTagsForObject = 'getTagsForObject';
 export const getTagById = 'getTagById';
-
 
