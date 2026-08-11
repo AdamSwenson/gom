@@ -16,7 +16,7 @@
             <ul class="pager">
                 <li class="next">
                     <a id="forwardNavButton"
-                       href="{{ url('exams') }}"
+                       href="{{ route('exam.create') }}"
                        title="Create new exam1">Create New Exam
                         <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
                 </li>
@@ -48,14 +48,14 @@
                         <td style="text-align:right;">
                             <a id="editExamButton{{$exam1->getId()}}"
                                class="editExam btn btn-info"
-                               href="{{ url('exam1/'.$exam1->getId().'/edit') }}"
+                               href="{{ url('exam/'.$exam1->getId().'/edit') }}"
                                title="Edit Exam">
                                 <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                                 Edit
                             </a>
                             <a id="cloneExamButton{{$exam1->getId()}}"
                                class="cloneExam btn btn-default"
-                               href="{{ url('exam1/'.$exam1->getId().'/clone') }}"
+                               href="{{ url('exam/'.$exam1->getId().'/clone') }}"
                                title="Clone Exam">
                                 <span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span> Clone
                             </a>
@@ -91,4 +91,3 @@
     </script>
     <script language="javascript" type="text/javascript" src="{{ asset('js/exam-select-package.js') }}"></script>
 @endsection
-

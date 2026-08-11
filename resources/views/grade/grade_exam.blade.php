@@ -101,6 +101,6 @@
 
     </script>
 
-    <script type="text/javascript" src="{{ asset('js/grade-exam1-package.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/grade-exam-package.js') }}"></script>
 
 @endsection

@@ -41,7 +41,7 @@
           name="questionForm"
           method="post"
           role="form"
-          action="{{ url('exam1/'.$examId.'/question/updateAll') }}"
+          action="{{ url('exam/'.$examId.'/question/updateAll') }}"
           accept-charset="UTF-8">
         <input type="hidden" id="token" name="_token" value="{{ csrf_token() }}">
         <ul class="form-group" id="questionList">
@@ -224,5 +224,4 @@
     {{--);--}}
     {{--</script>--}}
 @endsection
-
 

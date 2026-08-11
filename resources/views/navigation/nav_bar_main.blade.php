@@ -14,7 +14,7 @@
             <ul class="nav navbar-nav navbar-right">
                 <li id="navSetup"
                     title="Create or edit an exam1">
-                    <a href="{{url('exam1')}}"
+                    <a href="{{url('exam')}}"
                        class="navItem"><span class="linkText">Setup</span></a>
                 </li>
 

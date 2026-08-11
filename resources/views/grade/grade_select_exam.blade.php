@@ -4,7 +4,7 @@
 @section('pageTitle', 'Grade Exam | gradeomatic')
 @section('description', 'grade')
 @section('otherCss')
-    <link href="{{ asset('css/exam1-table-package.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('css/exam-table-package.css') }}" rel="stylesheet" type="text/css">
 @endsection
 
 @section('body')
@@ -58,14 +58,14 @@
                             <td class="examButtonsCell">
                                 <a
                                         id="gradeExam{{$examId}}"
-                                        data-href="{{ url('grade/exam1/'.$examId) }}"
+                                        data-href="{{ url('grade/exam/'.$examId) }}"
                                         class="gradeButton btn btn-primary {{ ! $exam1->isGradable() ? 'disabled' : '' }}"
                                         title="Grade exam1"
                                 >
                                     <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Grade</a>
                                 <a
                                         id="assignExam{{$examId}}"
-                                        data-href="{{ url('grade/exam1/'.$examId.'/assign') }}"
+                                        data-href="{{ url('grade/exam/'.$examId.'/assign') }}"
                                         class="assignButton btn btn-primary {{ ! $exam1->isGradable() ? 'disabled' : '' }}"
                                         title="Assign letter grades"
                                 >
@@ -97,7 +97,6 @@
         // for setting 'Grade' tab as active
         var activeTab = 'navGrade';
     </script>
-    <script type="text/javascript" src="{{ asset('js/grade-exam1-select-package.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/grade-exam-select-package.js') }}"></script>
 
 @endsection
-

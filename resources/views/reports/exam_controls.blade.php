@@ -51,7 +51,6 @@
 //        var activeTab = '';
         var baseUrl = '{!! url('') !!}';
     </script>
-    <script type="text/javascript" src="{{ asset('js/report-exam1-controls-package.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/report-exam-controls-package.js') }}"></script>
 @endsection
-
 

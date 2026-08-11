@@ -5,7 +5,7 @@
 @section('description', 'View information about the exam1')
 
 @section('otherCss')
-    <link rel="stylesheet" href="{{ asset('css/exam1-analytics-package.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('css/exam-analytics-package.css') }}"/>
 @endsection
 
 @section('body')
@@ -110,8 +110,7 @@
         console.log( 'questionScoresByQNum', questionScoresByQNumber );
         console.log( 'elementScoresByQENum', elementScoresByQENumber );
     </script>
-    <script type="text/javascript" src="{{ asset('js/report-exam1-analytics-package.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/report-exam-analytics-package.js') }}"></script>
 
 @endsection
-
 

@@ -50,7 +50,7 @@
         <p>
         <?php isset($exam1) ? $examId = $exam1->getId() : $examId = 0; ?>
         <div style="display: {{ isset($exam1) ? 'visible' : 'none' }}">
-            <a href="{{ url('exam1/'.$examId.'/student/edit') }}"
+            <a href="{{ url('exam/'.$examId.'/student/edit') }}"
                class="btn btn-info"
                title="Edit Student Roster"
                style="cursor:pointer;"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>

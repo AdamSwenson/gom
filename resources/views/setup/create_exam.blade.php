@@ -9,12 +9,12 @@
 @section('body')
     <div id="editExamPage" class="mainBodyLocator">
 
-        <form id="examForm" method="POST" action="{{url('exam1')}}"
+        <form id="examForm" method="POST" action="{{url('exam')}}"
               accept-charset="UTF-8" role="form">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
             <ul class="pager">
                 <li class="previous">
-                    <a href="{{ url('exam1/') }}" id="prev-question" style="cursor:pointer;"> <span
+                    <a href="{{ url('exam/') }}" id="prev-question" style="cursor:pointer;"> <span
                                 class="glyphicon glyphicon-chevron-left"
                                 aria-hidden="true"></span> Setup
                     </a>
@@ -42,5 +42,4 @@
     </script>
     <script language="javascript" type="text/javascript" src="{{ asset('exams') }}"></script>
 @endsection
-
 
