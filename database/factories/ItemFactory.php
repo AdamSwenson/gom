@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Item;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ItemFactory extends Factory
@@ -11,7 +12,7 @@ class ItemFactory extends Factory
 
     public function definition(): array
     {
-        $score = $this->faker->randomFloat(2, 1, \DatabaseSeeder::MAX_ITEM_SCORE);
+        $score = $this->faker->randomFloat(2, 1, DatabaseSeeder::MAX_ITEM_SCORE);
 
         return [
             'name' => $this->faker->word,
@@ -19,9 +20,9 @@ class ItemFactory extends Factory
             'comment_text' => $this->faker->word(),
             'text' => $this->faker->word(),
             'settings' => [],
-            'max_score' => \DatabaseSeeder::VARY_MAX_ITEM_SCORES
+            'max_score' => DatabaseSeeder::VARY_MAX_ITEM_SCORES
                 ? $score
-                : \DatabaseSeeder::MAX_ITEM_SCORE,
+                : DatabaseSeeder::MAX_ITEM_SCORE,
         ];
     }
 }

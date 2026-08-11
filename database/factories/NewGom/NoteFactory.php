@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Database\Factories\NewGom;
 
 use App\Models\NewGom\Note;
 use Illuminate\Database\Eloquent\Factories\Factory;

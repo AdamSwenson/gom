@@ -1,7 +1,12 @@
 <?php
 
+
+namespace Database\Seeders;
+
 use App\Exam;
+use App\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Creates entire exams under the new setup structure
@@ -53,5 +58,11 @@ class CompleteNewSetupSeeder extends Seeder
 
     public function run()
     {
+        $user = User::query()->firstOrFail();
+
+        Auth::login($user);
+
+        self::makeCompleteExam(2, 2, 2, 20, 10, 10);
+
     }
 }

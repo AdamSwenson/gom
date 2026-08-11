@@ -84,7 +84,7 @@ class Exam extends BaseModel
         'released' => 'boolean',
         'term' => 'string',
         'other' => 'array',
-        'year' => 'year',
+//        'year' => 'year',
     ];
 
 

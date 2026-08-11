@@ -5,6 +5,9 @@
  * Date: 7/18/15
  * Time: 11:31 AM
  */
+namespace Database\Seeders;
+
+
 use Illuminate\Database\Seeder;
 
 

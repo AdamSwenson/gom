@@ -5,6 +5,9 @@
  * Date: 7/22/15
  * Time: 5:21 PM
  */
+
+namespace Database\Seeders;
+
 use App\Comment;
 use App\Element;
 use Illuminate\Database\Seeder;

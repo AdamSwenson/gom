@@ -1,19 +1,12 @@
 <?php
+namespace Database\Seeders;
 
-use App\Models\NewGom\Tag;
 use App\QuestionAssignment;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * This creates the db for the new gom
- *
- *
- * Class DevSeeder
- */
-class DevSeeder extends BaseSeeder
+class DatabaseSeederNoScores extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -22,18 +15,22 @@ class DevSeeder extends BaseSeeder
     public function run()
     {
         Model::unguard();
+
         $this->call(UserTableSeeder::class);
-        \Auth::loginUsingId($this->userId);
+        \Auth::loginUsingId(1);
         $this->call(ExamTableSeeder::class);
+        $this->call(QuestionTableSeeder::class);
+        $this->call(ElementTableSeeder::class);
         $this->call(StudentTableSeeder::class);
         $this->call(KumiTableSeeder::class);
+        $this->call(QuestionAssignmentTableSeeder::class);
+//        $this->call(QuestionScoresTableSeeder::class);
+        $this->call(ElementAssignmentTableSeeder::class);
+//        $this->call(ElementScoresTableSeeder::class);
         $this->call(KumiAssociationsSeeder::class);
         $this->call(CommentTableSeeder::class);
-        $this->call(ItemTableSeeder::class);
-        $this->call(AssignmentsTableSeeder::class);
-        $this->call(NoteTableSeeder::class);
-        $this->call(ItemScoreSeeder::class);
-        $this->call(TagTableSeeder::class);
+        //$this->call('ItemSeeder');
+        //$this->call('ItemAssignmentSeeder');
         Model::reguard();
     }
 }

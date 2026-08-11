@@ -1,6 +1,5 @@
 <?php
-
-namespace Database\Factories;
+namespace Database\Factories\NewGom;
 
 use App\Models\NewGom\Tag;
 use Illuminate\Database\Eloquent\Factories\Factory;

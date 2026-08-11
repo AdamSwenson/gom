@@ -1,5 +1,6 @@
 <?php
 
+namespace Database\Seeders;
 
 use App\Exam;
 use App\GradingTime;

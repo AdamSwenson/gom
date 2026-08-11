@@ -1,4 +1,5 @@
 <?php
+namespace Database\Seeders;
 
 use Base\User;
 use Illuminate\Support\Facades\Auth;
