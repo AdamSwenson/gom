@@ -7,7 +7,7 @@
 @section('description', 'Create, edit, clone or delete an exam1')
 
 @section('otherCss')
-    <link rel="stylesheet" href="{{ asset('css/select-exam1-package.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/select-exam-package.css') }}">
 @endsection
 
 @section('body')
@@ -89,7 +89,6 @@
         //The tab to be set as active
         var activeTab = 'navSetup';
     </script>
-    <script language="javascript" type="text/javascript" src="{{ asset('js/exam1-select-package.js') }}"></script>
+    <script language="javascript" type="text/javascript" src="{{ asset('js/exam-select-package.js') }}"></script>
 @endsection
-
 
