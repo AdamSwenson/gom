@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "axios": "^1.7.9",
+    "bootbox": "^5.5.3",
     "bootstrap-slider": "^11.0.2",
     "bootstrap-toggle": "^2.2.2",
     "bootstrap-vue": "^2.23.1",
