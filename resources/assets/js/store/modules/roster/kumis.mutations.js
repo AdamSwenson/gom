@@ -33,7 +33,7 @@ const checkIfNew = ( state, kumi ) => {
     return _.findIndex( state.kumis, { id: kumi.id } ) === -1;
 };
 
-module.exports = {
+export default {
 // ------------------ kumi properties
     /**
      * Adds a new kumi object to the list of kumis

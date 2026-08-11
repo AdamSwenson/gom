@@ -15,7 +15,7 @@ import Exam from '../../../models/Exam'
 import Note from '../../../models/Note'
 
 
-module.exports  = {
+export default {
 
         /**
          * Returns a list of notes associated with the

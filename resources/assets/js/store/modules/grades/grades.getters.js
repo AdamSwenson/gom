@@ -1,7 +1,7 @@
 import * as gTypes from "../../getter-types";
 import { gradeGetterForScore, sortGradeAssignments } from "./grades.helpers";
 
-module.exports = {
+export default {
 
     /**
      * Given a score, it returns the appropriate gradeAssignment object

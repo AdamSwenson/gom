@@ -1,6 +1,6 @@
 
 import Payload from "../../../../models/Payload";
-module.exports ={
+export default {
 
 
     computed: {

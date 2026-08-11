@@ -22,7 +22,7 @@ const isNew = ( state, student ) => {
     return _.findIndex( state.roster, { id: student.id } ) === -1;
 };
 
-module.exports = {
+export default {
 
     /**
      * Adds a student record to state.roster.

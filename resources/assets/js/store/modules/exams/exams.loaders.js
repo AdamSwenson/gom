@@ -20,7 +20,7 @@ import {
 import * as ngmTypes from "../../new-grading-mutation-types";
 
 
-module.exports = {
+export default {
     actions: {
         /**
          * Reads the exam data from the data attribute of a page element

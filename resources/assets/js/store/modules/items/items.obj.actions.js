@@ -8,7 +8,7 @@ import Payload from '../../../models/Payload'
 import Comment from '../../../models/Comment'
 import { updateComment } from "../../../api/requests/commentRequests";
 
-module.exports = {
+export default {
     /**
      * Runs the various maintenance operations on the item store.
      * It will delete any empty slots and then make sure

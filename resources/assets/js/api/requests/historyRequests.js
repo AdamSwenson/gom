@@ -12,7 +12,7 @@ import { errorHandling, handleResponse } from '../responseHandlers';
 import { holdForIdLoading } from '../apiHelpers';
 
 
-module.exports = {
+const historyRequests = {
 
     /**
      * Gets score histories for the item on
@@ -56,5 +56,6 @@ module.exports = {
     getStudentHistory: ( store, student ) => {
 
     }
-}
+};
 
+export const { getItemHistory, getStudentHistory } = historyRequests;

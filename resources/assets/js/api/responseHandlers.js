@@ -61,7 +61,7 @@ const handleExamResponse = ( store, item, response ) => {
     } );
 };
 
-module.exports = {
+const responseHandlers = {
 
 
     /**
@@ -128,3 +128,5 @@ module.exports = {
     }
 
 };
+
+export const { handleResponse, errorHandling } = responseHandlers;

@@ -25,7 +25,7 @@ const checkExpectedType = ( toBeSet ) => {
 };
 
 
-module.exports = {
+export default {
 
     /**
      * Pushes a node into the order.

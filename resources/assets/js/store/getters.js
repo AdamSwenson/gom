@@ -5,7 +5,7 @@
  */
 import * as gTypes from './getter-types'
 
-module.exports = {
+export default {
 
     /**
      * Helper function used by getters which tests for an index value and then

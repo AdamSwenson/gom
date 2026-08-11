@@ -41,7 +41,7 @@
     window.examId = document.getElementById( 'examId' ).getAttribute( 'data' );
     window.isStatic = true;
 </script>
-<script src="{{ asset('/js/dev/newest-public-feedback-package.js') }}"></script>
+@vite('resources/assets/js/development/entries/new-public-feedback.js')
 
 </body>
 </html>

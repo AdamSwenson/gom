@@ -1,6 +1,6 @@
 import Payload from "../../models/Payload";
 
-module.exports = {
+const qualityRequests = {
 
     getQCData: ( exam ) => {
         let to = '/quality/exam/' + exam.id;
@@ -11,4 +11,6 @@ module.exports = {
                 return response.data;
             } );
     }
-}
+};
+
+export const { getQCData } = qualityRequests;

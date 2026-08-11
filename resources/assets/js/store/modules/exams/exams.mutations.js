@@ -13,7 +13,7 @@ import Payload from '../../../models/Payload'
 import Vue from "vue";
 
 
-module.exports = {
+export default {
 
     /**
      * Push an exam into storage

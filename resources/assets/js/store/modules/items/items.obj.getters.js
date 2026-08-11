@@ -28,7 +28,7 @@ const isItemsEmpty = ( state ) => {
 };
 
 
-module.exports = {
+export default {
 
     /**
      * Returns all stored item objects in whatever

@@ -15,7 +15,7 @@ import { errorHandling } from '../responseHandlers';
 
 const route = 'dev/scores';
 
-module.exports = {
+const statsRequests = {
 
     /**
      * Gets all item scores for the exam without identifying
@@ -135,3 +135,6 @@ module.exports = {
 
     }
 };
+
+export default statsRequests;
+export const { getExamScoresForStats, getItemScoresForStats, getItemScoreSummaryForExam, getItemScoreSummariesByKumis, getItemSummaryStats, getTotalScoreSummaryStats } = statsRequests;

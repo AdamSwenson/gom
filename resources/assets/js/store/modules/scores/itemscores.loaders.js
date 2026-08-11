@@ -13,7 +13,7 @@ import { readJsonFromPageString } from "../../utlities/JsonHelpers";
  *
  * @type {{actions: {processAndStoreLoadedScores: function({state: *, dispatch: *, commit?: *, getters?: *}, *=)}}}
  */
-module.exports = {
+export default {
     actions: {
         [ ngaTypes.loadScoresFromServer ]: ( { state, dispatch, commit, getters }, exam ) => {
             return new Promise( function ( resolve, reject ) {

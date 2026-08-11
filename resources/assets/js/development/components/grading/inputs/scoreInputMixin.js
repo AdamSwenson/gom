@@ -10,7 +10,7 @@ import * as ngmTypes from '../../../../store/new-grading-mutation-types';
 import * as ngaTypes from '../../../../store/new-grading-action-types';
 
 
-module.exports = {
+export default {
 
 
     computed: {

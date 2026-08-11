@@ -73,7 +73,7 @@ const handleCreateKumiResponse = ( store, kumi, data ) => {
 };
 
 
-module.exports = {
+const kumiRequests = {
 
     loadKumiForExam: ( exam ) => {
         // window.console.log( 'apiPlugin -- studentRequests', 'loadAllStudents', 8, exam );
@@ -211,4 +211,6 @@ module.exports = {
                 // errorHandling( error );
             } );
     }
-}
+};
+
+export const { loadKumiForExam, loadAllKumi, createKumiRequest, updateKumi, disassociateKumiAndExam, destroyKumi } = kumiRequests;

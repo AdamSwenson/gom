@@ -4,7 +4,7 @@
 import Vue from 'vue';
 import * as mTypes from '../../mutation-types'
 
-module.exports = {
+export default {
     /**
      * Adds a tag object to the client's central store
      * @param state

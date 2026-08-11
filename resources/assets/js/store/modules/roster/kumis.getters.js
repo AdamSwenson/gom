@@ -30,7 +30,7 @@ import {
 } from './kumis.helpers';
 
 
-module.exports = {
+export default {
 
     areKumiAndExamAssociated: ( state, getters, rootState, objs ) => ( objs ) => {
         // return (function(state, objs) {

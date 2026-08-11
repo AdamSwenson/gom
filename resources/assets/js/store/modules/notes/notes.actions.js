@@ -17,7 +17,7 @@ import Note from '../../../models/Note'
 import { loadNotesForItemRequest } from '../../../api/requests/noteRequests';
 
 
-module.exports = {
+export default {
     /**
      *
      */

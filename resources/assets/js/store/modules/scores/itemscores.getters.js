@@ -1,7 +1,7 @@
 import * as nggTypes from "../../new-grading-getter-types";
 import { itemScoreGetter } from "./itemscores.helpers";
 
-module.exports = {
+export default {
 
     getExamScores: ( state, getters, rootState, examId ) => ( examId ) => {
         return (function ( state, examId ) {

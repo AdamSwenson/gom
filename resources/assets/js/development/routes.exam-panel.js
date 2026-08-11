@@ -20,7 +20,7 @@ Vue.component( 'panel-students', panelStudents );
 
 Vue.component( 'panel-notes', panelNotes );
 
-module.exports = [
+export default [
     //comments-exam
     {
         name: 'exam-comments',

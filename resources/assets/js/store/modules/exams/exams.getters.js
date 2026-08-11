@@ -21,7 +21,7 @@ import {loadExam  } from '../../../api/requests/examRequests';
 
 
 
-module.exports  = {
+export default {
     /**
      * Returns the desired exam object
      * Payload can have any of the following identifiers,

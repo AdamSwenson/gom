@@ -12,7 +12,7 @@ import Payload from '../../../models/Payload'
 import { releaseExamToStudents, revokeExamAccess } from '../../../api/requests/examRequests';
 
 
-module.exports = {
+export default {
 
     /**
      * Adds the exam in the payload to the store. Also

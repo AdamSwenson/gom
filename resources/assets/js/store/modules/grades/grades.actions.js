@@ -4,7 +4,7 @@ import { getGradeAssignments, updateGradeAssignment } from "../../../api/request
 import GradeAssignment from "../../../models/GradeAssignment";
 import Payload from "../../../models/Payload";
 
-module.exports = {
+export default {
 
     /**
      * Makes a request to the server for grade assignment data

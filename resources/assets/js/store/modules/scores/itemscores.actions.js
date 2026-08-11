@@ -9,7 +9,7 @@ import * as nggTypes from "../../new-grading-getter-types";
 import * as ngmTypes from "../../new-grading-mutation-types";
 import scoreRequests from "../../../api/requests/scoreRequests";
 
-module.exports = {
+export default {
 
     /**
      * Silently creates an item score record for the student and item

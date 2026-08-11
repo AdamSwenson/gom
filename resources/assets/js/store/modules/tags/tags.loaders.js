@@ -17,7 +17,7 @@ import Tag from '../../../models/Tag'
 
 import { loadAllUserTagsRequest, loadTagsForItemRequest } from '../../../api/requests/tagRequests';
 
-module.exports = {
+export default {
     actions: {
         /**
          * Requests all tags that the user has created from the server.

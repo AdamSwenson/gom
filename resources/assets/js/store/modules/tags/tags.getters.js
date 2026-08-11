@@ -58,7 +58,7 @@ const getTagSerialNumbersFromObjectSerialNumber = ( state, objectSerialNumber ) 
     })( state, objectSerialNumber );
 };
 
-module.exports = {
+export default {
 
     [ gTypes.getTagBySerialNumber ]: ( state, getters, rootState, serialNumber ) =>
         ( serialNumber ) => {

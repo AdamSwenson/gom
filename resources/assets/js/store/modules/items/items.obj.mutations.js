@@ -44,7 +44,7 @@ const getItemFromPayload = ( state, payload ) => {
     }
 };
 
-module.exports = {
+export default {
     /**
      * Pushes a mapping of index to id into indexMap
      * Payload should have keys: ItemIndex, ItemId
